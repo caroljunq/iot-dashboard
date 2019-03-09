@@ -12,7 +12,7 @@ const routes: Routes = [{
     component: DashboardComponent,
   }, {
     path: '',
-    redirectTo: 'dashboard',
+    redirectTo: 'iot-dashboard',
     pathMatch: 'full',
   }],
 }];

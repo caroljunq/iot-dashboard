@@ -15,6 +15,10 @@ import { AppRoutingModule } from './app-routing.module';
 import { ThemeModule } from './@theme/theme.module';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 
+import { AngularFireModule } from 'angularfire2';
+import { AngularFireDatabaseModule } from 'angularfire2/database';
+import { environment } from 'environments/environment';
+
 @NgModule({
   declarations: [AppComponent],
   imports: [
@@ -26,6 +30,9 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
     NgbModule.forRoot(),
     ThemeModule.forRoot(),
     CoreModule.forRoot(),
+
+    AngularFireModule.initializeApp(environment.firebase, 'iot-dash'),
+    AngularFireDatabaseModule,
   ],
   bootstrap: [AppComponent],
   providers: [

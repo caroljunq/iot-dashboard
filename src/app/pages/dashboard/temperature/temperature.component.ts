@@ -1,16 +1,16 @@
-import { Component, OnDestroy } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { NbThemeService } from '@nebular/theme';
 import { Temperature, TemperatureHumidityData } from '../../../@core/data/temperature-humidity';
 import { takeWhile } from 'rxjs/operators';
 import { forkJoin } from 'rxjs';
+import { FirebaseDatabaseService } from 'app/@core/iot-dash/firebase-database.service';
 
 @Component({
   selector: 'ngx-temperature',
   styleUrls: ['./temperature.component.scss'],
   templateUrl: './temperature.component.html',
 })
-export class TemperatureComponent implements OnDestroy {
-
+export class TemperatureComponent implements OnInit, OnDestroy {
   private alive = true;
 
   temperatureData: Temperature;
@@ -26,8 +26,11 @@ export class TemperatureComponent implements OnDestroy {
   colors: any;
   themeSubscription: any;
 
-  constructor(private theme: NbThemeService,
-              private temperatureHumidityService: TemperatureHumidityData) {
+  constructor(
+    private theme: NbThemeService,
+    private temperatureHumidityService: TemperatureHumidityData,
+    private fbDatabase: FirebaseDatabaseService,
+  ) {
     this.theme.getJsTheme()
       .pipe(takeWhile(() => this.alive))
       .subscribe(config => {
@@ -45,6 +48,10 @@ export class TemperatureComponent implements OnDestroy {
         this.humidityData = humidityData;
         this.humidity = this.humidityData.value;
       });
+  }
+
+  ngOnInit(): void {
+    // this.fbDatabase.currentTemp();
   }
 
   ngOnDestroy() {
