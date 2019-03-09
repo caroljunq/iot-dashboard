@@ -5,11 +5,11 @@ import { takeWhile } from 'rxjs/operators';
 import { forkJoin } from 'rxjs';
 
 @Component({
-  selector: 'ngx-device',
-  styleUrls: ['./device.component.scss'],
-  templateUrl: './device.component.html',
+  selector: 'ngx-device-monitoring',
+  styleUrls: ['./device-monitoring.component.scss'],
+  templateUrl: './device-monitoring.component.html',
 })
-export class TemperatureComponent implements OnDestroy {
+export class DeviceMonitoringComponent implements OnDestroy {
 
   private alive = true;
 

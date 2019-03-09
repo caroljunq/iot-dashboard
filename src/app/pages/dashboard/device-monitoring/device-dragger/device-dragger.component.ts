@@ -5,11 +5,11 @@ import {
 const VIEW_BOX_SIZE = 300;
 
 @Component({
-  selector: 'ngx-temperature-dragger',
-  templateUrl: './temperature-dragger.component.html',
-  styleUrls: ['./temperature-dragger.component.scss'],
+  selector: 'ngx-device-dragger',
+  templateUrl: './device-dragger.component.html',
+  styleUrls: ['./device-dragger.component.scss'],
 })
-export class TemperatureDraggerComponent implements AfterViewInit, OnChanges {
+export class DeviceDraggerComponent implements AfterViewInit, OnChanges {
 
   @ViewChild('svgRoot') svgRoot: ElementRef;
 
@@ -115,7 +115,7 @@ export class TemperatureDraggerComponent implements AfterViewInit, OnChanges {
   }
 
   private invalidate(): void {
-    this.bottomAngleRad = TemperatureDraggerComponent.toRad(this.bottomAngle);
+    this.bottomAngleRad = DeviceDraggerComponent.toRad(this.bottomAngle);
     this.calculateVars();
 
     this.invalidateClipPathStr();
@@ -129,7 +129,7 @@ export class TemperatureDraggerComponent implements AfterViewInit, OnChanges {
   }
 
   private calculateVars() {
-    this.bottomAngleRad = TemperatureDraggerComponent.toRad(this.bottomAngle);
+    this.bottomAngleRad = DeviceDraggerComponent.toRad(this.bottomAngle);
     this.colors = (typeof this.fillColors === 'string') ? [this.fillColors] : this.fillColors;
 
     const halfAngle = this.bottomAngleRad / 2;

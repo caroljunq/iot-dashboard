@@ -4,7 +4,7 @@
     <nb-tab tabTitle="Temperature">
 
       <div class="slider-container">
-        <ngx-temperature-dragger [(value)]="temperature" (power)="temperatureOff = !$event"
+        <ngx-device-dragger [(value)]="temperature" (power)="temperatureOff = !$event"
                                  [min]="temperatureData.min" [max]="temperatureData.max" [disableArcColor]="colors.layoutBg"
                                  [fillColors]="colors.temperature">
 
@@ -16,7 +16,7 @@
               Celsius
             </div>
           </div>
-        </ngx-temperature-dragger>
+        </ngx-device-dragger>
       </div>
 
       <div [(ngModel)]="temperatureMode" ngbRadioGroup data-toggle="buttons"
