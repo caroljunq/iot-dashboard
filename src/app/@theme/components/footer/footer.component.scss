@@ -9,6 +9,8 @@
   align-items: center;
 
   .socials {
+    display: flex;
+    justify-content: center;
     font-size: 2rem;
 
     a {

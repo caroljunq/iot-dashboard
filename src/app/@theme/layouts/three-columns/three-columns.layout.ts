@@ -13,9 +13,6 @@ import { takeWhile } from 'rxjs/operators';
       </nb-layout-header>
 
       <nb-sidebar class="menu-sidebar" tag="menu-sidebar" responsive >
-        <nb-sidebar-header *ngIf="currentTheme !== 'corporate'">
-          <span>Header aqui</span>
-        </nb-sidebar-header>
         <ng-content select="nb-menu"></ng-content>
       </nb-sidebar>
 

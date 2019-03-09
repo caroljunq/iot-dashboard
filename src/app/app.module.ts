@@ -14,9 +14,10 @@ import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';
 import { ThemeModule } from './@theme/theme.module';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import { DeviceMonitoringComponent } from './device-monitoring/device-monitoring.component';
 
 @NgModule({
-  declarations: [AppComponent],
+  declarations: [AppComponent, DeviceMonitoringComponent],
   imports: [
     BrowserModule,
     BrowserAnimationsModule,

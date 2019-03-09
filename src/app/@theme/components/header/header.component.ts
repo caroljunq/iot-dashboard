@@ -2,7 +2,6 @@ import { Component, Input, OnInit } from '@angular/core';
 
 import { NbMenuService, NbSidebarService } from '@nebular/theme';
 import { UserData } from '../../../@core/data/users';
-import { AnalyticsService } from '../../../@core/utils';
 import { LayoutService } from '../../../@core/utils';
 
 @Component({
@@ -16,12 +15,11 @@ export class HeaderComponent implements OnInit {
 
   user: any;
 
-  userMenu = [{ title: 'Profile' }, { title: 'Log out' }];
+  userMenu = [{ title: 'Perfil' }, { title: 'Sair' }];
 
   constructor(private sidebarService: NbSidebarService,
               private menuService: NbMenuService,
               private userService: UserData,
-              private analyticsService: AnalyticsService,
               private layoutService: LayoutService) {
   }
 
@@ -39,9 +37,5 @@ export class HeaderComponent implements OnInit {
 
   goToHome() {
     this.menuService.navigateHome();
-  }
-
-  startSearch() {
-    this.analyticsService.trackEvent('startSearch');
   }
 }
