@@ -1,4 +1,4 @@
-import { Component, OnDestroy } from '@angular/core';
+import { Component, OnDestroy, Input } from '@angular/core';
 import { NbThemeService } from '@nebular/theme';
 import { Temperature, TemperatureHumidityData } from '../../../@core/data/temperature-humidity';
 import { takeWhile } from 'rxjs/operators';
@@ -13,6 +13,8 @@ export class DeviceMonitoringComponent implements OnDestroy {
 
   private alive = true;
 
+  @Input() type = "temperature";
+
   temperatureData: Temperature;
   temperature: number;
   temperatureOff = false;
@@ -25,6 +27,20 @@ export class DeviceMonitoringComponent implements OnDestroy {
 
   colors: any;
   themeSubscription: any;
+
+  units: any = {
+    temperature: {
+      title: 'Temperature',
+      symbol: "°C"
+    },
+    humidity: {
+      title: 'Humidity',
+      symbol: "%"
+    },
+  };
+
+  title: string =  "";
+  symbols: string = "";
 
   constructor(private theme: NbThemeService,
               private temperatureHumidityService: TemperatureHumidityData) {
@@ -45,6 +61,8 @@ export class DeviceMonitoringComponent implements OnDestroy {
         this.humidityData = humidityData;
         this.humidity = this.humidityData.value;
       });
+      this.title = this.units[this.type].title;
+      this.symbol = this.units[this.type].symbol;
   }
 
   ngOnDestroy() {
