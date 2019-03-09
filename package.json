@@ -1,6 +1,6 @@
 {
   "name": "iot-dashboard",
-  "version": ".0.0.1",
+  "version": "0.0.1",
   "browserslist": [
     "> 1%",
     "last 2 versions",
