@@ -1,6 +1,5 @@
 import { Component, OnDestroy, Input, OnInit } from '@angular/core';
 import { NbThemeService } from '@nebular/theme';
-import { Temperature, TemperatureHumidityData } from '../../../@core/data/temperature-humidity';
 import { takeWhile } from 'rxjs/operators';
 import { forkJoin } from 'rxjs';
 import { FirebaseDatabaseService } from 'app/@core/iot-dash/firebase-database.service';
@@ -16,15 +15,6 @@ export class DeviceMonitoringComponent implements OnDestroy {
 
   @Input() devtype;
 
-  temperatureData: Temperature;
-  temperature: number;
-  temperatureOff = false;
-  temperatureMode = 'cool';
-
-  humidityData: Temperature;
-  humidity: number;
-  humidityOff = false;
-  humidityMode = 'heat';
 
   colors: any;
   themeSubscription: any;
@@ -44,26 +34,13 @@ export class DeviceMonitoringComponent implements OnDestroy {
     }
   };
 
-  constructor(private theme: NbThemeService,
-              private temperatureHumidityService: TemperatureHumidityData,
-            private fbDatabase: FirebaseDatabaseService) {
+  constructor( private theme: NbThemeService, private fbDatabase: FirebaseDatabaseService ) {
+
     this.theme.getJsTheme()
       .pipe(takeWhile(() => this.alive))
       .subscribe(config => {
       this.colors = config.variables;
     });
-
-    forkJoin(
-      this.temperatureHumidityService.getTemperatureData(),
-      this.temperatureHumidityService.getHumidityData(),
-    )
-      .subscribe(([temperatureData, humidityData]: [Temperature, Temperature]) => {
-        this.temperatureData = temperatureData;
-        this.temperature = this.temperatureData.value;
-
-        this.humidityData = humidityData;
-        this.humidity = this.humidityData.value;
-      });
   }
 
   ngOnInit(): void {
