@@ -4,28 +4,27 @@ import { NbMenuService, NbSidebarService } from '@nebular/theme';
 import { LayoutService } from '../../../@core/utils';
 
 @Component({
-  selector: 'ngx-header',
-  styleUrls: ['./header.component.scss'],
-  templateUrl: './header.component.html',
+  selector: "ngx-header",
+  styleUrls: ["./header.component.scss"],
+  templateUrl: "./header.component.html"
 })
 export class HeaderComponent implements OnInit {
+  @Input() position = "normal";
 
-  @Input() position = 'normal';
+  user: any = { name: "Nick Jones", picture: "assets/images/nick.png" };
 
-  user: any = { name: 'Nick Jones', picture: 'assets/images/nick.png' };
+  userMenu = [{ title: "Profile" }, { title: "Log out" }];
 
-  userMenu = [{ title: 'Profile' }, { title: 'Log out' }];
+  constructor(
+    private sidebarService: NbSidebarService,
+    private menuService: NbMenuService,
+    private layoutService: LayoutService
+  ) {}
 
-  constructor(private sidebarService: NbSidebarService,
-              private menuService: NbMenuService,
-              private layoutService: LayoutService) {
-  }
-
-  ngOnInit() {
-  }
+  ngOnInit() {}
 
   toggleSidebar(): boolean {
-    this.sidebarService.toggle(true, 'menu-sidebar');
+    this.sidebarService.toggle(true, "menu-sidebar");
     this.layoutService.changeLayoutSize();
 
     return false;
@@ -33,5 +32,9 @@ export class HeaderComponent implements OnInit {
 
   goToHome() {
     this.menuService.navigateHome();
+  }
+
+  startSearch() {
+    //
   }
 }
