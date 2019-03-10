@@ -1,8 +1,9 @@
 <nb-card size="large">
-  <nb-card-header>{{ title }}</nb-card-header>
+  <nb-card-header>{{ devices_type[devtype].title }}</nb-card-header>
   <nb-card-body>
-    23{{ symbol }}
-    <span>26-03-2019 às 18:03</span>
+    <span>
+      <span class="dev-val">23.5</span><span class="dev-val-unit">{{ devices_type[devtype].unit }}</span>
+    </span>
+    <span class="dev-time">26-03-2019 às 18:03</span>
   </nb-card-body>
-
 </nb-card>

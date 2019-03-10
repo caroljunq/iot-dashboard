@@ -13,7 +13,7 @@ export class DeviceMonitoringComponent implements OnDestroy {
 
   private alive = true;
 
-  @Input() type = "temperature";
+  @Input() devtype;
 
   temperatureData: Temperature;
   temperature: number;
@@ -28,19 +28,20 @@ export class DeviceMonitoringComponent implements OnDestroy {
   colors: any;
   themeSubscription: any;
 
-  units: any = {
+  devices_type: any = {
     temperature: {
       title: 'Temperature',
-      symbol: "°C"
+      unit: "°C"
     },
     humidity: {
       title: 'Humidity',
-      symbol: "%"
+      unit: "%"
     },
+    electricity: {
+      title: 'Electricity',
+      unit: 'kW'
+    }
   };
-
-  title: string =  "";
-  symbols: string = "";
 
   constructor(private theme: NbThemeService,
               private temperatureHumidityService: TemperatureHumidityData) {
@@ -61,11 +62,10 @@ export class DeviceMonitoringComponent implements OnDestroy {
         this.humidityData = humidityData;
         this.humidity = this.humidityData.value;
       });
-      this.title = this.units[this.type].title;
-      this.symbol = this.units[this.type].symbol;
   }
 
   ngOnDestroy() {
     this.alive = false;
   }
+
 }

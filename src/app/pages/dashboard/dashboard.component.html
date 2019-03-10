@@ -8,13 +8,25 @@
 </div>
 
 <div class="row">
-  <div class="col-xxxl-3 col-xxl-4 col-lg-5 col-md-6">
-    <ngx-device-monitoring [type]="temperature"></ngx-device-monitoring>
+  <div class="col">
+    <ngx-device-monitoring devtype="temperature"></ngx-device-monitoring>
+  </div>
+  <div class="col">
+    <ngx-device-monitoring devtype="humidity"></ngx-device-monitoring>
+  </div>
+  <div class="col">
+    <ngx-device-monitoring devtype="electricity"></ngx-device-monitoring>
   </div>
 
-  <div class="col-xxxl-9 col-xxl-8 col-lg-7 col-md-6">
-    <ngx-electricity></ngx-electricity>
+  <!-- <div class="col-sm">
+    <ngx-device-monitoring [dev_type]="temperature"></ngx-device-monitoring>
   </div>
+  <div class="col-sm">
+    <ngx-device-monitoring [dev_type]="humidity"></ngx-device-monitoring>
+  </div> -->
+  <!-- <div class="col-xxxl-9 col-xxl-8 col-lg-7 col-md-6">
+    <ngx-electricity></ngx-electricity>
+  </div> -->
 </div>
 
 <div class="row">
