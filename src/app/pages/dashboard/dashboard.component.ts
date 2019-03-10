@@ -2,6 +2,9 @@ import {Component, OnDestroy} from '@angular/core';
 import { NbThemeService } from '@nebular/theme';
 import { takeWhile } from 'rxjs/operators' ;
 import { SolarData } from '../../@core/data/solar';
+import { Observable } from 'rxjs';
+import { Site } from 'app/@core/iot-dash/iot-dash-models';
+import { FirebaseDatabaseService } from 'app/@core/iot-dash/firebase-database.service';
 
 interface CardSettings {
   title: string;
@@ -10,34 +13,33 @@ interface CardSettings {
 }
 
 @Component({
-  selector: 'ngx-dashboard',
-  styleUrls: ['./dashboard.component.scss'],
-  templateUrl: './dashboard.component.html',
+  selector: "ngx-dashboard",
+  styleUrls: ["./dashboard.component.scss"],
+  templateUrl: "./dashboard.component.html"
 })
 export class DashboardComponent implements OnDestroy {
-
   private alive = true;
 
   solarValue: number;
   lightCard: CardSettings = {
-    title: 'Light',
-    iconClass: 'nb-lightbulb',
-    type: 'primary',
+    title: "Light",
+    iconClass: "nb-lightbulb",
+    type: "primary"
   };
   rollerShadesCard: CardSettings = {
-    title: 'Roller Shades',
-    iconClass: 'nb-roller-shades',
-    type: 'success',
+    title: "Roller Shades",
+    iconClass: "nb-roller-shades",
+    type: "success"
   };
   wirelessAudioCard: CardSettings = {
-    title: 'Wireless Audio',
-    iconClass: 'nb-audio',
-    type: 'info',
+    title: "Wireless Audio",
+    iconClass: "nb-audio",
+    type: "info"
   };
   coffeeMakerCard: CardSettings = {
-    title: 'Coffee Maker',
-    iconClass: 'nb-coffee-maker',
-    type: 'warning',
+    title: "Coffee Maker",
+    iconClass: "nb-coffee-maker",
+    type: "warning"
   };
 
   statusCards: string;
@@ -46,7 +48,7 @@ export class DashboardComponent implements OnDestroy {
     this.lightCard,
     this.rollerShadesCard,
     this.wirelessAudioCard,
-    this.coffeeMakerCard,
+    this.coffeeMakerCard
   ];
 
   statusCardsByThemes: {
@@ -59,36 +61,52 @@ export class DashboardComponent implements OnDestroy {
     corporate: [
       {
         ...this.lightCard,
-        type: 'warning',
+        type: "warning"
       },
       {
         ...this.rollerShadesCard,
-        type: 'primary',
+        type: "primary"
       },
       {
         ...this.wirelessAudioCard,
-        type: 'danger',
+        type: "danger"
       },
       {
         ...this.coffeeMakerCard,
-        type: 'secondary',
-      },
-    ],
+        type: "secondary"
+      }
+    ]
   };
+  sites: Observable<Site[]>;
 
-  constructor(private themeService: NbThemeService,
-              private solarService: SolarData) {
-    this.themeService.getJsTheme()
+  constructor(
+    private themeService: NbThemeService,
+    private solarService: SolarData,
+    private fbDatabase: FirebaseDatabaseService,
+  ) {
+    this.sites = this.fbDatabase.getSites();
+
+    this.themeService
+      .getJsTheme()
       .pipe(takeWhile(() => this.alive))
       .subscribe(theme => {
         this.statusCards = this.statusCardsByThemes[theme.name];
-    });
+      });
 
-    this.solarService.getSolarData()
+    this.solarService
+      .getSolarData()
       .pipe(takeWhile(() => this.alive))
-      .subscribe((data) => {
+      .subscribe(data => {
         this.solarValue = data;
       });
+  }
+
+  sensors = {};
+  getSensorValue(key) {
+    if (this.sensors[key] == null) {
+      this.sensors[key] = this.fbDatabase.getSensorValue(key);
+    }
+    return this.sensors[key];
   }
 
   ngOnDestroy() {
