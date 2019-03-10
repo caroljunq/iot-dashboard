@@ -1,10 +1,9 @@
-import { isNullOrUndefined } from 'util';
 
 export class SensorValue {
   constructor(
-    public key: string,
-    public timestamp: Date|number,
+    public timestamp: Date|number|Object,
     public value: number|string,
+    public key?: string,
   ) { }
 }
 export class Sensor {
@@ -31,7 +30,19 @@ export interface SiteFb {
   sensors: {[key: string]: SensorFb};
 }
 
-
+export class ActorValue {
+  constructor(
+    public value: boolean|number,
+    public timestamp: Date|number|Object,
+    public key?: string,
+  ) { }
+}
+export class Actor {
+  constructor(
+    public location: String,
+    public key?: String,
+  ) { }
+}
 
 const sample = {
   'humidity': {
