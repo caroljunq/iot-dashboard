@@ -64,3 +64,4 @@ typings/
 .firebase*
 # build
 dist/*
+.angulardoc.json

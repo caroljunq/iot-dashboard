@@ -1,14 +1,16 @@
-<div class="row">
-  <div class="col-xxxl-3 col-md-6" *ngFor="let site of (sites | async)">
+<nb-card *ngFor="let site of (sites | async)">
+  <nb-card-header>
     <h1>{{ site.name }}</h1>
-    <ul>
-      <li *ngFor="let sensor of site.sensors">
-        <h3>{{ sensor.location }}</h3>
-        {{ (getSensorValue(sensor.key) | async)?.value | number: "1.1-1" }}
-      </li>
-    </ul>
-  </div>
-</div>
+  </nb-card-header>
+  <nb-card-body>
+    <div class="row">
+      <div class="col-4" *ngFor="let sensor of site.sensors">
+        <ngx-device-monitoring [title]="sensor.location" [sensorData]="getSensorValue(sensor.key) | async"></ngx-device-monitoring>
+      </div>
+    </div>
+  </nb-card-body>
+</nb-card>
+
 <div class="row">
   <div class="col-xxxl-3 col-md-6" *ngFor="let statusCard of statusCards">
     <ngx-status-card [title]="statusCard.title" [type]="statusCard.type">
