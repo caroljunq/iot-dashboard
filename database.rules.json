@@ -6,6 +6,11 @@
       "$sensorId": {
         ".indexOn": "timestamp"
       }
+    },
+    "actorData": {
+      "$actorId": {
+        ".indexOn": "timestamp"
+      }
     }
   }
 }

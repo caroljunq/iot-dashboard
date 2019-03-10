@@ -5,6 +5,10 @@ function someName(): string {
   const words = ['the', 'quick', 'brown', 'fox', 'jumps', 'over', 'lazy', 'dog'];
   return words[getRandomInt(words.length)] + ' ' + words[getRandomInt(words.length)];
 }
+function someClass(): string {
+  const words = ['nb-lightbulb', 'nb-roller-shades', 'nb-audio', 'nb-coffee-maker'];
+  return words[getRandomInt(words.length)] + ' ' + words[getRandomInt(words.length)];
+}
 function oneSixSixBits(): string {
   return (Date.now().toString(36) + Math.random().toString(36)).replace('0.', '');
 }
@@ -20,7 +24,7 @@ export function setSampleData() {
   for (let siteIndex = 0; siteIndex < 3; siteIndex++) {
     // -------------- sensors --------------------
     const siteSensors = {};
-    for (let sensorIndex = 0; sensorIndex < 4; sensorIndex++) {
+    for (let sensorIndex = 0; sensorIndex < 2 + getRandomInt(2); sensorIndex++) {
       const sensorKey = oneSixSixBits();
       siteSensors[sensorKey] = {
         sensorKey,
@@ -37,17 +41,18 @@ export function setSampleData() {
     }
     // -------------- actors --------------------
     const siteActors = {};
-    for (let actorIndex = 0; actorIndex < 1; actorIndex++) {
+    for (let actorIndex = 0; actorIndex < 1 + getRandomInt(2); actorIndex++) {
       const actorKey = oneSixSixBits();
       siteActors[actorKey] = {
         actorKey,
         location: `Actor #${actorIndex} ${someName()}`,
+        iconClass: someClass(),
       };
       // fake reports
       sampleData.actorData[actorKey] = {};
       for (let i = 0; i < getRandomInt(10); i++) {
         sampleData.actorData[actorKey][oneSixSixBits()] = {
-          value: Math.random() > 0.5,
+          value: Math.random() >= 0.5,
           timestamp: Date.now() - getRandomInt(100),
         };
       }

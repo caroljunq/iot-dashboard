@@ -13,7 +13,7 @@ interface CardSettings {
 }
 
 @Component({
-  selector: 'ngx-dashboard',
+  selector: 'app-dashboard',
   styleUrls: ['./dashboard.component.scss'],
   templateUrl: './dashboard.component.html',
 })
@@ -73,8 +73,8 @@ export class DashboardComponent implements OnDestroy {
       {
         ...this.coffeeMakerCard,
         type: 'secondary',
-      }
-    ]
+      },
+    ],
   };
   sites: Observable<Site[]>;
 
@@ -94,11 +94,22 @@ export class DashboardComponent implements OnDestroy {
   }
 
   sensors = {};
-  getSensorValue(key) {
+  getSensorValue(key: string) {
     if (this.sensors[key] == null) {
       this.sensors[key] = this.fbDatabase.getSensorValue(key);
     }
     return this.sensors[key];
+  }
+
+  actors = {};
+  getActorValue(key: string) {
+    if (this.actors[key] == null) {
+      this.actors[key] = this.fbDatabase.getActorValue(key);
+    }
+    return this.actors[key];
+  }
+  setActorValue(key: string, value: boolean) {
+    return this.fbDatabase.setActorValue(key, value);
   }
 
   ngOnDestroy() {

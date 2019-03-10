@@ -3,11 +3,11 @@ import { Injectable } from '@angular/core';
 import { database } from 'firebase/app';
 import { AngularFireDatabase } from 'angularfire2/database';
 import { Observable } from 'rxjs';
-import { tap, map, filter } from 'rxjs/operators';
+import { tap, map, filter, debounceTime } from 'rxjs/operators';
 
-import { Site, SensorValue, Sensor, SiteFb, ActorValue } from './iot-dash-models';
 import { environment } from 'environments/environment';
 import { setSampleData } from './setup-dash';
+import { Site, Device, TimedValue } from './iot-dash-models';
 
 @Injectable({
   providedIn: 'root',
@@ -17,35 +17,46 @@ export class FirebaseDatabaseService {
     private angularFireDatabase: AngularFireDatabase,
   ) {
     if (!environment.production) {
-      this.setup();
+      // this.setup();
     }
   }
 
   getSites() {
-    return this.angularFireDatabase.object<{[key: string]: SiteFb}>('/sites').valueChanges().pipe(
+    return this.angularFireDatabase.object<{[key: string]: Site}>('/sites')
+    .valueChanges().pipe(
       // tap(v => console.log(v)),
       map(
         (value) => Object.entries(value).map(
-          siteEntry => new Site(
-            siteEntry[0],
-            siteEntry[1].name,
-            Object.entries(siteEntry[1].sensors).map(
-              sensoEntry => new Sensor(sensoEntry[0], sensoEntry[1].location),
+          siteEntry => <Site>{
+            ...siteEntry[1],
+            key: siteEntry[0],
+            sensorsArray: Object.entries(siteEntry[1].sensors || {}).map(
+              sensorEntry => <Device>{
+                key: sensorEntry[0],
+                ...sensorEntry[1],
+              },
             ),
-          ),
+            actorsArray: Object.entries(siteEntry[1].actors || {}).map(
+              sensorEntry => <Device>{
+                key: sensorEntry[0],
+                ...sensorEntry[1],
+              },
+            ),
+          },
         ),
       ),
     );
   }
 
-  getLatest(path: string) {
-    return this.angularFireDatabase.list<ActorValue>(
+  getLatest<T>(path: string): Observable<TimedValue<T>> {
+    return this.angularFireDatabase.list<TimedValue<T>>(
       path,
       ref => ref.orderByChild('timestamp').limitToLast(1),
     ).valueChanges().pipe(
+      debounceTime(500),
       map(list => list[0]),
-      filter(value => value != null),
-      // tap((value) => console.log({key, ...value})),
+      filter(value => value !== null && value !== undefined),
+      // tap(value => console.log({path, ...value})),
     );
   }
 
@@ -53,14 +64,16 @@ export class FirebaseDatabaseService {
     return this.getLatest(`sensorData/${key}`);
   }
 
-  setActorValue(key: string, value: number|boolean) {
-    return this.angularFireDatabase.list<ActorValue>(`actorData/${key}`).push({
+  setActorValue(key: string, value: boolean) {
+    return this.angularFireDatabase.list<TimedValue<boolean>>(`actorData/${key}`).push({
       value,
       timestamp: database.ServerValue.TIMESTAMP,
     });
   }
-  getActorValue(key: string): Observable<ActorValue> {
-    return this.getLatest(`actorData/${key}`);
+  getActorValue(key: string): Observable<TimedValue<boolean>> {
+    return this.getLatest(`actorData/${key}`).pipe(
+      map(timedValue => ({...timedValue, value: !!timedValue.value})),
+    );
   }
 
   private setup() {
