@@ -10,10 +10,6 @@ const routes: Routes = [{
   children: [{
     path: 'iot-dashboard',
     component: DashboardComponent,
-  }, {
-    path: '',
-    redirectTo: 'iot-dashboard',
-    pathMatch: 'full',
   }],
 }];
 

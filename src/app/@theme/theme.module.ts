@@ -44,12 +44,7 @@ import {
   FooterComponent,
   HeaderComponent,
   SearchInputComponent,
-  ThemeSettingsComponent,
-  SwitcherComponent,
-  LayoutDirectionSwitcherComponent,
-  ThemeSwitcherComponent,
   TinyMCEComponent,
-  ThemeSwitcherListComponent,
   ToggleSettingsButtonComponent,
 } from './components';
 import {
@@ -67,8 +62,6 @@ import {
   TwoColumnsLayoutComponent,
 } from './layouts';
 import { DEFAULT_THEME } from './styles/theme.default';
-import { COSMIC_THEME } from './styles/theme.cosmic';
-import { CORPORATE_THEME } from './styles/theme.corporate';
 
 const BASE_MODULES = [CommonModule, FormsModule, ReactiveFormsModule];
 
@@ -109,24 +102,15 @@ const NB_MODULES = [
 ];
 
 const COMPONENTS = [
-  SwitcherComponent,
-  LayoutDirectionSwitcherComponent,
-  ThemeSwitcherComponent,
-  ThemeSwitcherListComponent,
   HeaderComponent,
   FooterComponent,
   SearchInputComponent,
-  ThemeSettingsComponent,
   TinyMCEComponent,
   OneColumnLayoutComponent,
   SampleLayoutComponent,
   ThreeColumnsLayoutComponent,
   TwoColumnsLayoutComponent,
   ToggleSettingsButtonComponent,
-];
-
-const ENTRY_COMPONENTS = [
-  ThemeSwitcherListComponent,
 ];
 
 const PIPES = [
@@ -143,7 +127,7 @@ const NB_THEME_PROVIDERS = [
     {
       name: 'default',
     },
-    [ DEFAULT_THEME, COSMIC_THEME, CORPORATE_THEME ],
+    [ DEFAULT_THEME ],
   ).providers,
   ...NbSidebarModule.forRoot().providers,
   ...NbMenuModule.forRoot().providers,
@@ -160,7 +144,6 @@ const NB_THEME_PROVIDERS = [
   imports: [...BASE_MODULES, ...NB_MODULES],
   exports: [...BASE_MODULES, ...NB_MODULES, ...COMPONENTS, ...PIPES],
   declarations: [...COMPONENTS, ...PIPES],
-  entryComponents: [...ENTRY_COMPONENTS],
 })
 export class ThemeModule {
   static forRoot(): ModuleWithProviders {

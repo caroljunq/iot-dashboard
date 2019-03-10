@@ -25,9 +25,6 @@ import { StateService } from '../../../@core/utils';
                    tag="menu-sidebar"
                    responsive
                    [end]="sidebar.id === 'end'">
-        <nb-sidebar-header *ngIf="currentTheme !== 'corporate'">
-          <span>Header aqui</span>
-        </nb-sidebar-header>
         <ng-content select="nb-menu"></ng-content>
       </nb-sidebar>
 
@@ -52,7 +49,6 @@ import { StateService } from '../../../@core/utils';
                    state="collapsed"
                    fixed
                    [end]="sidebar.id !== 'end'">
-        <ngx-theme-settings></ngx-theme-settings>
       </nb-sidebar>
     </nb-layout>
     <ngx-toggle-settings-button></ngx-toggle-settings-button>

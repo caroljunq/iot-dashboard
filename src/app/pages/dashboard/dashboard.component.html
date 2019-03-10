@@ -1,4 +1,5 @@
 <div class="row">
+<<<<<<< HEAD
   <div class="col-xxxl-3 col-md-6" *ngFor="let site of (sites | async)">
     <h1>{{ site.name }}</h1>
     <ul>
@@ -7,5 +8,30 @@
         {{ (getSensorValue(sensor.key) | async)?.value | number:'1.1-1' }}
       </li>
     </ul>
+=======
+  <div class="col-xxxl-3 col-md-6" *ngFor="let statusCard of statusCards">
+    <ngx-status-card [title]="statusCard.title"
+                     [type]="statusCard.type">
+      <i [ngClass]="statusCard.iconClass"></i>
+    </ngx-status-card>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col">
+    <ngx-device-monitoring devtype="temperature"></ngx-device-monitoring>
+  </div>
+  <div class="col">
+    <ngx-device-monitoring devtype="humidity"></ngx-device-monitoring>
+  </div>
+  <div class="col">
+    <ngx-device-monitoring devtype="electricity"></ngx-device-monitoring>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-xxxl-9 col-xl-12">
+    <ngx-rooms></ngx-rooms>
+>>>>>>> f4c4d1125de8ca93102be96eb0484cc6bcaf72c3
   </div>
 </div>
