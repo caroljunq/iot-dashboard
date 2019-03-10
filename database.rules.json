@@ -1,9 +1,11 @@
 {
   "rules": {
     ".read": true,
-    ".write": "auth != null",
-    "/sensorData/$id": {
-      ".indexOn": "timestamp"
+    ".write": true,
+    "sensorData": {
+      "$sensorId": {
+        ".indexOn": "timestamp"
+      }
     }
   }
 }
