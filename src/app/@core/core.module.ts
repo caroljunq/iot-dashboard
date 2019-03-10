@@ -45,6 +45,7 @@ import { StatsBarService } from './mock/stats-bar.service';
 import { CountryOrderService } from './mock/country-order.service';
 import { StatsProgressBarService } from './mock/stats-progress-bar.service';
 import { MockDataModule } from './mock/mock-data.module';
+import { FirebaseDatabaseService } from './iot-dash/firebase-database.service';
 
 const socialLinks = [
   {
@@ -82,6 +83,7 @@ const DATA_SERVICES = [
   { provide: StatsBarData, useClass: StatsBarService },
   { provide: CountryOrderData, useClass: CountryOrderService },
   { provide: StatsProgressBarData, useClass: StatsProgressBarService },
+  { provide: FirebaseDatabaseService, useClass: FirebaseDatabaseService }
 ];
 
 export class NbSimpleRoleProvider extends NbRoleProvider {

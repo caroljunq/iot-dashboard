@@ -38,7 +38,7 @@
     "no-console": [
       true,
       "debug",
-      "log",
+      // "log",
       "time",
       "timeEnd",
       "trace"

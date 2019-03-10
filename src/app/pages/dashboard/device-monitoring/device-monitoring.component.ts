@@ -1,8 +1,9 @@
-import { Component, OnDestroy, Input } from '@angular/core';
+import { Component, OnDestroy, Input, OnInit } from '@angular/core';
 import { NbThemeService } from '@nebular/theme';
 import { Temperature, TemperatureHumidityData } from '../../../@core/data/temperature-humidity';
 import { takeWhile } from 'rxjs/operators';
 import { forkJoin } from 'rxjs';
+import { FirebaseDatabaseService } from 'app/@core/iot-dash/firebase-database.service';
 
 @Component({
   selector: 'ngx-device-monitoring',
@@ -44,7 +45,8 @@ export class DeviceMonitoringComponent implements OnDestroy {
   };
 
   constructor(private theme: NbThemeService,
-              private temperatureHumidityService: TemperatureHumidityData) {
+              private temperatureHumidityService: TemperatureHumidityData,
+            private fbDatabase: FirebaseDatabaseService) {
     this.theme.getJsTheme()
       .pipe(takeWhile(() => this.alive))
       .subscribe(config => {
@@ -62,6 +64,10 @@ export class DeviceMonitoringComponent implements OnDestroy {
         this.humidityData = humidityData;
         this.humidity = this.humidityData.value;
       });
+  }
+
+  ngOnInit(): void {
+    // this.fbDatabase.currentTemp();
   }
 
   ngOnDestroy() {

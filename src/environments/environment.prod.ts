@@ -1,3 +1,5 @@
+import { firebase } from './secrets';
+
 /**
  * @license
  * Copyright Akveo. All Rights Reserved.
@@ -5,4 +7,5 @@
  */
 export const environment = {
   production: true,
+  firebase: firebase.prod,
 };
