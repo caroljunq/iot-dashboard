@@ -48,7 +48,7 @@ export class FirebaseDatabaseService {
     ).valueChanges().pipe(
       map(list => list[0]),
       filter(value => value != null),
-      tap((value) => console.log({key, ...value})),
+      // tap((value) => console.log({key, ...value})),
     );
   }
 

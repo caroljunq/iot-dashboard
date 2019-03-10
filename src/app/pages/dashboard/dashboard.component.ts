@@ -1,13 +1,10 @@
 import {Component, OnDestroy} from '@angular/core';
 import { NbThemeService } from '@nebular/theme';
-import { takeWhile } from 'rxjs/operators' ;
-<<<<<<< HEAD
-import { SolarData } from '../../@core/data/solar';
+
 import { Observable } from 'rxjs';
+import { takeWhile } from 'rxjs/operators' ;
 import { Site } from 'app/@core/iot-dash/iot-dash-models';
 import { FirebaseDatabaseService } from 'app/@core/iot-dash/firebase-database.service';
-=======
->>>>>>> f4c4d1125de8ca93102be96eb0484cc6bcaf72c3
 
 interface CardSettings {
   title: string;
@@ -83,33 +80,17 @@ export class DashboardComponent implements OnDestroy {
 
   constructor(
     private themeService: NbThemeService,
-    private solarService: SolarData,
     private fbDatabase: FirebaseDatabaseService,
   ) {
     this.sites = this.fbDatabase.getSites();
 
-<<<<<<< HEAD
     this.themeService
       .getJsTheme()
-=======
-  constructor(private themeService: NbThemeService) {
-    this.themeService.getJsTheme()
->>>>>>> f4c4d1125de8ca93102be96eb0484cc6bcaf72c3
       .pipe(takeWhile(() => this.alive))
       .subscribe(theme => {
         this.statusCards = this.statusCardsByThemes[theme.name];
       });
 
-<<<<<<< HEAD
-    this.solarService
-      .getSolarData()
-      .pipe(takeWhile(() => this.alive))
-      .subscribe(data => {
-        this.solarValue = data;
-      });
-=======
-
->>>>>>> f4c4d1125de8ca93102be96eb0484cc6bcaf72c3
   }
 
   sensors = {};
