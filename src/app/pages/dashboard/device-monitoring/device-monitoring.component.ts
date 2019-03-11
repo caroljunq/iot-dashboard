@@ -1,13 +1,14 @@
-import { Component, OnDestroy, Input, OnInit } from '@angular/core';
+import { FirebaseDatabaseService } from './../../../@core/iot-dash/firebase-database.service';
+import { Component, OnDestroy, Input, OnInit, AfterViewInit } from '@angular/core';
 import { NbThemeService } from '@nebular/theme';
 import { takeWhile } from 'rxjs/operators';
 
 @Component({
-  selector: 'ngx-device-monitoring',
+  selector: 'app-device-monitoring',
   styleUrls: ['./device-monitoring.component.scss'],
   templateUrl: './device-monitoring.component.html',
 })
-export class DeviceMonitoringComponent implements OnDestroy {
+export class DeviceMonitoringComponent implements OnDestroy, AfterViewInit {
   private alive = true;
 
   @Input()
@@ -19,9 +20,6 @@ export class DeviceMonitoringComponent implements OnDestroy {
     timestamp: Date.now(),
     value: 25.5,
   };
-
-  colors: any;
-  themeSubscription: any;
 
   devices_type: any = {
     temperature: {
@@ -37,16 +35,23 @@ export class DeviceMonitoringComponent implements OnDestroy {
       unit: 'kW',
     },
   };
+  options: any = {};
+  colors;
+  themeSubscription;
 
-  constructor(private theme: NbThemeService) {
-    this.theme.getJsTheme()
-      .pipe(takeWhile(() => this.alive))
-      .subscribe(config => {
+  constructor(
+    private theme: NbThemeService,
+    private firebaseDatabaseService: FirebaseDatabaseService,
+  ) { }
+
+  ngAfterViewInit() {
+    this.themeSubscription = this.theme.getJsTheme().subscribe(config => {
       this.colors = config.variables;
     });
   }
 
-  ngOnDestroy() {
+  ngOnDestroy(): void {
+    this.themeSubscription.unsubscribe();
     this.alive = false;
   }
 

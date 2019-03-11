@@ -17,10 +17,13 @@
     </div>
     <div class="row">
       <div class="col-xxxl-3 col-md-4 col-sm-12" *ngFor="let sensor of site.sensorsArray">
-        <ngx-device-monitoring [title]="sensor.location" [sensorData]="getSensorValue(sensor.key) | async"></ngx-device-monitoring>
+        <app-device-monitoring [title]="sensor.location" [sensorData]="getSensorValue(sensor.key) | async"></app-device-monitoring>
       </div>
     </div>
   </nb-card-body>
+  <nb-card-footer>
+    <div echarts [options]="getChart(site.key) | async" class="echart"></div>
+  </nb-card-footer>
 </nb-card>
 
 <div class="row">
@@ -33,13 +36,13 @@
 
 <div class="row">
   <div class="col">
-    <ngx-device-monitoring devtype="temperature"></ngx-device-monitoring>
+    <app-device-monitoring devtype="temperature"></app-device-monitoring>
   </div>
   <div class="col">
-    <ngx-device-monitoring devtype="humidity"></ngx-device-monitoring>
+    <app-device-monitoring devtype="humidity"></app-device-monitoring>
   </div>
   <div class="col">
-    <ngx-device-monitoring devtype="electricity"></ngx-device-monitoring>
+    <app-device-monitoring devtype="electricity"></app-device-monitoring>
   </div>
 </div>
 

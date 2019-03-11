@@ -1,7 +1,7 @@
-import {Component, OnDestroy} from '@angular/core';
+import { Component, OnDestroy, AfterViewInit, OnInit } from '@angular/core';
 import { NbThemeService } from '@nebular/theme';
 
-import { Observable } from 'rxjs';
+import { Observable, Subscription } from 'rxjs';
 import { takeWhile } from 'rxjs/operators' ;
 import { Site } from 'app/@core/iot-dash/iot-dash-models';
 import { FirebaseDatabaseService } from 'app/@core/iot-dash/firebase-database.service';
@@ -17,7 +17,7 @@ interface CardSettings {
   styleUrls: ['./dashboard.component.scss'],
   templateUrl: './dashboard.component.html',
 })
-export class DashboardComponent implements OnDestroy {
+export class DashboardComponent implements OnDestroy, OnInit, AfterViewInit, OnDestroy {
   private alive = true;
 
   lightCard: CardSettings = {
@@ -77,26 +77,46 @@ export class DashboardComponent implements OnDestroy {
     ],
   };
   sites: Observable<Site[]>;
+  themeSubscription: Subscription;
+  colors;
+  echarts;
+  options;
 
   constructor(
     private themeService: NbThemeService,
-    private fbDatabase: FirebaseDatabaseService,
-  ) {
-    this.sites = this.fbDatabase.getSites();
+    private firebaseDatabaseService: FirebaseDatabaseService,
+  ) { }
 
-    this.themeService
-      .getJsTheme()
-      .pipe(takeWhile(() => this.alive))
-      .subscribe(theme => {
-        this.statusCards = this.statusCardsByThemes[theme.name];
-      });
+  ngOnInit(): void {
+    this.sites = this.firebaseDatabaseService.getSites();
 
+    this.themeSubscription = this.themeService.getJsTheme().subscribe(theme => {
+      this.statusCards = this.statusCardsByThemes[theme.name];
+
+      this.colors = theme.variables;
+      this.echarts = theme.variables.echarts;
+    });
+  }
+
+  ngAfterViewInit() { }
+
+  getChart(siteKey) {
+    return this.firebaseDatabaseService.getChartOptions({
+      colors: this.colors,
+      echarts: this.echarts,
+      siteKey,
+    });
+  }
+
+  ngOnDestroy(): void {
+    this.themeSubscription.unsubscribe();
+    this.alive = false;
   }
 
   sensors = {};
   getSensorValue(key: string) {
     if (this.sensors[key] == null) {
-      this.sensors[key] = this.fbDatabase.getSensorValue(key);
+      this.sensors[key] = this.firebaseDatabaseService.getSensorValue(key);
     }
     return this.sensors[key];
   }
@@ -104,15 +124,11 @@ export class DashboardComponent implements OnDestroy {
   actors = {};
   getActorValue(key: string) {
     if (this.actors[key] == null) {
-      this.actors[key] = this.fbDatabase.getActorValue(key);
+      this.actors[key] = this.firebaseDatabaseService.getActorValue(key);
     }
     return this.actors[key];
   }
   setActorValue(key: string, value: boolean) {
-    return this.fbDatabase.setActorValue(key, value);
-  }
-
-  ngOnDestroy() {
-    this.alive = false;
+    return this.firebaseDatabaseService.setActorValue(key, value);
   }
 }
