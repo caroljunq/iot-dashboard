@@ -1,16 +1,17 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { NbDialogService } from '@nebular/theme';
+import { StatusCardDialogComponent } from './status-card-dialog.component';
 
 @Component({
   selector: 'app-status-card',
   styleUrls: ['./status-card.component.scss'],
   template: `
-    <nb-card (click)="nextValue()" [ngClass]="{'off': !on}">
+    <nb-card class="status-card" (click)="changeState()" [ngClass]="{'off': !on}">
       <div class="icon-container">
         <div class="icon {{ type }}">
-          <ng-content></ng-content>
+          <i [ngClass]="iconClass"></i>
         </div>
       </div>
-
       <div class="details">
         <div class="title">{{ title }}</div>
         <div class="status">{{ on ? 'ON' : 'OFF' }}</div>
@@ -22,12 +23,25 @@ export class StatusCardComponent {
 
   @Input() title: string;
   @Input() type: string;
+  @Input() iconClass: string;
   @Input() on = true;
 
   @Output()
   valueChange = new EventEmitter<boolean>();
 
-  nextValue() {
-    this.valueChange.next(!this.on);
+  constructor(private dialogService: NbDialogService) {}
+
+  changeState() {
+    const dialogRef = this.dialogService.open(
+      StatusCardDialogComponent,
+      {
+        context: {
+          title: this.title,
+          iconClass: this.iconClass,
+          value: !this.on,
+        },
+      },
+    );
+    dialogRef.onClose.subscribe(newValue => newValue !== null && this.valueChange.next(newValue));
   }
 }

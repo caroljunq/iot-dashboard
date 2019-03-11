@@ -17,7 +17,7 @@ export class FirebaseDatabaseService {
     private angularFireDatabase: AngularFireDatabase,
   ) {
     if (!environment.production) {
-      // this.setup();
+      this.setup();
     }
   }
 

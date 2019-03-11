@@ -10,8 +10,8 @@
           [title]="actor.location"
           [on]="(getActorValue(actor.key) | async)?.value"
           (valueChange)="setActorValue(actor.key, $event)"
+          [iconClass]="actor.iconClass"
         >
-          <i [ngClass]="actor.iconClass"></i>
         </app-status-card>
       </div>
     </div>
