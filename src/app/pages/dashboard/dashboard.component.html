@@ -2,31 +2,27 @@
   <div class="col-md-3 col-sm-4">
     <div class="form-group">
     <label>Room</label>
-    <select class="form-control">
-      <option>Minsk</option>
-      <option>Gomel</option>
-      <option>Brest</option>
-      <option>Grodno</option>
-      <option>Mogilev</option>
+    <select class="form-control" [(ngModel)]="selectedRoom">
+      <option *ngFor="let site of (sites)" [ngValue]="site">{{ site.name }}</option>
     </select>
   </div>
   </div>
   <div class="col-md-3 col-sm-12">
     <label class="config-desc">Current Date</label>
-     <span class="config-val">26-03-2019</span>
+     <span class="config-val">{{ currentDate | async | date:'dd-MM-yy' }}</span>
   </div>
   <div class="col-md-3 col-sm-12">
     <label class="config-desc">Current Hour</label>
-    <span class="config-val">18:03</span>
+    <span class="config-val">{{ currentDate | async | date:'hh:mm' }}</span>
   </div>
 </div>
-<nb-card *ngFor="let site of (sites | async)">
+<nb-card  >
   <nb-card-header>
-    <h1>{{ site.name }}</h1>
+    <h1>{{ selectedRoom?.name }}</h1>
   </nb-card-header>
   <nb-card-body>
-    <div class="row" *ngIf="site?.actorsArray?.length" >
-      <div class="col-xxxl-3 col-md-6 col-sm-12" *ngFor="let actor of site.actorsArray">
+    <div class="row" *ngIf="selectedRoom?.actorsArray?.length" >
+      <div class="col-xxxl-3 col-md-6 col-sm-12" *ngFor="let actor of selectedRoom.actorsArray">
         <app-status-card
           type="primary"
           [title]="actor.location"
@@ -38,32 +34,13 @@
       </div>
     </div>
     <div class="row">
-      <div class="col-xxxl-3 col-md-4 col-sm-12" *ngFor="let sensor of site.sensorsArray">
+      <div class="col-xxxl-3 col-md-4 col-sm-12" *ngFor="let sensor of selectedRoom?.sensorsArray">
         <ngx-device-monitoring [title]="sensor.location" [sensorData]="getSensorValue(sensor.key) | async"></ngx-device-monitoring>
       </div>
     </div>
   </nb-card-body>
 </nb-card>
 
-<div class="row">
-  <div class="col-xxxl-3 col-md-6" *ngFor="let statusCard of statusCards">
-    <app-status-card [title]="statusCard.title" [type]="statusCard.type">
-      <i [ngClass]="statusCard.iconClass"></i>
-    </app-status-card>
-  </div>
-</div>
-
-<div class="row">
-  <div class="col">
-    <ngx-device-monitoring devtype="temperature"></ngx-device-monitoring>
-  </div>
-  <div class="col">
-    <ngx-device-monitoring devtype="humidity"></ngx-device-monitoring>
-  </div>
-  <div class="col">
-    <ngx-device-monitoring devtype="electricity"></ngx-device-monitoring>
-  </div>
-</div>
 
 <div class="row">
   <div class="col-xxxl-9 col-xl-12">

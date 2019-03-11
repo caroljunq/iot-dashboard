@@ -1,8 +1,8 @@
 import {Component, OnDestroy} from '@angular/core';
 import { NbThemeService } from '@nebular/theme';
 
-import { Observable } from 'rxjs';
-import { takeWhile } from 'rxjs/operators' ;
+import { Observable, Subscription, interval } from 'rxjs';
+import { takeWhile, map } from 'rxjs/operators' ;
 import { Site } from 'app/@core/iot-dash/iot-dash-models';
 import { FirebaseDatabaseService } from 'app/@core/iot-dash/firebase-database.service';
 
@@ -43,6 +43,8 @@ export class DashboardComponent implements OnDestroy {
 
   statusCards: string;
 
+  selectedRoom = null;
+
   commonStatusCardsSet: CardSettings[] = [
     this.lightCard,
     this.rollerShadesCard,
@@ -52,37 +54,28 @@ export class DashboardComponent implements OnDestroy {
 
   statusCardsByThemes: {
     default: CardSettings[];
-    cosmic: CardSettings[];
-    corporate: CardSettings[];
   } = {
-    default: this.commonStatusCardsSet,
-    cosmic: this.commonStatusCardsSet,
-    corporate: [
-      {
-        ...this.lightCard,
-        type: 'warning',
-      },
-      {
-        ...this.rollerShadesCard,
-        type: 'primary',
-      },
-      {
-        ...this.wirelessAudioCard,
-        type: 'danger',
-      },
-      {
-        ...this.coffeeMakerCard,
-        type: 'secondary',
-      },
-    ],
+    default: this.commonStatusCardsSet
   };
-  sites: Observable<Site[]>;
+  sites: any;
+  sitesSubscription: Subscription;
+
+  currentDate = null;
 
   constructor(
     private themeService: NbThemeService,
     private fbDatabase: FirebaseDatabaseService,
   ) {
-    this.sites = this.fbDatabase.getSites();
+    this.sitesSubscription = this.fbDatabase.getSites()
+      .subscribe(res =>{
+        this.sites = res;
+
+        if(!this.selectedRoom){
+          this.selectedRoom = this.sites[0];
+        }
+      })
+
+    this.currentDate = interval(5000).pipe( map(() => Date.now()));
 
     this.themeService
       .getJsTheme()
@@ -114,5 +107,6 @@ export class DashboardComponent implements OnDestroy {
 
   ngOnDestroy() {
     this.alive = false;
+    this.sitesSubscription.unsubscribe();
   }
 }
