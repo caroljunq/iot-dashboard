@@ -1,5 +1,5 @@
 <div class="row config-line">
-  <div class="col-md-3 col-sm-4">
+  <div class="col-md-4 col-sm-6 col-12">
     <div class="form-group">
     <label>Room</label>
     <select class="form-control" [(ngModel)]="selectedRoom">
@@ -7,11 +7,11 @@
     </select>
   </div>
   </div>
-  <div class="col-md-3 col-sm-12">
+  <div class="col-md-3 col-sm-3 col-6">
     <label class="config-desc">Current Date</label>
-     <span class="config-val">{{ currentDate | async | date:'dd-MM-yy' }}</span>
+     <span class="config-val">{{ currentDate | async | date:'dd-MM-yyyy' }}</span>
   </div>
-  <div class="col-md-3 col-sm-12">
+  <div class="col-md-3 col-sm-3 col-6">
     <label class="config-desc">Current Hour</label>
     <span class="config-val">{{ currentDate | async | date:'HH:mm' }}</span>
   </div>
