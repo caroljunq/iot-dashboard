@@ -75,7 +75,7 @@ export class DashboardComponent implements OnDestroy {
         }
       })
 
-    this.currentDate = interval(5000).pipe( map(() => Date.now()));
+    this.currentDate = interval(2000).pipe( map(() => Date.now()));
 
     this.themeService
       .getJsTheme()

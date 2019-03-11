@@ -6,19 +6,11 @@ import { NbDialogService, NbDialogRef } from '@nebular/theme';
   styleUrls: ['./status-card.component.scss'],
   template: `
     <nb-card accent="warning">
-      <nb-card-header>{{ value ? 'Ligar' : 'Desligar' }} {{ title }}</nb-card-header>
       <nb-card-body>
         <nb-card class="status-card dialog">
-          <div class="icon-container">
-            <div class="icon primary">
-              <i [ngClass]="iconClass"></i>
-            </div>
-          </div>
-          <p class="details">
-            Para <b><i>{{ value ? 'ligar' : 'desligar' }}</i></b>
-            <b>{{ title }}</b>
-            é necessário confirmação.
-          </p>
+          <span class="desc-dialog">
+            Deseja <b>{{ value ? 'ligar' : 'desligar' }}</b> o dispositivo <b>{{ title }}</b>?
+          </span>
         </nb-card>
       </nb-card-body>
       <nb-card-footer>

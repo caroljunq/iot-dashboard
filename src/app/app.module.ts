@@ -36,7 +36,7 @@ import { environment } from 'environments/environment';
   ],
   bootstrap: [AppComponent],
   providers: [
-    { provide: APP_BASE_HREF, useValue: '/' },
+    { provide: APP_BASE_HREF, useValue: '/' }
   ],
 })
 export class AppModule {
