@@ -51,7 +51,6 @@ import { StateService } from '../../../@core/utils';
                    [end]="sidebar.id !== 'end'">
       </nb-sidebar>
     </nb-layout>
-    <ngx-toggle-settings-button></ngx-toggle-settings-button>
   `,
 })
 export class SampleLayoutComponent implements OnDestroy {
