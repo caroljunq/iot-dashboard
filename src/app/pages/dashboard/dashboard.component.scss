@@ -19,4 +19,17 @@
       height: nb-theme(card-height-medium);
     }
   }
+
+  .config-line{
+    align-items: baseline;
+  }
+
+  .config-desc{
+    display: block;
+  }
+
+  .config-val{
+    display: block;
+    font-size: 2.2rem;
+  }
 }

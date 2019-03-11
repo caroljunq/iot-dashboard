@@ -1,3 +1,25 @@
+<div class="row config-line">
+  <div class="col-md-3 col-sm-4">
+    <div class="form-group">
+    <label>Room</label>
+    <select class="form-control">
+      <option>Minsk</option>
+      <option>Gomel</option>
+      <option>Brest</option>
+      <option>Grodno</option>
+      <option>Mogilev</option>
+    </select>
+  </div>
+  </div>
+  <div class="col-md-3 col-sm-12">
+    <label class="config-desc">Current Date</label>
+     <span class="config-val">26-03-2019</span>
+  </div>
+  <div class="col-md-3 col-sm-12">
+    <label class="config-desc">Current Hour</label>
+    <span class="config-val">18:03</span>
+  </div>
+</div>
 <nb-card *ngFor="let site of (sites | async)">
   <nb-card-header>
     <h1>{{ site.name }}</h1>
