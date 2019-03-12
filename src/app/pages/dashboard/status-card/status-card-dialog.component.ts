@@ -14,7 +14,7 @@ import { NbDialogService, NbDialogRef } from '@nebular/theme';
         </nb-card>
       </nb-card-body>
       <nb-card-footer>
-        <button nbButton (click)="dialogRef.close(null)">Cancelar</button>
+        <button nbButton (click)="dialogRef.close(null)" status="warning">Cancelar</button>
         <button nbButton (click)="dialogRef.close(value)" status="warning">
           Sim, {{ value ? 'ligar' : 'desligar' }}.
         </button>
