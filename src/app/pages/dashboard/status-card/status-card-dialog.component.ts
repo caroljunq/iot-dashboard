@@ -27,5 +27,5 @@ export class StatusCardDialogComponent {
   @Input() title: string;
   @Input() iconClass: string;
 
-  constructor(protected dialogRef: NbDialogRef<StatusCardDialogComponent>) {}
+  constructor(public dialogRef: NbDialogRef<StatusCardDialogComponent>) {}
 }

@@ -1,4 +1,6 @@
-import {Component, OnDestroy} from '@angular/core';
+import { tap, filter } from 'rxjs/operators';
+import { LiveChartService } from './../../@core/iot-dash/live-chart.service';
+import { Component, OnDestroy, AfterViewInit, OnInit } from '@angular/core';
 import { NbThemeService } from '@nebular/theme';
 
 import { Observable, Subscription, interval } from 'rxjs';
@@ -17,79 +19,46 @@ interface CardSettings {
   styleUrls: ['./dashboard.component.scss'],
   templateUrl: './dashboard.component.html',
 })
-export class DashboardComponent implements OnDestroy {
-  private alive = true;
-
-  lightCard: CardSettings = {
-    title: 'Light',
-    iconClass: 'nb-lightbulb',
-    type: 'primary',
-  };
-  rollerShadesCard: CardSettings = {
-    title: 'Roller Shades',
-    iconClass: 'nb-roller-shades',
-    type: 'success',
-  };
-  wirelessAudioCard: CardSettings = {
-    title: 'Wireless Audio',
-    iconClass: 'nb-audio',
-    type: 'info',
-  };
-  coffeeMakerCard: CardSettings = {
-    title: 'Coffee Maker',
-    iconClass: 'nb-coffee-maker',
-    type: 'warning',
-  };
-
-  statusCards: string;
-
+export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
   selectedRoom = null;
-
-  commonStatusCardsSet: CardSettings[] = [
-    this.lightCard,
-    this.rollerShadesCard,
-    this.wirelessAudioCard,
-    this.coffeeMakerCard,
-  ];
-
-  statusCardsByThemes: {
-    default: CardSettings[];
-  } = {
-    default: this.commonStatusCardsSet
-  };
-  sites: any;
-  sitesSubscription: Subscription;
-
-  currentDate = null;
+  themeSubscription: Subscription;
+  colors: {};
+  echarts: {};
+  sites: Observable<Site[]>;
+  currentDate = interval(2000).pipe( map(() => Date.now()));
 
   constructor(
     private themeService: NbThemeService,
-    private fbDatabase: FirebaseDatabaseService,
+    private firebaseDatabaseService: FirebaseDatabaseService,
+    private liveChartService: LiveChartService,
   ) {
-    this.sitesSubscription = this.fbDatabase.getSites()
-      .subscribe(res =>{
-        this.sites = res;
+    this.sites = this.firebaseDatabaseService.getSites().pipe(
+      tap(res => this.selectedRoom = this.selectedRoom || res[0]),
+    );
+    this.themeSubscription = this.themeService.getJsTheme().subscribe(theme => {
+      this.colors = theme.variables;
+      this.echarts = theme.variables.echarts;
+    });
+  }
 
-        if(!this.selectedRoom){
-          this.selectedRoom = this.sites[0];
-        }
-      })
+  ngOnInit() { }
+  ngOnDestroy() {
+    this.themeSubscription.unsubscribe();
+  }
+  ngAfterViewInit() { }
 
-    this.currentDate = interval(2000).pipe( map(() => Date.now()));
-
-    this.themeService
-      .getJsTheme()
-      .pipe(takeWhile(() => this.alive))
-      .subscribe(theme => {
-        this.statusCards = this.statusCardsByThemes[theme.name];
-      });
-
+  getSensorChart(sensor) {
+    return this.liveChartService.getSensorsChart({
+      colors: this.colors,
+      echarts: this.echarts,
+      device: sensor,
+    });
   }
 
   sensors = {};
   getSensorValue(key: string) {
     if (this.sensors[key] == null) {
-      this.sensors[key] = this.fbDatabase.getSensorValue(key);
+      this.sensors[key] = this.firebaseDatabaseService.getSensorValue(key);
     }
     return this.sensors[key];
   }
@@ -97,16 +66,12 @@ export class DashboardComponent implements OnDestroy {
   actors = {};
   getActorValue(key: string) {
     if (this.actors[key] == null) {
-      this.actors[key] = this.fbDatabase.getActorValue(key);
+      this.actors[key] = this.firebaseDatabaseService.getActorValue(key);
     }
     return this.actors[key];
   }
   setActorValue(key: string, value: boolean) {
-    return this.fbDatabase.setActorValue(key, value);
-  }
-
-  ngOnDestroy() {
-    this.alive = false;
-    this.sitesSubscription.unsubscribe();
+    return this.firebaseDatabaseService.setActorValue(key, value);
+    // return this.firebaseDatabaseService.setActorValue(key, value);
   }
 }

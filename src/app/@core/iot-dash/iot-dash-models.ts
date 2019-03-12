@@ -2,10 +2,10 @@
 export interface TimedValue<T> {
   key?: string;
   value: T;
-  timestamp: Date|number|Object;
+  timestamp: number|Object;
 }
 export interface Device {
-  key?: string;
+  key: string;
   location: string;
 }
 export interface Site {

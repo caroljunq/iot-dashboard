@@ -1,15 +1,12 @@
-import { Component, OnDestroy, Input, OnInit } from '@angular/core';
+import { Component, OnDestroy, Input, OnInit, AfterViewInit } from '@angular/core';
 import { NbThemeService } from '@nebular/theme';
-import { takeWhile } from 'rxjs/operators';
 
 @Component({
-  selector: 'ngx-device-monitoring',
+  selector: 'app-device-monitoring',
   styleUrls: ['./device-monitoring.component.scss'],
   templateUrl: './device-monitoring.component.html',
 })
-export class DeviceMonitoringComponent implements OnDestroy {
-  private alive = true;
-
+export class DeviceMonitoringComponent implements OnDestroy, AfterViewInit {
   @Input()
   title = 'Temperature';
   @Input()
@@ -19,35 +16,20 @@ export class DeviceMonitoringComponent implements OnDestroy {
     timestamp: Date.now(),
     value: 25.5,
   };
+  colors;
+  themeSubscription;
 
-  colors: any;
-  themeSubscription: any;
+  constructor(
+    private theme: NbThemeService,
+  ) { }
 
-  devices_type: any = {
-    temperature: {
-      title: 'Temperature',
-      unit: '°C',
-    },
-    humidity: {
-      title: 'Humidity',
-      unit: '%',
-    },
-    electricity: {
-      title: 'Electricity',
-      unit: 'kW',
-    },
-  };
-
-  constructor(private theme: NbThemeService) {
-    this.theme.getJsTheme()
-      .pipe(takeWhile(() => this.alive))
-      .subscribe(config => {
+  ngAfterViewInit() {
+    this.themeSubscription = this.theme.getJsTheme().subscribe(config => {
       this.colors = config.variables;
     });
   }
 
-  ngOnDestroy() {
-    this.alive = false;
+  ngOnDestroy(): void {
+    this.themeSubscription.unsubscribe();
   }
-
 }

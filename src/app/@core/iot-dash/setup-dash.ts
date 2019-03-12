@@ -27,7 +27,7 @@ export function setSampleData() {
     for (let sensorIndex = 0; sensorIndex < 2 + getRandomInt(2); sensorIndex++) {
       const sensorKey = oneSixSixBits();
       siteSensors[sensorKey] = {
-        sensorKey,
+        key: sensorKey,
         location: `Sensor #${sensorIndex} ${someName()}`,
       };
       // fake reports
@@ -44,7 +44,7 @@ export function setSampleData() {
     for (let actorIndex = 0; actorIndex < 1 + getRandomInt(2); actorIndex++) {
       const actorKey = oneSixSixBits();
       siteActors[actorKey] = {
-        actorKey,
+        key: actorKey,
         location: `Actor #${actorIndex} ${someName()}`,
         iconClass: someClass(),
       };

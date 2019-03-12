@@ -3,20 +3,20 @@
     <div class="form-group">
     <label>Room</label>
     <select class="form-control" [(ngModel)]="selectedRoom">
-      <option *ngFor="let site of (sites)" [ngValue]="site">{{ site.name }}</option>
+      <option *ngFor="let site of sites | async" [ngValue]="site">{{ site.name }}</option>
     </select>
   </div>
   </div>
   <div class="col-md-3 col-sm-3 col-6">
     <label class="config-desc">Current Date</label>
-     <span class="config-val">{{ currentDate | async | date:'dd-MM-yy' }}</span>
+      <span class="config-val">{{ currentDate | async | date:'dd-MM-yy' }}</span>
   </div>
   <div class="col-md-3 col-sm-3 col-6">
     <label class="config-desc">Current Hour</label>
     <span class="config-val">{{ currentDate | async | date:'HH:mm' }}</span>
   </div>
 </div>
-<div class="row" *ngIf="selectedRoom?.actorsArray?.length" >
+<div class="row" *ngIf="selectedRoom?.actorsArray?.length">
   <div class="col" *ngFor="let actor of selectedRoom.actorsArray">
     <app-status-card
       type="primary"
@@ -28,9 +28,10 @@
     </app-status-card>
   </div>
 </div>
-<div class="row">
+<div class="row" *ngIf="selectedRoom?.sensorsArray?.length">
   <div class="col" *ngFor="let sensor of selectedRoom?.sensorsArray">
-    <ngx-device-monitoring [title]="sensor.location" [sensorData]="getSensorValue(sensor.key) | async"></ngx-device-monitoring>
+    <app-device-monitoring [title]="sensor.location" [sensorData]="getSensorValue(sensor.key) | async"></app-device-monitoring>
+    <div echarts [options]="getSensorChart(sensor) | async" class="echart"></div>
   </div>
 </div>
   
