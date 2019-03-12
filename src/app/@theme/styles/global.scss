@@ -5,3 +5,11 @@ html {
 ngx-footer{
   justify-content: center !important;
 }
+
+nb-layout > div > div > div > nb-sidebar.menu-sidebar > div > .scrollable{
+  padding-top: 0 !important;
+}
+
+nb-sidebar{
+  margin-top: 0 !important;
+}

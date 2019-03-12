@@ -5,7 +5,7 @@
       <span class="dev-val">{{ sensorData?.value | number: "1.1-1" }}</span><span class="dev-val-unit">{{ unit }}</span>
     </span>
     <span class="dev-time">
-      {{ sensorData?.timestamp | date }}
+      {{ sensorData?.timestamp | date:'MMM dd y, HH:mm' }}
     </span>
   </nb-card-body>
 </nb-card>
