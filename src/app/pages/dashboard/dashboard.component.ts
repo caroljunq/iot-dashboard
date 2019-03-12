@@ -1,3 +1,4 @@
+import { LiveChartService } from './../../@core/iot-dash/live-chart.service';
 import { Component, OnDestroy, AfterViewInit, OnInit } from '@angular/core';
 import { NbThemeService } from '@nebular/theme';
 
@@ -85,6 +86,7 @@ export class DashboardComponent implements OnDestroy, OnInit, AfterViewInit, OnD
   constructor(
     private themeService: NbThemeService,
     private firebaseDatabaseService: FirebaseDatabaseService,
+    private liveChartService: LiveChartService,
   ) { }
 
   ngOnInit(): void {
@@ -100,11 +102,18 @@ export class DashboardComponent implements OnDestroy, OnInit, AfterViewInit, OnD
 
   ngAfterViewInit() { }
 
-  getChart(siteKey) {
-    return this.firebaseDatabaseService.getChartOptions({
+  // getChart(siteKey) {
+  //   return this.liveChartService.getSiteSensorsComposedChart({
+  //     colors: this.colors,
+  //     echarts: this.echarts,
+  //     siteKey,
+  //   });
+  // }
+  getSensorChart(sensor) {
+    return this.liveChartService.getSensorsChart({
       colors: this.colors,
       echarts: this.echarts,
-      siteKey,
+      device: sensor,
     });
   }
 
