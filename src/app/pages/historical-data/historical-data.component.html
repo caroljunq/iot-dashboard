@@ -1,3 +1,34 @@
-<p>
-  historical-data works!
-</p>
+<div class="row config-line">
+  <div class="col-md-4 col-sm-6 col-12">
+    <div class="form-group">
+    <label>Room</label>
+    <select class="form-control">
+      <option>Room 1</option>
+      <option>Room 2</option>
+      <option>Room 3</option>
+      <option>Room 4</option>
+    </select>
+  </div>
+  </div>
+  <div class="col-md-3 col-sm-3 col-6">
+    <label class="config-desc">Current Date</label>
+     <span class="config-val">{{ currentDate | async | date:'dd-MM-yy' }}</span>
+  </div>
+  <div class="col-md-3 col-sm-3 col-6">
+    <label class="config-desc">Current Hour</label>
+    <span class="config-val">{{ currentDate | async | date:'HH:mm' }}</span>
+  </div>
+</div>
+<nb-card>
+  <nb-card-header>
+    <div>
+      <input nbInput format="dd-MM-yy" placeholder="Form Picker" [nbDatepicker]="formcontrol" [formControl]="formControl">
+      <nb-datepicker #formcontrol ></nb-datepicker>       
+      <input nbInput format="dd-MM-yy" placeholder="Form Picker" [nbDatepicker]="ngmodel" [(ngModel)]="ngModelDate">
+      <nb-datepicker #ngmodel></nb-datepicker>
+    </div> 
+  </nb-card-header>
+  <nb-card-body>
+    <div echarts [options]="options" class="echart"></div>
+  </nb-card-body>
+</nb-card>
