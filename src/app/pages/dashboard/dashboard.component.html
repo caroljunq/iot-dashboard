@@ -3,7 +3,7 @@
     <div class="form-group">
     <label>Room</label>
     <select class="form-control" [(ngModel)]="selectedRoom">
-      <option *ngFor="let site of (sites)" [ngValue]="site">{{ site.name }}</option>
+      <option *ngFor="let site of sites | async" [ngValue]="site">{{ site.name }}</option>
     </select>
   </div>
   </div>
@@ -16,39 +16,7 @@
     <span class="config-val">{{ currentDate | async | date:'HH:mm' }}</span>
   </div>
 </div>
-<!--
-<nb-card *ngFor="let site of (sites | async)">
-  <nb-card-header>
-    <h1>{{ site.name }}</h1>
-  </nb-card-header>
-  <nb-card-body>
-    <div class="row" *ngIf="site?.actorsArray?.length" >
-      <div class="col-xxxl-3 col-md-6 col-sm-12" *ngFor="let actor of site.actorsArray">
-        <app-status-card
-          type="primary"
-          [title]="actor.location"
-          [on]="(getActorValue(actor.key) | async)?.value"
-          (valueChange)="setActorValue(actor.key, $event)"
-          [iconClass]="actor.iconClass"
-        >
-        </app-status-card>
-      </div>
-    </div>
-    <div class="row">
-      <div class="col-xxxl-3 col-md-4 col-sm-12" *ngFor="let sensor of site.sensorsArray">
-        <app-device-monitoring [title]="sensor.location" [sensorData]="getSensorValue(sensor.key) | async"></app-device-monitoring>
-        
-      </div>
-    </div>
-  </nb-card-body>
-</nb-card>
--->
-<div class="row" *ngIf="selectedRoom?.actorsArray?.length" >
-  <!--
-  <div class="col-xxxl-3 col-md-6" *ngFor="let statusCard of statusCards">
-    <app-status-card [title]="statusCard.title" [type]="statusCard.type">
-      <i [ngClass]="statusCard.iconClass"></i>
-  -->
+<div class="row" *ngIf="selectedRoom?.actorsArray?.length">
   <div class="col" *ngFor="let actor of selectedRoom.actorsArray">
     <app-status-card
       type="primary"
@@ -60,7 +28,7 @@
     </app-status-card>
   </div>
 </div>
-<div class="row">
+<div class="row" *ngIf="selectedRoom?.sensorsArray?.length">
   <div class="col" *ngFor="let sensor of selectedRoom?.sensorsArray">
     <app-device-monitoring [title]="sensor.location" [sensorData]="getSensorValue(sensor.key) | async"></app-device-monitoring>
     <div echarts [options]="getSensorChart(sensor) | async" class="echart"></div>

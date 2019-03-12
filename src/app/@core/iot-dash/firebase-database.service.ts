@@ -81,15 +81,9 @@ export class FirebaseDatabaseService {
       // tap(value => console.log({path, ...value})),
     );
   }
-  getLatest<T>(path: string): Observable<TimedValue<T>> {
-    return this.getLast<T>(path).pipe(
-      map(list => list[0]),
-      filter(value => value !== null && value !== undefined),
-    );
-  }
 
   getLastSensorValues(key: string, limit = 1) {
-    return this.getLast(`sensorData/${key}`, limit);
+    return this.getLast<TimedValue<number>>(`sensorData/${key}`, limit);
   }
   getSensorValue(key: string) {
     if (!environment.production) {
@@ -98,7 +92,10 @@ export class FirebaseDatabaseService {
         1000,
       );
     }
-    return this.getLastSensorValues(key);
+    return this.getLastSensorValues(key).pipe(
+      map(list => list[0]),
+      filter(value => value !== null && value !== undefined),
+    );
   }
   setSensorValue(key: string, value: number) {
     return this.angularFireDatabase
@@ -118,7 +115,9 @@ export class FirebaseDatabaseService {
       });
   }
   getActorValue(key: string): Observable<TimedValue<boolean>> {
-    return this.getLatest(`actorData/${key}`).pipe(
+    return this.getLast(`actorData/${key}`).pipe(
+      map(list => list[0]),
+      filter(value => value !== null && value !== undefined),
       map(timedValue => ({ ...timedValue, value: !!timedValue.value })),
     );
   }

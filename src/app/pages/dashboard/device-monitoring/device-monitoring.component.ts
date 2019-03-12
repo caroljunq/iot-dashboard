@@ -1,7 +1,5 @@
-import { FirebaseDatabaseService } from './../../../@core/iot-dash/firebase-database.service';
 import { Component, OnDestroy, Input, OnInit, AfterViewInit } from '@angular/core';
 import { NbThemeService } from '@nebular/theme';
-import { takeWhile } from 'rxjs/operators';
 
 @Component({
   selector: 'app-device-monitoring',
@@ -9,8 +7,6 @@ import { takeWhile } from 'rxjs/operators';
   templateUrl: './device-monitoring.component.html',
 })
 export class DeviceMonitoringComponent implements OnDestroy, AfterViewInit {
-  private alive = true;
-
   @Input()
   title = 'Temperature';
   @Input()
@@ -20,28 +16,11 @@ export class DeviceMonitoringComponent implements OnDestroy, AfterViewInit {
     timestamp: Date.now(),
     value: 25.5,
   };
-
-  devices_type: any = {
-    temperature: {
-      title: 'Temperature',
-      unit: '°C',
-    },
-    humidity: {
-      title: 'Humidity',
-      unit: '%',
-    },
-    electricity: {
-      title: 'Electricity',
-      unit: 'kW',
-    },
-  };
-  options: any = {};
   colors;
   themeSubscription;
 
   constructor(
     private theme: NbThemeService,
-    private firebaseDatabaseService: FirebaseDatabaseService,
   ) { }
 
   ngAfterViewInit() {
@@ -52,7 +31,5 @@ export class DeviceMonitoringComponent implements OnDestroy, AfterViewInit {
 
   ngOnDestroy(): void {
     this.themeSubscription.unsubscribe();
-    this.alive = false;
   }
-
 }
