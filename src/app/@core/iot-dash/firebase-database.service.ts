@@ -72,8 +72,8 @@ export class FirebaseDatabaseService {
     return this.angularFireDatabase.list<Device>(`sites/${key}/sensors`).valueChanges();
   }
 
-  getLast<T>(path: string, limit = 1): Observable<TimedValue<T>[]> {
-    return this.angularFireDatabase.list<TimedValue<T>>(
+  getLast<T>(path: string, limit = 1): Observable<T[]> {
+    return this.angularFireDatabase.list<T>(
       path,
       ref => ref.orderByChild('timestamp').limitToLast(limit),
     ).valueChanges().pipe(
@@ -115,7 +115,7 @@ export class FirebaseDatabaseService {
       });
   }
   getActorValue(key: string): Observable<TimedValue<boolean>> {
-    return this.getLast(`actorData/${key}`).pipe(
+    return this.getLast<TimedValue<boolean>>(`actorData/${key}`).pipe(
       map(list => list[0]),
       filter(value => value !== null && value !== undefined),
       map(timedValue => ({ ...timedValue, value: !!timedValue.value })),

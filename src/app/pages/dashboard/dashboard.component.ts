@@ -36,7 +36,6 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
       tap(res => this.selectedRoom = this.selectedRoom || res[0]),
     );
     this.themeSubscription = this.themeService.getJsTheme().subscribe(theme => {
-      debugger;
       this.colors = theme.variables;
       this.echarts = theme.variables.echarts;
     });
