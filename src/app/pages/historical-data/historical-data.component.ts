@@ -41,18 +41,15 @@ export class HistoricalDataComponent implements AfterViewInit, OnDestroy {
         legend: {
           data:['Sensor1','Sensor2']
         },
-    // toolbox: {
-    //     show: true,
-    //     feature: {
-    //         dataZoom: {
-    //             yAxisIndex: 'none'
-    //         },
-    //         dataView: {readOnly: false},
-    //         magicType: {type: ['line', 'bar']},
-    //         restore: {},
-    //         saveAsImage: {}
-    //     }
-    // },
+        toolbox: {
+          show: true,
+          feature: {
+            saveAsImage: {
+              name: 'temperature_' + Date.now(),
+              title: 'Save as png'
+            },
+          }
+        },
         xAxis:  {
           type: 'category',
           boundaryGap: false,
@@ -69,12 +66,6 @@ export class HistoricalDataComponent implements AfterViewInit, OnDestroy {
           name:'Sensor1',
           type:'line',
           data:[11, 11, 15, 13, 12, 13, 10],
-          markPoint: {
-            data: [
-              {type: 'max', name: 'Max'},
-              {type: 'min', name: 'Min'}
-            ]
-          },
           markLine: {
             data: [
               { type: 'average', name: 'Avg'}
@@ -87,7 +78,7 @@ export class HistoricalDataComponent implements AfterViewInit, OnDestroy {
           data:[1, -2, 2, 5, 3, 2, 0],
           markLine: {
             data: [
-              {type: 'average', name: 'Avg'},
+              {type: 'average', name: 'Avg',},
               {
                 symbol: 'none',
                 x: '90%',

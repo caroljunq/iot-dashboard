@@ -8,6 +8,27 @@
     height: 100%;
     width: 100%;
   }
+
+   nb-card-header{
+    border: none !important;
+    padding: 25px;
+  }
+
+  .datepicker-chart{
+    .form-group{
+      input {
+        width: 22rem;
+      }
+
+      label{
+        margin-left: 10px;
+        margin-right: 5px;
+      }
+    }
+  }
+  
+  
+
 }
 
 

@@ -21,11 +21,17 @@
 </div>
 <nb-card>
   <nb-card-header>
-    <div>
-      <input nbInput format="dd-MM-yy" placeholder="Form Picker" [nbDatepicker]="formcontrol" [formControl]="formControl">
-      <nb-datepicker #formcontrol ></nb-datepicker>       
-      <input nbInput format="dd-MM-yy" placeholder="Form Picker" [nbDatepicker]="ngmodel" [(ngModel)]="ngModelDate">
-      <nb-datepicker #ngmodel></nb-datepicker>
+    <div class="row datepicker-chart">
+      <div class="form-group">
+        <label>From</label>
+        <input nbInput format="dd-MM-yy" placeholder="Form Picker" [nbDatepicker]="formcontrol" [formControl]="formControl">
+        <nb-datepicker #formcontrol ></nb-datepicker>      
+      </div> 
+      <div class="form-group">
+        <label>To</label>
+        <input nbInput format="dd-MM-yy" placeholder="Form Picker" [nbDatepicker]="ngmodel" [(ngModel)]="ngModelDate">
+        <nb-datepicker #ngmodel></nb-datepicker>
+      </div>
     </div> 
   </nb-card-header>
   <nb-card-body>
