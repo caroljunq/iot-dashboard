@@ -6,7 +6,6 @@ import { firebase } from './secrets';
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 export const environment = {
-  // production: true,
-  production: false,
+  production: true,
   firebase: firebase.prod,
 };
