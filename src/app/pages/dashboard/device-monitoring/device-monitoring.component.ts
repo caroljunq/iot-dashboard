@@ -1,3 +1,4 @@
+import { TimedAggregate } from './../../../@core/iot-dash/iot-dash-models';
 import { Component, OnDestroy, Input, OnInit, AfterViewInit } from '@angular/core';
 import { NbThemeService } from '@nebular/theme';
 
@@ -11,6 +12,8 @@ export class DeviceMonitoringComponent implements OnDestroy, AfterViewInit {
   title = 'Temperature';
   @Input()
   unit = '°C';
+  @Input()
+  sensorAggregate: TimedAggregate;
   @Input()
   sensorData = {
     timestamp: Date.now(),

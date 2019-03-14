@@ -3,7 +3,7 @@
     <div class="form-group">
     <label>Room</label>
     <select class="form-control" [(ngModel)]="selectedRoom">
-      <option *ngFor="let site of sites | async" [ngValue]="site">{{ site.name }}</option>
+      <option *ngFor="let site of sites$ | async" [ngValue]="site">{{ site?.name }}</option>
     </select>
   </div>
   </div>
@@ -29,11 +29,15 @@
   </div>
 </div>
 <div class="row" *ngIf="selectedRoom?.sensorsArray?.length">
-  <div class="col" *ngFor="let sensor of selectedRoom?.sensorsArray">
-    <app-device-monitoring [title]="sensor.location" [sensorData]="getSensorValue(sensor.key) | async"></app-device-monitoring>
+  <div class="col-md-6 col-sm-6 col-xl-4" *ngFor="let sensor of selectedRoom?.sensorsArray">
+    <app-device-monitoring
+      [title]="sensor.location"
+      [sensorData]="sensor.value$ | async"
+      [sensorAggregate]="sensor.aggregate$ | async"
+    ></app-device-monitoring>
     <nb-card>
       <nb-card-body>
-        <div echarts [options]="getSensorChart(sensor) | async" class="echart"></div>
+        <div echarts [options]="sensor.chart$ | async" class="echart"></div>
       </nb-card-body>
     </nb-card>
   </div>

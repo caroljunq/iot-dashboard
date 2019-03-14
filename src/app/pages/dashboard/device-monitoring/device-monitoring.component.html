@@ -7,5 +7,10 @@
     <span class="dev-time">
       {{ sensorData?.timestamp | date:'MMM dd y, HH:mm' }}
     </span>
+    <span>
+      Min: {{ sensorAggregate?.min | number: "1.1-1"}}
+      <br>
+      Max: {{ sensorAggregate?.max | number: "1.1-1"}}
+    </span>
   </nb-card-body>
 </nb-card>

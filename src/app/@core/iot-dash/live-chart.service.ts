@@ -314,7 +314,7 @@ export class LiveChartService {
 
   constructor(public firebaseDatabaseService: FirebaseDatabaseService) { }
 
-  getLastSensorValues(device: Device, index: number, limit = 15): Observable<DeviceTimeSereies> {
+  getLastSensorValues(device: Device, index: number = 0, limit = 15): Observable<DeviceTimeSereies> {
     return this.firebaseDatabaseService.getLastSensorValues(device.key, limit)
     .pipe(
       map<TimedValue<number>[], DeviceTimeSereies>(timeSeries => ({
@@ -409,7 +409,7 @@ export class LiveChartService {
       return this.charts[device.key];
     }
 
-    this.charts[device.key] = this.getLastSensorValues(device, 0).pipe(
+    this.charts[device.key] = this.getLastSensorValues(device).pipe(
       map(deviceTimeSereies => {
         const base = baseSensorChartOpts(colors, echarts);
         base.legend.data = [device.location];
