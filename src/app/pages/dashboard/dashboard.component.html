@@ -31,6 +31,10 @@
 <div class="row" *ngIf="selectedRoom?.sensorsArray?.length">
   <div class="col" *ngFor="let sensor of selectedRoom?.sensorsArray">
     <app-device-monitoring [title]="sensor.location" [sensorData]="getSensorValue(sensor.key) | async"></app-device-monitoring>
+  </div>
+</div>
+<div class="row" *ngIf="selectedRoom?.sensorsArray?.length">
+  <div class="col-md-12 col-sm-12" *ngFor="let sensor of selectedRoom?.sensorsArray">
     <nb-card>
       <nb-card-body>
         <div echarts [options]="getSensorChart(sensor) | async" class="echart"></div>
@@ -38,9 +42,9 @@
     </nb-card>
   </div>
 </div>
-  
-<div class="row">
+
+<!-- <div class="row">
   <div class="col-xxxl-9 col-xl-12">
     <ngx-rooms></ngx-rooms>
   </div>
-</div>
+</div> -->
