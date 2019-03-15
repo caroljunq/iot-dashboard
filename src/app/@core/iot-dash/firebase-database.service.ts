@@ -1,28 +1,19 @@
 import { Injectable } from '@angular/core';
 import { database } from 'firebase/app';
 import { AngularFireDatabase } from '@angular/fire/database';
-import { Observable, of, Subject } from 'rxjs';
-import { map, filter, publishReplay, refCount, take, tap, timeout } from 'rxjs/operators';
+import { Observable } from 'rxjs';
+import { map, filter, publishReplay, refCount, take } from 'rxjs/operators';
 
 import { environment } from 'environments/environment';
 import { getSampleData } from './setup-dash';
-import { Site, Device, TimedValue, TimedAggregate } from './iot-dash-models';
-import { sensor24hourAggregate } from './sensor24hourAggregate';
+import { Site, Device, TimedValue } from './iot-dash-models';
 import { LiveChartService } from './live-chart.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class FirebaseDatabaseService {
-  connectionSpeed = {
-    size: 0,
-    speed: 0,
-    time: 0,
-    related: 0,
-    isSlow: false,
-  };
-
-  constructor(private angularFireDatabase: AngularFireDatabase) {
+  constructor(protected angularFireDatabase: AngularFireDatabase) {
     if (!environment.production) {
       // this.angularFireDatabase.object('/').update(getSampleData());
       const randomValue = (sensor: Device) => setInterval(
@@ -39,21 +30,6 @@ export class FirebaseDatabaseService {
         );
       });
     }
-    const init = Date.now();
-    fetch('assets/images/speed-test.png').then(
-      response => (!response.ok ? null : response.blob()),
-    ).then(
-      b => {
-        const end = Date.now();
-        const size = b.size;
-        const time = end - init;
-        const speed = b.size / time;
-        const related = time / 16000;
-        // below 60fps
-        const isSlow = related > 1;
-        this.connectionSpeed = { size, time, speed, related, isSlow };
-      },
-    );
   }
 
   sites$: Observable<Site[]>;
@@ -113,44 +89,6 @@ export class FirebaseDatabaseService {
     );
   }
 
-  sensor24hAggregate = {};
-  sensor24hAggregateCache = {};
-  getSensor24hAggregate(key: string): Observable<TimedAggregate> {
-    if (this.sensor24hAggregate.hasOwnProperty(key)) {
-      return this.sensor24hAggregate[key];
-    }
-    if (this.connectionSpeed.isSlow) {
-      this.sensor24hAggregate[key] = of<TimedAggregate>({
-        key,
-        max: 50,
-        min: -10,
-        avg: 25,
-        endTimeStamp: 0,
-        startTimeStamp: 0,
-        stdDev: 25,
-      }).pipe(
-        publishReplay(),
-        refCount(),
-      );
-      return this.sensor24hAggregate[key];
-    }
-
-    const yesterday = new Date();
-    yesterday.setDate(yesterday.getDate() - 1);
-
-    this.sensor24hAggregate[key] = this.angularFireDatabase.list<TimedValue<number>>(
-      `sensorData/${key}`,
-      ref => ref.orderByChild('timestamp').startAt(yesterday.valueOf()).endAt(Date.now()),
-    ).valueChanges().pipe(
-      take(1),
-      map((values) => sensor24hourAggregate(key, values)),
-      publishReplay(),
-      refCount(),
-      filter(v => !!v),
-    );
-
-    return this.sensor24hAggregate[key];
-  }
   setSensorValue(key: string, value: number) {
     return this.angularFireDatabase
       .list<TimedValue<number>>(`sensorData/${key}`)
@@ -179,9 +117,6 @@ export class FirebaseDatabaseService {
   loadSensorData(sensor: Device, liveChartService: LiveChartService, colors, echarts): Device {
     if (!sensor.value$) {
       sensor.value$ = this.getSensorValue(sensor.key);
-    }
-    if (!sensor.aggregate$) {
-      sensor.aggregate$ = this.getSensor24hAggregate(sensor.key);
     }
     if (!sensor.chart$) {
       sensor.chart$ = liveChartService.getSensorsChart({
