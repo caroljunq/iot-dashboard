@@ -1,13 +1,14 @@
 import { Injectable } from '@angular/core';
 
 import { database } from 'firebase/app';
-import { AngularFireDatabase } from 'angularfire2/database';
+import { AngularFireDatabase } from '@angular/fire/database';
 import { Observable } from 'rxjs';
-import { map, filter, debounceTime } from 'rxjs/operators';
+import { map, filter, publishReplay, refCount, take } from 'rxjs/operators';
 
 import { environment } from 'environments/environment';
-import { setSampleData } from './setup-dash';
-import { Site, Device, TimedValue } from './iot-dash-models';
+import { getSampleData } from './setup-dash';
+import { Site, Device, TimedValue, TimedAggregate } from './iot-dash-models';
+import { sensor24hourAggregate } from './sensor24hourAggregate';
 
 @Injectable({
   providedIn: 'root',
@@ -15,26 +16,22 @@ import { Site, Device, TimedValue } from './iot-dash-models';
 export class FirebaseDatabaseService {
   constructor(private angularFireDatabase: AngularFireDatabase) {
     if (!environment.production) {
-      this.setup().then(() => null);
+      // debugger;
+      // this.angularFireDatabase.object('/').update(getSampleData());
+      const randomValue = (sensor: Device) => setInterval(
+        () => this.setSensorValue(sensor.key, Math.random() * 60 - 10).then(() => null),
+        100 * Math.floor(Math.random() * 10 + 10),
+      );
+      const sub = this.angularFireDatabase.list<Site>('/sites').valueChanges().pipe(take(1)).subscribe(sampleData => {
+        sub.unsubscribe();
+        // update
+        sampleData.forEach(
+          site => Object.values(site.sensors).forEach(
+            sensor => randomValue(sensor),
+          ),
+        );
+      });
     }
-  }
-  private async setup() {
-    const sampleData = setSampleData();
-    // const sampleData = await this.angularFireDatabase.object('/').valueChanges().toPromise();
-    this.angularFireDatabase.object('/').update(sampleData);
-    // update
-    Object.values(sampleData.sites).forEach(site =>
-      setInterval(
-        () =>
-          this.angularFireDatabase
-            .list(`sensorData/${Object.keys(site)[0]}`)
-            .push({
-              value: Math.random() * 60 - 10,
-              timestamp: database.ServerValue.TIMESTAMP,
-            }),
-        1000 * Math.floor(Math.random() * 10.0 + 1),
-      ),
-    );
   }
 
   getSites() {
@@ -76,33 +73,48 @@ export class FirebaseDatabaseService {
     return this.angularFireDatabase.list<T>(
       path,
       ref => ref.orderByChild('timestamp').limitToLast(limit),
-    ).valueChanges().pipe(
-      debounceTime(500),
-      // tap(value => console.log({path, ...value})),
-    );
+    ).valueChanges();
   }
 
   getLastSensorValues(key: string, limit = 1) {
     return this.getLast<TimedValue<number>>(`sensorData/${key}`, limit);
   }
   getSensorValue(key: string) {
-    if (!environment.production) {
-      setInterval(
-        () => this.setSensorValue(key, Math.random() * 50 - 10),
-        1000,
-      );
-    }
     return this.getLastSensorValues(key).pipe(
       map(list => list[0]),
       filter(value => value !== null && value !== undefined),
     );
+  }
+
+  sensor24hAggregate = {};
+  sensor24hAggregateCache = {};
+  getSensor24hAggregate(key: string): Observable<TimedAggregate> {
+    if (this.sensor24hAggregate.hasOwnProperty(key)) {
+      return this.sensor24hAggregate[key];
+    }
+
+    const yesterday = new Date();
+    yesterday.setDate(yesterday.getDate() - 1);
+
+    this.sensor24hAggregate[key] = this.angularFireDatabase.list<TimedValue<number>>(
+      `sensorData/${key}`,
+      ref => ref.orderByChild('timestamp').startAt(yesterday.valueOf()).endAt(Date.now()),
+    ).valueChanges().pipe(
+      take(1),
+      map((values) => sensor24hourAggregate(key, values)),
+      publishReplay(),
+      refCount(),
+      filter(v => !!v),
+    );
+
+    return this.sensor24hAggregate[key];
   }
   setSensorValue(key: string, value: number) {
     return this.angularFireDatabase
       .list<TimedValue<number>>(`sensorData/${key}`)
       .push({
         value,
-        timestamp: database.ServerValue.TIMESTAMP,
+        timestamp: <number>database.ServerValue.TIMESTAMP,
       });
   }
 
@@ -111,7 +123,7 @@ export class FirebaseDatabaseService {
       .list<TimedValue<boolean>>(`actorData/${key}`)
       .push({
         value,
-        timestamp: database.ServerValue.TIMESTAMP,
+        timestamp: <number>database.ServerValue.TIMESTAMP,
       });
   }
   getActorValue(key: string): Observable<TimedValue<boolean>> {

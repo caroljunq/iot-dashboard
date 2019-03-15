@@ -1,12 +1,18 @@
+import { Observable } from 'rxjs';
 
 export interface TimedValue<T> {
   key?: string;
   value: T;
-  timestamp: number|Object;
+  timestamp: number;
 }
 export interface Device {
   key: string;
   location: string;
+  max: number;
+  min: number;
+  value$?: Observable<TimedValue<number>>;
+  aggregate$?: Observable<TimedAggregate>;
+  chart$?: Observable<any>;
 }
 export interface Site {
   key?: string;
@@ -21,4 +27,14 @@ export interface RootData {
   sites: {[key: string]: Site};
   sensorData: {[key: string]: TimedValue<number>};
   actorData: {[key: string]: TimedValue<boolean>};
+}
+
+export interface TimedAggregate {
+  key: string;
+  min: number;
+  max: number;
+  avg: number;
+  stdDev: number;
+  startTimeStamp: number;
+  endTimeStamp: number;
 }

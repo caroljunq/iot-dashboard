@@ -24,7 +24,9 @@
     "docs:serve": "compodoc -p src/tsconfig.app.json -d docs -s",
     "release:changelog": "npm run conventional-changelog -- -p angular -i CHANGELOG.md -s",
     "deploy": "firebase deploy --project luminous-fire-6577",
-    "build:deploy": "npm run build:prod && npm run deploy"
+    "deploy:prod": "firebase deploy --project sala-tiv1",
+    "build:deploy": "npm run build && npm run deploy",
+    "build:deploy:prod": "npm run build:prod && npm run deploy:prod"
   },
   "dependencies": {
     "@agm/core": "^1.0.0-beta.5",

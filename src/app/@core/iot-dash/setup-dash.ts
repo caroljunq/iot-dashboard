@@ -1,8 +1,14 @@
+import { AngularFireDatabase } from 'angularfire2/database';
+import { Observable } from 'rxjs';
+import { single } from 'rxjs/operators';
+
+import { RootData } from './iot-dash-models';
+
 function getRandomInt(max) {
   return Math.floor(Math.random() * Math.floor(max));
 }
 function someName(): string {
-  const words = ['the', 'quick', 'brown', 'fox', 'jumps', 'over', 'lazy', 'dog'];
+  const words = ['TV', 'Raio-X', 'Espera', 'Secretaria', 'Servidores', 'Cirurgia', 'Gesso'];
   return words[getRandomInt(words.length)] + ' ' + words[getRandomInt(words.length)];
 }
 function someClass(): string {
@@ -13,8 +19,7 @@ function oneSixSixBits(): string {
   return (Date.now().toString(36) + Math.random().toString(36)).replace('0.', '');
 }
 
-
-export function setSampleData() {
+export function getSampleData() {
   const sampleData = {
     sites: {},
     sensorData: {},
@@ -24,15 +29,17 @@ export function setSampleData() {
   for (let siteIndex = 0; siteIndex < 3; siteIndex++) {
     // -------------- sensors --------------------
     const siteSensors = {};
-    for (let sensorIndex = 0; sensorIndex < 2 + getRandomInt(2); sensorIndex++) {
+    for (let sensorIndex = 0; sensorIndex < 2 + getRandomInt(3); sensorIndex++) {
       const sensorKey = oneSixSixBits();
       siteSensors[sensorKey] = {
         key: sensorKey,
-        location: `Sensor #${sensorIndex} ${someName()}`,
+        location: `Sensor #${sensorIndex}`,
+        max: 30,
+        min: 15,
       };
       // fake reports
       sampleData.sensorData[sensorKey] = {};
-      for (let i = 0; i < getRandomInt(10); i++) {
+      for (let i = 0; i < 10 + getRandomInt(10); i++) {
         sampleData.sensorData[sensorKey][oneSixSixBits()] = {
           value: Math.random() * 60 - 10,
           timestamp: Date.now() - getRandomInt(100),
@@ -59,7 +66,7 @@ export function setSampleData() {
     }
     // -------------- sites --------------------
     sampleData.sites[oneSixSixBits()] = {
-      name: `Site #${siteIndex} ${someName()}`,
+      name: `Sala #${siteIndex} ${someName()}`,
       sensors: siteSensors,
       actors: siteActors,
     };

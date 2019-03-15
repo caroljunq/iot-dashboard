@@ -24,7 +24,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
   themeSubscription: Subscription;
   colors: {};
   echarts: {};
-  sites: Observable<Site[]>;
+  sites$: Observable<Site[]>;
   currentDate = interval(2000).pipe( map(() => Date.now()));
 
   constructor(
@@ -32,7 +32,21 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     private firebaseDatabaseService: FirebaseDatabaseService,
     private liveChartService: LiveChartService,
   ) {
-    this.sites = this.firebaseDatabaseService.getSites().pipe(
+    this.sites$ = this.firebaseDatabaseService.getSites().pipe(
+      map(sites => {
+        sites.forEach(site => site.sensorsArray.forEach(
+          sensor => {
+            sensor.value$ = this.firebaseDatabaseService.getSensorValue(sensor.key);
+            sensor.aggregate$ = this.firebaseDatabaseService.getSensor24hAggregate(sensor.key);
+            sensor.chart$ = this.liveChartService.getSensorsChart({
+              colors: this.colors,
+              echarts: this.echarts,
+              device: sensor,
+            });
+          },
+        ));
+        return sites;
+      }),
       tap(res => this.selectedRoom = this.selectedRoom || res[0]),
     );
     this.themeSubscription = this.themeService.getJsTheme().subscribe(theme => {
@@ -61,6 +75,9 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
       this.sensors[key] = this.firebaseDatabaseService.getSensorValue(key);
     }
     return this.sensors[key];
+  }
+  getSensorAggregate(key: string) {
+    return this.firebaseDatabaseService.getSensor24hAggregate(key);
   }
 
   actors = {};
