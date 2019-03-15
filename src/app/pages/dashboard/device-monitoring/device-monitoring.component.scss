@@ -39,15 +39,22 @@
     font-size: 0.9rem;
   }
 
-  // .top-down-values{
-  //   justify-content: center;
-  //   align-items: center;
+  .top-down-values{
+    justify-content: center;
+    align-items: center;
 
-  //   & > div{
-  //     width: 5rem;
-  //     display: flex;
-  //     justify-content: space-between;
-  //   }
-  // }
+    & > div{
+      width: 8rem;
+      display: flex;
+      justify-content: space-between;
+      position: absolute;
+      bottom: 9px;
+
+      & > .values-range{
+        color: #a1a8af;
+      }
+      
+    }
+  }
 }
   

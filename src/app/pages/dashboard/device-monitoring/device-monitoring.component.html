@@ -11,12 +11,12 @@
     <span class="dev-time">
       {{ sensorData?.timestamp | date:'MMM dd y, HH:mm' }}
     </span>
-    <!-- <div class="row top-down-values">
+    <div class="row top-down-values">
       <div>
-        <span class="min-value">{{ sensorAggregate?.min | number: "1.1-1" }}</span>
-        <span class="max-value">{{ sensorAggregate?.max | number: "1.1-1" }}</span>
+        <span class="values-range">{{ sensorAggregate?.min | number: "1.1-1" }}</span>
+        <span class="values-range">{{ sensorAggregate?.max | number: "1.1-1" }}</span>
       </div>   
-    </div> -->
+    </div>
   </nb-card-body>
 </nb-card>
 
