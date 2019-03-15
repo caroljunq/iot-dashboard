@@ -28,8 +28,8 @@
     </app-status-card>
   </div>
 </div>
-<div class="row" *ngIf="selectedRoom?.sensorsArray?.length">
-  <div class="col-md-6 col-sm-6 col-xl-4" *ngFor="let sensor of selectedRoom?.sensorsArray">
+<div class="sensors-items" *ngIf="selectedRoom?.sensorsArray?.length">
+  <div class="sensor-item" *ngFor="let sensor of selectedRoom?.sensorsArray">
     <app-device-monitoring
       [title]="sensor.location"
       [sensorData]="sensor.value$ | async"
