@@ -9,6 +9,7 @@ import { getSampleData } from './setup-dash';
 import { Site, Device, TimedValue, TimedAggregate } from './iot-dash-models';
 import { sensor24hourAggregate } from './sensor24hourAggregate';
 import { LiveChartService } from './live-chart.service';
+import { AngularFireFunctions } from '@angular/fire/functions';
 
 @Injectable({
   providedIn: 'root',
@@ -22,7 +23,10 @@ export class FirebaseDatabaseService {
     isSlow: false,
   };
 
-  constructor(private angularFireDatabase: AngularFireDatabase) {
+  constructor(
+    private angularFireDatabase: AngularFireDatabase,
+    private angularFireFunctions: AngularFireFunctions,
+  ) {
     if (!environment.production) {
       // this.angularFireDatabase.object('/').update(getSampleData());
       const randomValue = (sensor: Device) => setInterval(
@@ -151,6 +155,18 @@ export class FirebaseDatabaseService {
 
     return this.sensor24hAggregate[key];
   }
+  getSensor24hAggregateFF(key: string): Observable<TimedAggregate> {
+    if (this.sensor24hAggregate.hasOwnProperty(key)) {
+      return this.sensor24hAggregate[key];
+    }
+
+    this.sensor24hAggregate[key] = this.angularFireFunctions.httpsCallable('sensorAggregate')({key}).pipe(
+      publishReplay(),
+      refCount(),
+    );
+    return this.sensor24hAggregate[key];
+  }
+
   setSensorValue(key: string, value: number) {
     return this.angularFireDatabase
       .list<TimedValue<number>>(`sensorData/${key}`)
@@ -181,7 +197,7 @@ export class FirebaseDatabaseService {
       sensor.value$ = this.getSensorValue(sensor.key);
     }
     if (!sensor.aggregate$) {
-      sensor.aggregate$ = this.getSensor24hAggregate(sensor.key);
+      sensor.aggregate$ = this.getSensor24hAggregateFF(sensor.key);
     }
     if (!sensor.chart$) {
       sensor.chart$ = liveChartService.getSensorsChart({

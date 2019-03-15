@@ -1,5 +1,6 @@
 import * as functions from 'firebase-functions';
 import * as admin from 'firebase-admin';
+// import { sensor24hourAggregate } from '../../src/app/@core/iot-dash/sensor24hourAggregate';
 
 // Start writing Firebase Functions
 // https://firebase.google.com/docs/functions/typescript
@@ -11,10 +12,28 @@ import * as admin from 'firebase-admin';
 //   projectId: 'projectId'
 // }
 
-export const sensorAggregate = functions.https.onRequest((request, response) => {
-  response.send("Hello from Firebase!" + JSON.stringify(request));
-  admin.database().ref(`sensorData`).once('value').then(snap => console.log(snap.toJSON())).catch(e => console.error(e));
-  return;
+function getSensorData(key: string) {
+  const yesterday = new Date();
+  yesterday.setDate(yesterday.getDate() - 1);
+  return admin.database().ref(`sensorData/${key}`)
+    .orderByChild('timestamp').startAt(yesterday.valueOf()).endAt(Date.now())
+    .once('value');
+}
+
+export const sensorAgg = functions.https.onRequest((req, resp) => {
+  console.log({params: req.params, headers: req.headers});
+  getSensorData('jt9rhc34nyxnnabq17h').then(console.log).catch(console.log);
+  return resp.send(JSON.stringify({msg: "Hello from Firebase!", params: req.params, headers: req.headers}));
+})
+
+export const sensorAggregate = functions.https.onCall((data, context) => {
+  return {msg: "Hello from Firebase!"};
+  return admin.database().ref(`sensorData`).once('value').then(
+    snap => {
+      console.log(snap)
+      // sensor24hourAggregate();
+      return {msg: "Hello from Firebase!", };
+  }).catch(e => console.error(e));
   // if (this.sensor24hAggregate.has(key)) {
   //   return this.sensor24hAggregate.get(key);
   // }
