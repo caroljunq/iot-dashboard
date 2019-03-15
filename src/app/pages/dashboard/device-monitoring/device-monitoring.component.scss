@@ -18,24 +18,43 @@
   }
 
   nb-card{
-    max-height: 200px;
+    max-height: 250px;
   }
 
   .dev-val{
     color: nb-theme(color-fg-heading);
     font-family: nb-theme(font-secondary);
-    font-size: 3.2rem;
+    font-size: 2.2rem;
     font-weight: nb-theme(font-weight-bolder);
   }
 
   .dev-val-unit{
-    font-size: 2.1rem;
+    font-size: 1.3rem;
     font-weight: nb-theme(font-weight-light);
   }
 
   .dev-time{
     color: nb-theme(color-fg);
     font-weight: nb-theme(font-weight-light);
-    font-size: 1rem;
+    font-size: 0.9rem;
+  }
+
+  .top-down-values{
+    justify-content: center;
+    align-items: center;
+
+    & > div{
+      width: 8rem;
+      display: flex;
+      justify-content: space-between;
+      position: absolute;
+      bottom: 9px;
+
+      & > .values-range{
+        color: #a1a8af;
+      }
+      
+    }
   }
 }
+  

@@ -7,11 +7,13 @@ import { NbDialogService, NbDialogRef } from '@nebular/theme';
   template: `
     <nb-card accent="warning">
       <nb-card-body>
-        <nb-card class="status-card dialog">
-          <span class="desc-dialog">
-            Deseja <b>{{ value ? 'ligar' : 'desligar' }}</b> o dispositivo <b>{{ title }}</b>?
-          </span>
-        </nb-card>
+        <span class="desc-dialog">
+          Deseja <b>{{ value ? 'ligar' : 'desligar' }}</b> o dispositivo <b>{{ title }}</b>?
+        </span>
+        <div class="pass-input">
+          <label style="color: #a4abb3;">Password</label>
+          <input nbInput type="password" placeholder="Enter your password" fullWidth>
+        </div>
       </nb-card-body>
       <nb-card-footer>
         <button nbButton (click)="dialogRef.close(null)" status="warning">Cancelar</button>

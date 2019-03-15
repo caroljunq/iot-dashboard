@@ -1,8 +1,8 @@
 <div class="row config-line">
-  <div class="col-md-4 col-sm-6 col-12">
+  <div class="col-md-6 col-sm-6 col-12">
     <div class="form-group">
     <label>Room</label>
-    {{ (site$ | async)?.name }}
+    <span class="config-val">{{ (site$ | async)?.name }}</span>
   </div>
   </div>
   <div class="col-md-3 col-sm-3 col-6">
@@ -26,8 +26,9 @@
     </app-status-card>
   </div>
 </div>
-<div class="row" *ngIf="(site$ | async)?.sensorsArray?.length">
-  <div class="col-md-6 col-sm-6 col-xl-4" *ngFor="let sensor of (site$ | async)?.sensorsArray">
+
+<div class="sensors-items" *ngIf="(site$ | async)?.sensorsArray?.length">
+  <div class="sensor-item" *ngFor="let sensor of (site$ | async)?.sensorsArray">
     <app-device-monitoring
       [title]="sensor.location"
       [sensorData]="sensor.value$ | async"
