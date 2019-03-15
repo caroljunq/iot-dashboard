@@ -13,6 +13,7 @@ import { HistoricalDataComponent } from './historical-data.component';
     NbDialogModule.forChild(),
   ],
   declarations: [ HistoricalDataComponent ],
+  exports: [ HistoricalDataComponent ],
   entryComponents: [  ],
 })
 export class HistoricalDataModule { }

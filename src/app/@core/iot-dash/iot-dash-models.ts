@@ -11,6 +11,7 @@ export interface Device {
   max: number;
   min: number;
   value$?: Observable<TimedValue<number>>;
+  emiter?: (number) => any;
   aggregate$?: Observable<TimedAggregate>;
   chart$?: Observable<any>;
 }
@@ -21,6 +22,7 @@ export interface Site {
   actors: {[key: string]: Device};
   sensorsArray?: Device[];
   actorsArray?: Device[];
+  icon?: string;
 }
 
 export interface RootData {

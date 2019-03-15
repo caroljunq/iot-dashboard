@@ -1,26 +1,34 @@
-import { ExtraOptions, RouterModule, Routes } from '@angular/router';
+import { RouterModule, Routes } from '@angular/router';
 import { NgModule } from '@angular/core';
-import {
-  NbAuthComponent,
-  NbLoginComponent,
-  NbLogoutComponent,
-  NbRegisterComponent,
-  NbRequestPasswordComponent,
-  NbResetPasswordComponent,
-} from '@nebular/auth';
+import { DashboardComponent } from './pages/dashboard/dashboard.component';
+import { HistoricalDataComponent } from './pages/historical-data/historical-data.component';
+import { DashboardModule } from './pages/dashboard/dashboard.module';
+import { HistoricalDataModule } from './pages/historical-data/historical-data.module';
 
 const routes: Routes = [
-  { path: 'pages', loadChildren: 'app/pages/pages.module#PagesModule' },
-  { path: '', redirectTo: 'pages/iot-dashboard', pathMatch: 'full' },
-  { path: '**', redirectTo: 'pages/iot-dashboard' },
+  {
+    path: 'dashboard/:id',
+    component: DashboardComponent,
+  },
+  {
+    path: 'dashboard',
+    component: DashboardComponent,
+  },
+  {
+    path: 'historical-data',
+    component: HistoricalDataComponent,
+  },
+  { path: '', redirectTo: 'historical-data', pathMatch: 'full' },
+  { path: '**', redirectTo: 'historical-data' },
 ];
 
-const config: ExtraOptions = {
-  useHash: true,
-};
-
 @NgModule({
-  imports: [RouterModule.forRoot(routes, config)],
+  imports: [
+    // hash is required by firebase
+    RouterModule.forRoot(routes, {useHash: true}),
+    DashboardModule,
+    HistoricalDataModule,
+  ],
   exports: [RouterModule],
 })
 export class AppRoutingModule {

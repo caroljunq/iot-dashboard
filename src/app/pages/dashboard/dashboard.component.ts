@@ -1,11 +1,11 @@
-import { tap, filter } from 'rxjs/operators';
-import { LiveChartService } from './../../@core/iot-dash/live-chart.service';
-import { Component, OnDestroy, AfterViewInit, OnInit } from '@angular/core';
+import { Component, ChangeDetectionStrategy } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 import { NbThemeService } from '@nebular/theme';
+import { Observable, interval, combineLatest } from 'rxjs';
+import { tap, filter, switchMap, publishReplay, refCount, map } from 'rxjs/operators';
 
-import { Observable, Subscription, interval } from 'rxjs';
-import { takeWhile, map } from 'rxjs/operators' ;
 import { Site } from 'app/@core/iot-dash/iot-dash-models';
+import { LiveChartService } from 'app/@core/iot-dash/live-chart.service';
 import { FirebaseDatabaseService } from 'app/@core/iot-dash/firebase-database.service';
 
 interface CardSettings {
@@ -19,65 +19,38 @@ interface CardSettings {
   styleUrls: ['./dashboard.component.scss'],
   templateUrl: './dashboard.component.html',
 })
-export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
-  selectedRoom = null;
-  themeSubscription: Subscription;
-  colors: {};
-  echarts: {};
-  sites$: Observable<Site[]>;
+export class DashboardComponent {
+  site$: Observable<Site>;
   currentDate = interval(2000).pipe( map(() => Date.now()));
 
   constructor(
     private themeService: NbThemeService,
     private firebaseDatabaseService: FirebaseDatabaseService,
     private liveChartService: LiveChartService,
+    private route: ActivatedRoute,
   ) {
-    this.sites$ = this.firebaseDatabaseService.getSites().pipe(
-      map(sites => {
-        sites.forEach(site => site.sensorsArray.forEach(
-          sensor => {
-            sensor.value$ = this.firebaseDatabaseService.getSensorValue(sensor.key);
-            sensor.aggregate$ = this.firebaseDatabaseService.getSensor24hAggregate(sensor.key);
-            sensor.chart$ = this.liveChartService.getSensorsChart({
-              colors: this.colors,
-              echarts: this.echarts,
-              device: sensor,
-            });
-          },
-        ));
-        return sites;
-      }),
-      tap(res => this.selectedRoom = this.selectedRoom || res[0]),
+    this.site$ = combineLatest(
+      this.route.paramMap,
+      this.themeService.getJsTheme(),
+      this.firebaseDatabaseService.getSites(),
+    ).pipe(
+      map(params => ({
+        route: params[0],
+        theme: params[1],
+        sites: params[2],
+        site: params[2].find(site => site.key === params[0].get('id')),
+      })),
+      // tap(v => console.log(v)),
+      map(params => this.firebaseDatabaseService.loadSiteSensorData(
+        params.site,
+        this.liveChartService,
+        params.theme.variables,
+        params.theme.variables.echarts,
+      )),
+      publishReplay(),
+      refCount(),
+      filter(v => !!v),
     );
-    this.themeSubscription = this.themeService.getJsTheme().subscribe(theme => {
-      this.colors = theme.variables;
-      this.echarts = theme.variables.echarts;
-    });
-  }
-
-  ngOnInit() { }
-  ngOnDestroy() {
-    this.themeSubscription.unsubscribe();
-  }
-  ngAfterViewInit() { }
-
-  getSensorChart(sensor) {
-    return this.liveChartService.getSensorsChart({
-      colors: this.colors,
-      echarts: this.echarts,
-      device: sensor,
-    });
-  }
-
-  sensors = {};
-  getSensorValue(key: string) {
-    if (this.sensors[key] == null) {
-      this.sensors[key] = this.firebaseDatabaseService.getSensorValue(key);
-    }
-    return this.sensors[key];
-  }
-  getSensorAggregate(key: string) {
-    return this.firebaseDatabaseService.getSensor24hAggregate(key);
   }
 
   actors = {};
