@@ -6,9 +6,8 @@
   <nb-sidebar 
     class="menu-sidebar"
     tag="menu-sidebar"
-    responsive
-    [end]="sidebar.id === 'end'">
-    <nb-menu [items]="menu"></nb-menu>
+    responsive>
+    <nb-menu [items]="menu$ | async"></nb-menu>
   </nb-sidebar>
 
   <nb-layout-column class="main-content">

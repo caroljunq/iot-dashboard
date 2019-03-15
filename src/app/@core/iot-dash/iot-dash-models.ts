@@ -11,6 +11,7 @@ export interface Device {
   max: number;
   min: number;
   value$?: Observable<TimedValue<number>>;
+  emiter?: (number) => any;
   aggregate$?: Observable<TimedAggregate>;
   chart$?: Observable<any>;
 }

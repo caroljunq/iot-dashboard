@@ -2,9 +2,7 @@
   <div class="col-md-4 col-sm-6 col-12">
     <div class="form-group">
     <label>Room</label>
-    <select class="form-control" [(ngModel)]="selectedRoom">
-      <option *ngFor="let site of sites$ | async" [ngValue]="site">{{ site?.name }}</option>
-    </select>
+    {{ (site$ | async)?.name }}
   </div>
   </div>
   <div class="col-md-3 col-sm-3 col-6">
@@ -16,20 +14,20 @@
     <span class="config-val">{{ currentDate | async | date:'HH:mm' }}</span>
   </div>
 </div>
-<div class="row" *ngIf="selectedRoom?.actorsArray?.length">
-  <div class="col" *ngFor="let actor of selectedRoom.actorsArray">
+<div class="row" *ngIf="(site$ | async)?.actorsArray?.length">
+  <div class="col" *ngFor="let actor of (site$ | async)?.actorsArray">
     <app-status-card
       type="primary"
       [title]="actor.location"
-      [on]="(getActorValue(actor.key) | async)?.value"
-      (valueChange)="setActorValue(actor.key, $event)"
+      [on]="(actor.value$ | async)?.value"
+      (valueChange)="actor.emiter($event)"
       [iconClass]="actor.iconClass"
     >
     </app-status-card>
   </div>
 </div>
-<div class="row" *ngIf="selectedRoom?.sensorsArray?.length">
-  <div class="col-md-6 col-sm-6 col-xl-4" *ngFor="let sensor of selectedRoom?.sensorsArray">
+<div class="row" *ngIf="(site$ | async)?.sensorsArray?.length">
+  <div class="col-md-6 col-sm-6 col-xl-4" *ngFor="let sensor of (site$ | async)?.sensorsArray">
     <app-device-monitoring
       [title]="sensor.location"
       [sensorData]="sensor.value$ | async"
@@ -37,8 +35,8 @@
     ></app-device-monitoring>
   </div>
 </div>
-<div class="row" *ngIf="selectedRoom?.sensorsArray?.length">
-  <div class="col-md-12 col-sm-12" *ngFor="let sensor of selectedRoom?.sensorsArray">
+<div class="row" *ngIf="(site$ | async)?.sensorsArray?.length">
+  <div class="col-md-12 col-sm-12" *ngFor="let sensor of (site$ | async)?.sensorsArray">
     <nb-card>
       <nb-card-body>
         <div echarts [options]="sensor.chart$ | async" class="echart"></div>

@@ -24,7 +24,8 @@ const routes: Routes = [
 
 @NgModule({
   imports: [
-    RouterModule.forRoot(routes),
+    // hash is required by firebase
+    RouterModule.forRoot(routes, {useHash: true}),
     DashboardModule,
     HistoricalDataModule,
   ],

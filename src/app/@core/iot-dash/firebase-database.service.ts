@@ -1,9 +1,8 @@
 import { Injectable } from '@angular/core';
-
 import { database } from 'firebase/app';
 import { AngularFireDatabase } from '@angular/fire/database';
-import { Observable } from 'rxjs';
-import { map, filter, publishReplay, refCount, take } from 'rxjs/operators';
+import { Observable, of, Subject } from 'rxjs';
+import { map, filter, publishReplay, refCount, take, tap, timeout } from 'rxjs/operators';
 
 import { environment } from 'environments/environment';
 import { getSampleData } from './setup-dash';
@@ -15,9 +14,16 @@ import { LiveChartService } from './live-chart.service';
   providedIn: 'root',
 })
 export class FirebaseDatabaseService {
+  connectionSpeed = {
+    size: 0,
+    speed: 0,
+    time: 0,
+    related: 0,
+    isSlow: false,
+  };
+
   constructor(private angularFireDatabase: AngularFireDatabase) {
     if (!environment.production) {
-      // debugger;
       // this.angularFireDatabase.object('/').update(getSampleData());
       const randomValue = (sensor: Device) => setInterval(
         () => this.setSensorValue(sensor.key, Math.random() * 60 - 10).then(() => null),
@@ -33,38 +39,58 @@ export class FirebaseDatabaseService {
         );
       });
     }
+    const init = Date.now();
+    fetch('assets/images/speed-test.png').then(
+      response => (!response.ok ? null : response.blob()),
+    ).then(
+      b => {
+        const end = Date.now();
+        const size = b.size;
+        const time = end - init;
+        const speed = b.size / time;
+        const related = time / 16000;
+        // below 60fps
+        const isSlow = related > 1;
+        this.connectionSpeed = { size, time, speed, related, isSlow };
+      },
+    );
   }
 
-  getSites() {
-    return this.angularFireDatabase
-      .object<{ [key: string]: Site }>('sites')
-      .valueChanges()
-      .pipe(
-        // tap(v => console.log(v)),
-        map(value =>
-          Object.entries(value).map(
-            siteEntry =>
-              <Site>{
-                ...siteEntry[1],
-                key: siteEntry[0],
-                sensorsArray: Object.entries(siteEntry[1].sensors || {}).map(
-                  sensorEntry =>
-                    <Device>{
-                      key: sensorEntry[0],
-                      ...sensorEntry[1],
-                    },
-                ),
-                actorsArray: Object.entries(siteEntry[1].actors || {}).map(
-                  sensorEntry =>
-                    <Device>{
-                      key: sensorEntry[0],
-                      ...sensorEntry[1],
-                    },
-                ),
-              },
-          ),
+  sites$: Observable<Site[]>;
+  getSites(): Observable<Site[]> {
+    if (this.sites$) {
+      return this.sites$;
+    }
+    this.sites$ = this.angularFireDatabase.object<{ [key: string]: Site }>('sites').valueChanges().pipe(
+      map(value =>
+        Object.entries(value).map(
+          siteEntry =>
+            <Site>{
+              ...siteEntry[1],
+              key: siteEntry[0],
+              sensorsArray: Object.entries(siteEntry[1].sensors || {}).map(
+                sensorEntry =>
+                  <Device>{
+                    key: sensorEntry[0],
+                    ...sensorEntry[1],
+                  },
+              ),
+              actorsArray: Object.entries(siteEntry[1].actors || {}).map(
+                sensorEntry =>
+                  <Device>{
+                    key: sensorEntry[0],
+                    ...sensorEntry[1],
+                  },
+              ),
+            },
         ),
-      );
+      ),
+      // tap(v => console.log(v)),
+      publishReplay(),
+      refCount(),
+      filter(v => !!v),
+    );
+    return this.sites$;
   }
   getSensorSites(key: string): Observable<Device[]> {
     return this.angularFireDatabase.list<Device>(`sites/${key}/sensors`).valueChanges();
@@ -93,6 +119,21 @@ export class FirebaseDatabaseService {
     if (this.sensor24hAggregate.hasOwnProperty(key)) {
       return this.sensor24hAggregate[key];
     }
+    if (this.connectionSpeed.isSlow) {
+      this.sensor24hAggregate[key] = of<TimedAggregate>({
+        key,
+        max: 50,
+        min: -10,
+        avg: 25,
+        endTimeStamp: 0,
+        startTimeStamp: 0,
+        stdDev: 25,
+      }).pipe(
+        publishReplay(),
+        refCount(),
+      );
+      return this.sensor24hAggregate[key];
+    }
 
     const yesterday = new Date();
     yesterday.setDate(yesterday.getDate() - 1);
@@ -119,34 +160,52 @@ export class FirebaseDatabaseService {
       });
   }
 
-  setActorValue(key: string, value: boolean) {
+  setActorValue(key: string, value: any) {
     return this.angularFireDatabase
-      .list<TimedValue<boolean>>(`actorData/${key}`)
+      .list<TimedValue<any>>(`actorData/${key}`)
       .push({
         value,
         timestamp: <number>database.ServerValue.TIMESTAMP,
       });
   }
-  getActorValue(key: string): Observable<TimedValue<boolean>> {
-    return this.getLast<TimedValue<boolean>>(`actorData/${key}`).pipe(
+  getActorValue(key: string): Observable<TimedValue<any>> {
+    return this.getLast<TimedValue<any>>(`actorData/${key}`).pipe(
       map(list => list[0]),
       filter(value => value !== null && value !== undefined),
       map(timedValue => ({ ...timedValue, value: !!timedValue.value })),
     );
   }
 
-  loadSiteSensorData(sites: Site[], liveChartService: LiveChartService, colors, echarts): Site[] {
-    sites.forEach(site =>
-      site.sensorsArray.forEach(sensor => {
-        sensor.value$ = this.getSensorValue(sensor.key);
-        sensor.aggregate$ = this.getSensor24hAggregate(sensor.key);
-        sensor.chart$ = liveChartService.getSensorsChart({
-          colors: colors,
-          echarts: echarts,
-          device: sensor,
-        });
-      }),
-    );
+  loadSensorData(sensor: Device, liveChartService: LiveChartService, colors, echarts): Device {
+    if (!sensor.value$) {
+      sensor.value$ = this.getSensorValue(sensor.key);
+    }
+    if (!sensor.aggregate$) {
+      sensor.aggregate$ = this.getSensor24hAggregate(sensor.key);
+    }
+    if (!sensor.chart$) {
+      sensor.chart$ = liveChartService.getSensorsChart({
+        colors: colors,
+        echarts: echarts,
+        device: sensor,
+      });
+    }
+    return sensor;
+  }
+  loadSiteSensorData(site: Site, liveChartService: LiveChartService, colors, echarts): Site {
+    site.sensorsArray = site.sensorsArray.map(sensor => this.loadSensorData(sensor, liveChartService, colors, echarts));
+    site.actorsArray.forEach(actor => {
+      if (!actor.value$) {
+        actor.value$ = this.getActorValue(actor.key);
+      }
+      if (!actor.emiter) {
+        actor.emiter = (next) => this.setActorValue(actor.key, next);
+      }
+    });
+    return site;
+  }
+  loadSitesArraySensorData(sites: Site[], liveChartService: LiveChartService, colors, echarts): Site[] {
+    sites.forEach(site => this.loadSiteSensorData(site, liveChartService, colors, echarts));
     return sites;
   }
 }
