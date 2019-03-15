@@ -9,6 +9,7 @@ import { environment } from 'environments/environment';
 import { getSampleData } from './setup-dash';
 import { Site, Device, TimedValue, TimedAggregate } from './iot-dash-models';
 import { sensor24hourAggregate } from './sensor24hourAggregate';
+import { LiveChartService } from './live-chart.service';
 
 @Injectable({
   providedIn: 'root',
@@ -132,5 +133,20 @@ export class FirebaseDatabaseService {
       filter(value => value !== null && value !== undefined),
       map(timedValue => ({ ...timedValue, value: !!timedValue.value })),
     );
+  }
+
+  loadSiteSensorData(sites: Site[], liveChartService: LiveChartService, colors, echarts): Site[] {
+    sites.forEach(site =>
+      site.sensorsArray.forEach(sensor => {
+        sensor.value$ = this.getSensorValue(sensor.key);
+        sensor.aggregate$ = this.getSensor24hAggregate(sensor.key);
+        sensor.chart$ = liveChartService.getSensorsChart({
+          colors: colors,
+          echarts: echarts,
+          device: sensor,
+        });
+      }),
+    );
+    return sites;
   }
 }

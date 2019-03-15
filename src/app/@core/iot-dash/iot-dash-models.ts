@@ -21,6 +21,7 @@ export interface Site {
   actors: {[key: string]: Device};
   sensorsArray?: Device[];
   actorsArray?: Device[];
+  icon?: string;
 }
 
 export interface RootData {
