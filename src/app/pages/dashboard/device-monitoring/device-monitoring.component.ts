@@ -39,7 +39,6 @@ export class DeviceMonitoringComponent implements OnDestroy, AfterViewInit {
   ngAfterViewInit() {
     this.themeSubscription = this.theme.getJsTheme().subscribe(config => {
       this.colors = config.variables;
-      console.log(this.colors)
     });
   }
 

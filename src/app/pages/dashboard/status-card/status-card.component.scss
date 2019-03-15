@@ -34,7 +34,7 @@
       transform: translate3d(0, 0, 0);
       -webkit-transform-style: preserve-3d;
       -webkit-backface-visibility: hidden;
-      color: nb-theme(color-white);
+      color: #40dc7e;
 
       &.primary {
         @include btn-hero-primary-gradient();
@@ -102,18 +102,22 @@
     &.off {
       color: nb-theme(card-fg);
 
-      .icon {
+      .icon{
         color: nb-theme(card-fg);
-
-        &.primary, &.success, &.info, &.warning, &.danger {
-          box-shadow: none;
-          background-image: linear-gradient(to right, transparent, transparent);
-        }
-
-        &.secondary {
-          background: transparent;
-        }
       }
+
+      // .icon {
+      //   // color: nb-theme(card-fg);
+
+      //   // &.primary, &.success, &.info, &.warning, &.danger {
+      //   //   box-shadow: none;
+      //   //   background-image: linear-gradient(to right, transparent, transparent);
+      //   // }
+
+      //   // &.secondary {
+      //   //   background: transparent;
+      //   // }
+      // }
 
       .title {
         color: nb-theme(card-fg);

@@ -8,8 +8,8 @@ import { StatusCardDialogComponent } from './status-card-dialog.component';
   template: `
     <nb-card class="status-card" (click)="changeState()" [ngClass]="{'off': !on}">
       <div class="icon-container">
-        <div class="icon {{ type }}">
-          <i [ngClass]="iconClass"></i>
+        <div class="icon">
+          <i class="ion ion-power"></i>
         </div>
       </div>
       <div class="details">
