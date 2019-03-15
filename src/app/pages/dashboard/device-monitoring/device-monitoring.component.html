@@ -14,3 +14,8 @@
     </span>
   </nb-card-body>
 </nb-card>
+<mwl-gauge class="three" *ngIf="!!sensorAggregate && !!sensorData" [min]="sensorAggregate.min"
+[max]="sensorAggregate.max"
+[value]="sensorData.value">
+</mwl-gauge>
+ 

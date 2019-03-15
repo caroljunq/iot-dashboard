@@ -1,4 +1,5 @@
 import { NgModule } from '@angular/core';
+import { GaugeModule } from 'angular-gauge';
 
 import { NgxEchartsModule } from 'ngx-echarts';
 import { NbDialogModule } from '@nebular/theme';
@@ -11,18 +12,20 @@ import { RoomsComponent } from './rooms/rooms.component';
 import { RoomSelectorComponent } from './rooms/room-selector/room-selector.component';
 import { DeviceMonitoringComponent } from './device-monitoring/device-monitoring.component';
 
+
 @NgModule({
   imports: [
     ThemeModule,
     NgxEchartsModule,
     NbDialogModule.forChild(),
+    GaugeModule.forRoot()
   ],
   declarations: [
     DashboardComponent,
     StatusCardComponent, StatusCardDialogComponent,
     RoomSelectorComponent,
     DeviceMonitoringComponent,
-    RoomsComponent,
+    RoomsComponent
   ],
   entryComponents: [
     StatusCardDialogComponent,

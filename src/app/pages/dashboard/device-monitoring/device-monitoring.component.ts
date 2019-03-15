@@ -22,6 +22,16 @@ export class DeviceMonitoringComponent implements OnDestroy, AfterViewInit {
   colors;
   themeSubscription;
 
+  gaugeValues: any = {
+    1: 100,
+    2: 50,
+    3: 50,
+    4: 50,
+    5: 50,
+    6: 50,
+    7: 50
+  };
+
   constructor(
     private theme: NbThemeService,
   ) { }
@@ -29,6 +39,7 @@ export class DeviceMonitoringComponent implements OnDestroy, AfterViewInit {
   ngAfterViewInit() {
     this.themeSubscription = this.theme.getJsTheme().subscribe(config => {
       this.colors = config.variables;
+      console.log(this.colors)
     });
   }
 
