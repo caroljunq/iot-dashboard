@@ -1,6 +1,7 @@
 import * as functions from 'firebase-functions';
 import * as admin from 'firebase-admin';
-// import { sensor24hourAggregate } from '../../src/app/@core/iot-dash/sensor24hourAggregate';
+import { sensor24hourAggregate } from '../../src/app/@core/iot-dash/sensor24hourAggregate';
+import { TimedValue } from '../../src/app/@core/iot-dash/iot-dash-models';
 
 // Start writing Firebase Functions
 // https://firebase.google.com/docs/functions/typescript
@@ -11,6 +12,11 @@ import * as admin from 'firebase-admin';
 //   storageBucket: 'projectId.appspot.com',
 //   projectId: 'projectId'
 // }
+const serviceAccount = require('../../src/environments/secrets.luminous-fire-6577-da78feb8be71.json');
+admin.initializeApp({
+  credential: admin.credential.cert(serviceAccount),
+  databaseURL: "https://luminous-fire-6577.firebaseio.com"
+});
 
 function getSensorData(key: string) {
   const yesterday = new Date();
@@ -22,7 +28,12 @@ function getSensorData(key: string) {
 
 export const sensorAgg = functions.https.onRequest((req, resp) => {
   console.log({params: req.params, headers: req.headers});
-  getSensorData('jt9rhc34nyxnnabq17h').then(console.log).catch(console.log);
+  const key = 'jt9rhc34nyxnnabq17h';
+  getSensorData(key).then(snap => {
+    const timedValues: TimedValue<number>[] = snap.val();
+    const aggr = sensor24hourAggregate(key, timedValues);
+    console.log({snap, timedValues, aggr});
+  }).catch(console.log);
   return resp.send(JSON.stringify({msg: "Hello from Firebase!", params: req.params, headers: req.headers}));
 })
 

@@ -25,7 +25,7 @@
     "release:changelog": "npm run conventional-changelog -- -p angular -i CHANGELOG.md -s",
     "deploy": "firebase deploy --project luminous-fire-6577",
     "deploy:prod": "firebase deploy --project sala-tiv1",
-    "build:deploy": "npm run build:prod && npm run deploy",
+    "build:deploy": "ng build --aot && npm run deploy",
     "build:deploy:prod": "npm run build:prod && npm run deploy:prod"
   },
   "dependencies": {

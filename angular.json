@@ -3,7 +3,7 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "ngx-admin-demo": {
+    "crsup-iot-dashboard": {
       "root": "",
       "sourceRoot": "src",
       "projectType": "application",
@@ -69,24 +69,38 @@
                   "with": "src/environments/environment.prod.ts"
                 }
               ]
+            },
+            "sandbox": {
+              "optimization": true,
+              "outputHashing": "all",
+              "sourceMap": false,
+              "extractCss": true,
+              "namedChunks": false,
+              "aot": true,
+              "extractLicenses": true,
+              "vendorChunk": false,
+              "buildOptimizer": true
             }
           }
         },
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
           "options": {
-            "browserTarget": "ngx-admin-demo:build"
+            "browserTarget": "crsup-iot-dashboard:build"
           },
           "configurations": {
             "production": {
-              "browserTarget": "ngx-admin-demo:build:production"
+              "browserTarget": "crsup-iot-dashboard:build:production"
+            },
+            "sandbox": {
+              "browserTarget": "crsup-iot-dashboard:build:sandbox"
             }
           }
         },
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "ngx-admin-demo:build"
+            "browserTarget": "crsup-iot-dashboard:build"
           }
         },
         "test": {
@@ -143,7 +157,7 @@
         }
       }
     },
-    "ngx-admin-demo-e2e": {
+    "crsup-iot-dashboard-e2e": {
       "root": "",
       "sourceRoot": "",
       "projectType": "application",
@@ -152,7 +166,7 @@
           "builder": "@angular-devkit/build-angular:protractor",
           "options": {
             "protractorConfig": "./protractor.conf.js",
-            "devServerTarget": "ngx-admin-demo:serve"
+            "devServerTarget": "crsup-iot-dashboard:serve"
           }
         },
         "lint": {
@@ -167,14 +181,14 @@
       }
     }
   },
-  "defaultProject": "ngx-admin-demo",
+  "defaultProject": "crsup-iot-dashboard",
   "schematics": {
     "@schematics/angular:component": {
-      "prefix": "ngx",
+      "prefix": "app",
       "styleext": "scss"
     },
     "@schematics/angular:directive": {
-      "prefix": "ngx"
+      "prefix": "app"
     }
   }
 }
