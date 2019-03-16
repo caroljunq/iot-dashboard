@@ -8,6 +8,10 @@ export interface TimedValue<T> {
 export interface Device {
   key: string;
   location: string;
+  // Umidade: 20 - 80
+  // Temperatura: 15 - 25
+  type: string | 'Temperatura' | 'Umidade';
+  unit: string | 'ºC' | '%';
   max: number;
   min: number;
   value$?: Observable<TimedValue<number>>;

@@ -1,3 +1,4 @@
+import { Device } from 'app/@core/iot-dash/iot-dash-models';
 import { AngularFireDatabase } from 'angularfire2/database';
 import { Observable } from 'rxjs';
 import { single } from 'rxjs/operators';
@@ -19,7 +20,7 @@ function oneSixSixBits(): string {
   return (Date.now().toString(36) + Math.random().toString(36)).replace('0.', '');
 }
 
-export function getSampleData() {
+export function getSampleData(): RootData {
   const sampleData = {
     sites: {},
     sensorData: {},
@@ -31,18 +32,22 @@ export function getSampleData() {
     const siteSensors = {};
     for (let sensorIndex = 0; sensorIndex < 2 + getRandomInt(3); sensorIndex++) {
       const sensorKey = oneSixSixBits();
-      siteSensors[sensorKey] = {
+      const type = Math.random() > .5 ? 'Temperatura' : 'Umidade';
+      const device: Device = {
         key: sensorKey,
-        location: `Sensor #${sensorIndex}`,
-        max: 30,
-        min: 15,
+        type,
+        location: `${type} #${sensorIndex}`,
+        unit: type === 'Temperatura' ? 'ºC' : '%',
+        max: type === 'Temperatura' ? 25 : 80,
+        min: type === 'Temperatura' ? 15 : 20,
       };
+      siteSensors[sensorKey] = device;
       // fake reports
       sampleData.sensorData[sensorKey] = {};
       for (let i = 0; i < 10 + getRandomInt(10); i++) {
         sampleData.sensorData[sensorKey][oneSixSixBits()] = {
-          value: Math.random() * 60 - 10,
-          timestamp: Date.now() - getRandomInt(100),
+          value: Math.random() * (device.max - device.min) + device.min,
+          timestamp: Date.now() - getRandomInt(1000),
         };
       }
     }

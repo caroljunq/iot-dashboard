@@ -1,23 +1,23 @@
 <nb-card size="large">
   <nb-card-header>{{ title }}</nb-card-header>
   <nb-card-body>
-    <mwl-gauge class="gauge-chart" *ngIf="!!sensorAggregate && !!sensorData" [min]="sensorAggregate.min"
-      [max]="sensorAggregate.max"
+    <mwl-gauge class="gauge-chart" *ngIf="!!sensor && !!sensorData" [min]="sensor.min"
+      [max]="sensor.max"
       [value]="sensorData.value">
     </mwl-gauge>
     <span>
-      <span class="dev-val">{{ sensorData?.value | number: "1.1-1" }}</span><span class="dev-val-unit">{{ unit }}</span>
+      <span class="dev-val">{{ sensorData?.value | number: "1.1-1" }}</span><span class="dev-val-unit">{{ sensor?.unit }}</span>
     </span>
     <span class="dev-time">
-      {{ sensorData?.timestamp | date:'MMM dd y, HH:mm' }}
+      {{ sensorData?.timestamp | date:'dd MMM y' }}
+      <br>
+      {{ sensorData?.timestamp | date:'HH:mm:ss' }}
     </span>
     <div class="row top-down-values">
       <div>
-        <span class="values-range">{{ sensorAggregate?.min | number: "1.1-1" }}</span>
-        <span class="values-range">{{ sensorAggregate?.max | number: "1.1-1" }}</span>
-      </div>   
+        <span class="values-range">{{ sensor?.min | number: "1.1-1" }}</span>
+        <span class="values-range">{{ sensor?.max | number: "1.1-1" }}</span>
+      </div>
     </div>
   </nb-card-body>
 </nb-card>
-
-

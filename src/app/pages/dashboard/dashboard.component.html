@@ -32,7 +32,7 @@
     <app-device-monitoring
       [title]="sensor.location"
       [sensorData]="sensor.value$ | async"
-      [sensorAggregate]="sensor.aggregate$ | async"
+      [sensor]="sensor"
     ></app-device-monitoring>
   </div>
 </div>

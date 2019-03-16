@@ -16,16 +16,20 @@ export class FirebaseDatabaseService {
   constructor(protected angularFireDatabase: AngularFireDatabase) {
     if (!environment.production) {
       // this.angularFireDatabase.object('/').update(getSampleData());
-      const randomValue = (sensor: Device) => setInterval(
-        () => this.setSensorValue(sensor.key, Math.random() * 60 - 10).then(() => null),
-        100 * Math.floor(Math.random() * 10 + 10),
-      );
       const sub = this.angularFireDatabase.list<Site>('/sites').valueChanges().pipe(take(1)).subscribe(sampleData => {
         sub.unsubscribe();
         // update
         sampleData.forEach(
           site => Object.values(site.sensors).forEach(
-            sensor => randomValue(sensor),
+            (sensor: Device) => {
+              setInterval(
+                () => this.setSensorValue(
+                  sensor.key,
+                  Math.random() * (sensor.max - sensor.min) + sensor.min,
+                ).then(() => null),
+                100 * Math.floor(Math.random() * 10 + 10),
+              );
+            },
           ),
         );
       });
@@ -128,19 +132,24 @@ export class FirebaseDatabaseService {
     return sensor;
   }
   loadSiteSensorData(site: Site, liveChartService: LiveChartService, colors, echarts): Site {
-    site.sensorsArray = site.sensorsArray.map(sensor => this.loadSensorData(sensor, liveChartService, colors, echarts));
-    site.actorsArray.forEach(actor => {
+    if (!site) {
+      return site;
+    }
+    site.sensorsArray = (site.sensorsArray || []).map(
+      sensor => this.loadSensorData(sensor, liveChartService, colors, echarts),
+    );
+    site.actorsArray = (site.actorsArray || []).map(actor => {
       if (!actor.value$) {
         actor.value$ = this.getActorValue(actor.key);
       }
       if (!actor.emiter) {
         actor.emiter = (next) => this.setActorValue(actor.key, next);
       }
+      return actor;
     });
     return site;
   }
   loadSitesArraySensorData(sites: Site[], liveChartService: LiveChartService, colors, echarts): Site[] {
-    sites.forEach(site => this.loadSiteSensorData(site, liveChartService, colors, echarts));
-    return sites;
+    return sites.map(site => this.loadSiteSensorData(site, liveChartService, colors, echarts));
   }
 }
