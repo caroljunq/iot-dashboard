@@ -8,6 +8,7 @@ import { environment } from 'environments/environment';
 import { getSampleData } from './setup-dash';
 import { Site, Device, TimedValue } from './iot-dash-models';
 import { LiveChartService } from './live-chart.service';
+import { AngularFireFunctions } from '@angular/fire/functions';
 
 @Injectable({
   providedIn: 'root',

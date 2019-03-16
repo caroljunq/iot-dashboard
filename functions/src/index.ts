@@ -7,4 +7,4 @@
 //  response.send("Hello from Firebase!");
 // });
 
-export { sensorAggregate } from './sensor-aggregate';
+export { sensorAggregate, sensorAgg } from './sensor-aggregate';
