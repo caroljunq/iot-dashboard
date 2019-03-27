@@ -1,3 +1,29 @@
-<p>
-  user-edit works!
-</p>
+<nb-card>
+  <nb-card-header class="register-form-title">Register</nb-card-header>
+  <nb-card-body>
+    <div class="register-form row">
+      <div class="input-group col-12 col-sm-10 col-md-8 col-lg-6">
+        <label>Full name</label>
+        <input type="text" nbInput fullWidth placeholder="Full name">
+      </div>
+      <div class="input-group col-12 col-sm-10 col-md-8 col-lg-6">
+        <label>Email address</label>
+        <input type="text" nbInput fullWidth placeholder="Email">
+      </div>
+      <div class="input-group col-12 col-sm-10 col-md-8 col-lg-6">
+        <label>Password</label>
+        <input type="password" nbInput fullWidth placeholder="Password">
+      </div>
+      <div class="input-group col-12 col-sm-10 col-md-8 col-lg-6">
+        <label>Repeat password</label>
+        <input type="password" nbInput fullWidth placeholder="Confirm Password">
+      </div>
+      <div class="input-group col-12 col-sm-10 col-md-8 col-lg-6">
+        <nb-checkbox name="terms">Agree to <a href="#" class="terms-conditions">Terms & Conditions</a></nb-checkbox>
+      </div>
+      <div class="input-group col-12 col-sm-10 col-md-8 col-lg-6">
+        <button nbButton status="success" class="btn-success btn-full-width"  aria-disabled="false" tabindex="0" fullWidth> Register </button>
+      </div>
+    </div>
+  </nb-card-body>
+</nb-card>

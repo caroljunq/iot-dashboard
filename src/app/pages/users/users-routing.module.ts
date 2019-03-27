@@ -8,7 +8,7 @@ import { UserEditComponent } from './user-edit/user-edit.component';
 const routes: Routes = [
   { path: '', component: UsersListComponent, canActivate: [] },
   { path: 'login', component: LoginComponent, canActivate: [] },
-  { path: '{id}', component: UserEditComponent, canActivate: [] },
+  { path: 'cadastro', component: UserEditComponent, canActivate: [] },
 ];
 
 @NgModule({
