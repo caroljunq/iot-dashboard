@@ -1,14 +1,11 @@
-<p>
-  login works!
-</p>
 
-<div *ngIf="usersService.user | async; then authenticated else guest">
+<!-- <div *ngIf="usersService.user | async; then authenticated else guest"> -->
   <!-- template will replace this div -->
-</div>
+<!-- </div> -->
 
 
 <!-- User NOT logged in -->
-<ng-template #guest>
+<!-- <ng-template #guest>
 <h3>Howdy, GUEST</h3>
 <p>Login to get started...</p>
 
@@ -16,11 +13,11 @@
     <i class="fa fa-google"></i> Connect Google
 </button>
 
-</ng-template>
+</ng-template> -->
 
 
 <!-- User logged in -->
-<ng-template #authenticated>
+<!-- <ng-template #authenticated>
 <div *ngIf="usersService.user | async as user">
     <h3>Howdy, {{ user.displayName }}</h3>
     <img  [src]="user.photoURL">
@@ -29,3 +26,31 @@
     <button (click)="usersService.signOut()">Logout</button>
 </div>
 </ng-template>
+ -->
+
+ <nb-card>
+  <nb-card-header class="login-form-title">Login</nb-card-header>
+  <nb-card-body>
+    <div class="login-form row">
+      <div class="input-group col-12 col-sm-10 col-md-8 col-lg-6">
+        <label>Email</label>
+        <input type="text" nbInput fullWidth placeholder="Email">
+      </div>
+      <div class="input-group col-12 col-sm-10 col-md-8 col-lg-6">
+        <label>Password</label>
+        <input type="password" nbInput fullWidth placeholder="Password">
+      </div>
+      <div class="input-group col-12 col-sm-10 col-md-8 col-lg-6">
+        <button nbButton status="success" class="btn-success btn-full-width"  aria-disabled="false" tabindex="0" fullWidth> Sign In </button>
+      </div>
+      <section aria-label="Social sign in" class="links ng-star-inserted col-12 col-sm-10 col-md-8 col-lg-6"> 
+        <label>or enter with:</label>
+        <div class="socials">
+          <a href="" class="socicon-google with-icon ng-star-inserted"></a>
+        </div>
+      </section>
+    </div>
+  </nb-card-body>
+</nb-card>
+
+

@@ -1,0 +1,29 @@
+.input-group{
+  margin-bottom: 28px;
+}
+
+.login-form{
+  flex-direction: column;
+  align-items: center;
+}
+
+.login-form-title{
+  text-align: center;
+  font-size: 1.8rem;
+  margin-bottom: 15px;
+}
+
+.links{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+}
+
+.socials {
+  margin-top: 10px;
+  & >  a{
+    font-size: 1.6rem !important;
+    padding: .4rem;
+  }
+}
