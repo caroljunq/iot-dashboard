@@ -55,12 +55,6 @@ import {
   NumberWithCommasPipe,
   EvaIconsPipe,
 } from './pipes';
-import {
-  OneColumnLayoutComponent,
-  SampleLayoutComponent,
-  ThreeColumnsLayoutComponent,
-  TwoColumnsLayoutComponent,
-} from './layouts';
 import { DEFAULT_THEME } from './styles/theme.default';
 
 const BASE_MODULES = [CommonModule, FormsModule, ReactiveFormsModule];
@@ -106,10 +100,6 @@ const COMPONENTS = [
   FooterComponent,
   SearchInputComponent,
   TinyMCEComponent,
-  OneColumnLayoutComponent,
-  SampleLayoutComponent,
-  ThreeColumnsLayoutComponent,
-  TwoColumnsLayoutComponent,
   ToggleSettingsButtonComponent,
 ];
 
