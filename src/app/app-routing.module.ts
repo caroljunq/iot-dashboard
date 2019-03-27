@@ -7,6 +7,8 @@ import { DashboardModule } from './pages/dashboard/dashboard.module';
 import { HistoricalDataModule } from './pages/historical-data/historical-data.module';
 import { DashboardIdGuard } from './dashboard-id.guard';
 
+// import { UsersModule } from './pages/users/users.module';
+
 const routes: Routes = [
   { path: 'dashboard', redirectTo: 'dashboard/none', pathMatch: 'full' },
   {
@@ -17,6 +19,10 @@ const routes: Routes = [
   {
     path: 'historical-data',
     component: HistoricalDataComponent,
+  },
+  {
+    path: 'users',
+    loadChildren: './pages/users/users.module#UsersModule',
   },
   { path: '', redirectTo: 'dashboard/none', pathMatch: 'full' },
   { path: '**', redirectTo: 'dashboard' },

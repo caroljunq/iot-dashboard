@@ -7,6 +7,19 @@ import { StateService } from 'app/@core/utils';
 import { FirebaseDatabaseService } from 'app/@core/iot-dash/firebase-database.service';
 import { Site } from 'app/@core/iot-dash/iot-dash-models';
 
+const baseMenu = [
+  {
+    title: 'Historical Data',
+    icon: 'nb-bar-chart',
+    link: 'historical-data',
+  },
+  {
+    title: 'Users',
+    icon: 'ion-android-people',
+    link: 'users',
+  },
+];
+
 @Component({
   selector: 'app-app',
   templateUrl: 'app.component.html',
@@ -28,17 +41,9 @@ export class AppComponent {
           title: site.name || 'Dashboard',
           icon: site.icon || 'nb-home',
           link: 'dashboard/' + site.key,
-        })).concat([{
-          title: 'Historical Data',
-          icon: 'nb-bar-chart',
-          link: 'historical-data',
-        }]),
+        })).concat(baseMenu),
       ),
-      startWith([{
-        title: 'Historical Data',
-        icon: 'nb-bar-chart',
-        link: 'historical-data',
-      }]),
+      startWith(baseMenu),
     );
   }
 }
