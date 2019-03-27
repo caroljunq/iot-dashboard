@@ -1,16 +1,13 @@
-/**
- * @license
- * Copyright Akveo. All Rights Reserved.
- * Licensed under the MIT License. See License.txt in the project root for license information.
- */
 import { APP_BASE_HREF } from '@angular/common';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { NgModule } from '@angular/core';
 import { HttpClientModule } from '@angular/common/http';
+
 import { AngularFireModule } from '@angular/fire';
 import { AngularFireFunctionsModule, FunctionsRegionToken } from '@angular/fire/functions';
 import { AngularFireDatabaseModule } from '@angular/fire/database';
+import { AngularFireAuthModule } from '@angular/fire/auth';
 
 import { CoreModule } from './@core/core.module';
 import { AppComponent } from './app.component';
@@ -35,6 +32,7 @@ import { environment } from 'environments/environment';
     AngularFireModule.initializeApp(environment.firebase, 'iot-dash'),
     AngularFireDatabaseModule,
     AngularFireFunctionsModule,
+    AngularFireAuthModule,
   ],
   bootstrap: [AppComponent],
   providers: [
