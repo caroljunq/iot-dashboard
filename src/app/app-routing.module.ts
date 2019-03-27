@@ -7,18 +7,20 @@ import { DashboardModule } from './pages/dashboard/dashboard.module';
 import { HistoricalDataModule } from './pages/historical-data/historical-data.module';
 import { DashboardIdGuard } from './dashboard-id.guard';
 
+import { AuthGuard } from './pages/users/auth.guard';
 // import { UsersModule } from './pages/users/users.module';
 
 const routes: Routes = [
-  { path: 'dashboard', redirectTo: 'dashboard/none', pathMatch: 'full' },
+  { path: 'dashboard', redirectTo: 'dashboard/none', pathMatch: 'full', canActivate: [AuthGuard] },
   {
     path: 'dashboard/:id',
     component: DashboardComponent,
-    canActivate: [DashboardIdGuard],
+    canActivate: [AuthGuard, DashboardIdGuard],
   },
   {
     path: 'historical-data',
     component: HistoricalDataComponent,
+    canActivate: [AuthGuard],
   },
   {
     path: 'users',
