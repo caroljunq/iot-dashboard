@@ -28,7 +28,7 @@
  -->
 
  <nb-card>
-  <nb-card-header class="login-form-title">{{ !passForgot ? "Login": "Forgot Password" }}</nb-card-header>
+  <nb-card-header class="login-form-title">{{ !passForgot ? "Log In": "Forgot Password" }}</nb-card-header>
   <nb-card-body>
     <div class="login-form row">
       <span class="col-12 col-sm-10 col-md-8 col-lg-6 form-descrip" *ngIf="passForgot">Enter your email address and we’ll send a link to reset your password.</span>
@@ -59,6 +59,7 @@
         <span (click)="changeForgotBtn()">Back to Log In</span>
         <span [routerLink]="['/users/register']">Register</span>
       </section>
+      <span class="col-sm-12 col-md-3 register-from-login " *ngIf="!passForgot">Don't have an account? <span [routerLink]="['/users/register']">Register</span></span>
     </div>
   </nb-card-body>
 </nb-card>

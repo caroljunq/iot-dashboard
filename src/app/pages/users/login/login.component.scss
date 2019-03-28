@@ -62,3 +62,18 @@
     cursor: pointer;
   }
 }
+
+.register-from-login{
+  text-align: center;
+  margin-top: 15px;
+
+  & > span{
+    color: #a4abb3;
+    font-weight: 600;
+  }
+
+  & > span:hover{
+    text-decoration: underline;
+    cursor: pointer;
+  }
+}
