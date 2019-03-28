@@ -58,3 +58,55 @@ mwl-gauge.gauge-chart {
     display: none !important;
   }
 }
+
+// custom form
+.custom-form{
+  flex-direction: column;
+  align-items: center;
+
+  .input-group{
+    margin-bottom: 28px;
+  }
+  
+  .space-bt{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .socials {
+    margin-top: 10px;
+    & >  a{
+      font-size: 1.6rem !important;
+      padding: .4rem;
+    }
+  }
+
+  .links{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+  }
+
+  .footer-msg-return{
+    text-align: center;
+    margin-top: 15px;
+
+    span{
+      color: #a4abb3;
+      font-weight: 600;
+    }
+
+    span:hover{
+      text-decoration: underline;
+      cursor: pointer;
+    }
+  }
+}
+
+.custom-form-title{
+  text-align: center !important;
+  font-size: 1.8rem !important;
+  margin-bottom: 15px !important;
+}

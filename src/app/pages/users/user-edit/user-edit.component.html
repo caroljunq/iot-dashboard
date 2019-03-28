@@ -1,7 +1,7 @@
 <nb-card>
-  <nb-card-header class="register-form-title">Register</nb-card-header>
+  <nb-card-header class="custom-form-title">Register</nb-card-header>
   <nb-card-body>
-    <div class="register-form row">
+    <div class="custom-form row">
       <div class="input-group col-12 col-sm-10 col-md-8 col-lg-6">
         <label>Full name</label>
         <input type="text" nbInput fullWidth placeholder="Full name">
@@ -30,6 +30,7 @@
           <a href="" target="_blank" class="socicon-google with-icon ng-star-inserted"></a>
         </div>
       </section>
+      <span class="col-sm-12 col-md-3 footer-msg-return">Already have an account? <span [routerLink]="['/users/login']">Log in</span></span>
     </div>
   </nb-card-body>
 </nb-card>

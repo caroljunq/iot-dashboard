@@ -1,7 +1,7 @@
 <nb-card>
-  <nb-card-header class="login-form-title">{{ !passForgot ? "Login": "Forgot Password" }}</nb-card-header>
+  <nb-card-header class="custom-form-title">{{ !passForgot ? "Log In": "Forgot Password" }}</nb-card-header>
   <nb-card-body>
-    <div class="login-form row">
+    <div class="custom-form row">
       <span class="col-12 col-sm-10 col-md-8 col-lg-6 form-descrip" *ngIf="passForgot">Enter your email address and we’ll send a link to reset your password.</span>
       <div class="input-group col-12 col-sm-10 col-md-8 col-lg-6">
         <label>Email</label>
@@ -12,15 +12,18 @@
           <label>Password</label>
           <input type="password" nbInput fullWidth placeholder="Password">
         </div>
-        <div class="input-group col-12 col-sm-10 col-md-8 col-lg-6 footer-forgot">
+        <!-- <div class="input-group col-12 col-sm-10 col-md-8 col-lg-6 space-bt">
           <nb-checkbox name="remember">Remember Me</nb-checkbox>
           <span (click)="changeForgotBtn()" class="forget-button">Forgot Password?</span>
-        </div>
+        </div> -->
       </ng-container>
       <div class="input-group col-12 col-sm-10 col-md-8 col-lg-6">
         <button nbButton status="success" class="btn-success btn-full-width" aria-disabled="false" tabindex="0" fullWidth (click)="googleLogin()">
           {{ !passForgot ? "Sign In": "Request Password" }}
         </button>
+      </div>
+      <div class="forgot-button row col-12 col-sm-10 col-md-8 col-lg-6" *ngIf="!passForgot">
+        <span (click)="changeForgotBtn()">Forgot Password?</span>
       </div>
       <section aria-label="Social sign in" class="links ng-star-inserted col-12 col-sm-10 col-md-8 col-lg-6" *ngIf="!passForgot"> 
         <label>or enter with:</label>
@@ -32,6 +35,7 @@
         <span (click)="changeForgotBtn()">Back to Log In</span>
         <span [routerLink]="['/users/register']">Register</span>
       </section>
+      <span class="col-sm-12 col-md-3 footer-msg-return" *ngIf="!passForgot">Don't have an account? <span [routerLink]="['/users/register']">Register</span></span>
     </div>
   </nb-card-body>
 </nb-card>
