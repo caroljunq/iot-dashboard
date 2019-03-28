@@ -1,7 +1,7 @@
 import { Router } from '@angular/router';
 import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
-import { switchMap, map, tap, shareReplay, distinctUntilChanged, take } from 'rxjs/operators';
+import { switchMap, map, tap, shareReplay, distinctUntilChanged, take, startWith } from 'rxjs/operators';
 import { AngularFireDatabase } from '@angular/fire/database';
 import { AngularFireAuth } from '@angular/fire/auth';
 import { auth } from 'firebase/app';
@@ -126,5 +126,30 @@ export class UsersService {
 
   signOut() {
     this.angularFireAuth.auth.signOut().then(() => this.router.navigate(['/']));
+  }
+
+  getUsersList(): Observable<StoredUser[]> {
+    return this.user$.pipe(
+      switchMap(user => {
+        if (!user.storedUser.isAdmin) {
+          return of([user.storedUser]);
+        }
+        return this.angularFireDatabase.list<StoredUser>(`users`).valueChanges().pipe(
+          map(
+            list => list.map(item => ({
+              ...item,
+              isCurrentUser: item.uid === user.storedUser.uid,
+            })).sort((a, b) => {
+              if (a.isCurrentUser) return -1;
+              if (b.isCurrentUser) return 1;
+              if (a.isValid && !b.isValid) return -1;
+              if (!a.isValid && b.isValid) return 1;
+              return a.displayName.localeCompare(b.displayName);
+            }),
+          ),
+          startWith([user.storedUser]),
+        );
+      }),
+    );
   }
 }

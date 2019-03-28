@@ -13,4 +13,5 @@ export interface StoredUser {
   email?: string;
   isValid?: boolean;
   isAdmin?: boolean;
+  isCurrentUser?: boolean;
 }
