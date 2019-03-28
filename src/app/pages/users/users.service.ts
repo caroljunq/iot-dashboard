@@ -43,7 +43,6 @@ export class UsersService {
     //// Get auth data, then get firestore user document || null
     this.user$ = this.getUser();
     this.role$ = this.user$.pipe(
-      tap(console.log),
       map(user => {
         if (!user) {
           return 'anom';
@@ -56,7 +55,7 @@ export class UsersService {
         }
         return 'guest';
       }),
-      tap(console.log),
+      // tap(console.log),
     );
   }
 
