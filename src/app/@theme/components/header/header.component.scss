@@ -2,6 +2,10 @@
 @import '~bootstrap/scss/mixins/breakpoints';
 @import '~@nebular/theme/styles/global/breakpoints';
 
+
+nb-action {
+  cursor: pointer,
+}
 @include nb-install-component() {
   display: flex;
   justify-content: space-between;

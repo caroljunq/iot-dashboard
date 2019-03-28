@@ -11,5 +11,6 @@ export interface StoredUser {
   photoURL: string;
   name?: string;
   email?: string;
+  isValid?: boolean;
   isAdmin?: boolean;
 }

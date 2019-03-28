@@ -28,13 +28,13 @@ export class AuthGuard implements CanActivate, CanActivateChild, CanLoad {
   canActivate(
     next: ActivatedRouteSnapshot,
     state: RouterStateSnapshot): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree {
-    console.count('AuthGuard, canActivate');
+    // console.count('AuthGuard, canActivate');
     return this.usersService.user$.pipe(
       take(1),
       map(user => !!user),
       tap(loggedIn => {
         if (!loggedIn) {
-          console.log('access denied');
+          // console.log('access denied');
           this.router.navigate(['/users/login']);
         }
       }),
