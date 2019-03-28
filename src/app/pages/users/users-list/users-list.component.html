@@ -1,7 +1,7 @@
 <nb-card *ngFor="let user of users$ | async">
   <nb-card-body class="row">
     <!-- size="small" "large" "large" "xlarge" -->
-    <div class="col-xs-12 col-sm-4">
+    <div class="col-xs-12 col-sm-3">
       <nb-user
       size="large"
       [badgeStatus]="user.badgeStatus"
@@ -12,15 +12,20 @@
       [picture]="user.photoURL"
       ></nb-user>
     </div>
-    <div class="col-xs-12 col-sm-4">
-      <button nbButton size="xsmall" status="success" (click)="chageActive(user, !user.isValid)">
-        {{ !user.isValid ? "Ativar": "Desativar" }}
-      </button>
-    </div>
-    <div class="col-xs-12 col-sm-4">
-      <button nbButton size="xsmall" status="primary" (click)="chageAdmin(user, !user.isAdmin)">
-        {{ !user.isAdmin ? "Promover a Administrador": "Remover Administrador" }}
-      </button>
+    <ng-container *nbIsGranted="['edit', 'admin']">
+      <div class="col-xs-12 col-sm-3">
+        <button nbButton size="xsmall" status="success" (click)="chageActive(user, !user.isValid)">
+          {{ !user.isValid ? "Ativar": "Desativar" }}
+        </button>
+      </div>
+      <div class="col-xs-12 col-sm-3">
+        <button nbButton size="xsmall" status="primary" (click)="chageAdmin(user, !user.isAdmin)">
+          {{ !user.isAdmin ? "Promover a Administrador": "Remover Administrador" }}
+        </button>
+      </div>
+    </ng-container>
+    <div class="col-xs-12 col-sm-3" *nbIsGranted="['edit', 'user']">
+      <a [routerLink]="['/users', user.uid]">Edit</a>
     </div>
   </nb-card-body>
 </nb-card>

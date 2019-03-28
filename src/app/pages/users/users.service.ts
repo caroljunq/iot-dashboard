@@ -18,6 +18,7 @@ export const ACL = {
   },
   user: {
     view: '*',
+    edit: 'user',
   },
   admin: {
     parent: 'user',
@@ -120,6 +121,23 @@ export class UsersService {
     return userRef.set(user);
   }
   updateUser(user: StoredUser): Promise<void> {
+    // const allowedFields = [ 'uid', 'displayName', 'photoURL', 'name', 'email', 'isValid', 'isAdmin'];
+    // user = <StoredUser>Object.entries(user).map(
+    //   i => ({k: i[0], v: i[1]}),
+    // ).filter(
+    //   i => allowedFields.includes(i.k)
+    // ).reduce(
+    //   (acc, i) => ({...acc, [i.k]: i.v}),
+    //   {},
+    // );
+    user = {
+      'uid': user.uid || '',
+      'displayName': user.displayName || '',
+      'photoURL': user.photoURL || '',
+      'email': user.email || '',
+      'isValid': user.isValid || false,
+      'isAdmin': user.isAdmin || false,
+    };
     const userRef = this.angularFireDatabase.object<StoredUser>(`users/${user.uid}`);
     return userRef.update(user);
   }
@@ -131,6 +149,9 @@ export class UsersService {
   getUsersList(): Observable<StoredUser[]> {
     return this.user$.pipe(
       switchMap(user => {
+        if (!user) {
+          return of([]);
+        }
         if (!user.storedUser.isAdmin) {
           return of([user.storedUser]);
         }

@@ -25,17 +25,19 @@
       <div class="forgot-button row col-12 col-sm-10 col-md-8 col-lg-6" *ngIf="!passForgot">
         <span (click)="changeForgotBtn()">Forgot Password?</span>
       </div>
-      <section aria-label="Social sign in" class="links ng-star-inserted col-12 col-sm-10 col-md-8 col-lg-6" *ngIf="!passForgot"> 
+      <section aria-label="Social sign in" class="links col-12 col-sm-10 col-md-8 col-lg-6" *ngIf="!passForgot"> 
         <label>or enter with:</label>
         <div class="socials">
-          <a (click)="googleLogin()" class="socicon-google with-icon ng-star-inserted"></a>
+          <button nbButton outline status="success" size="large" class="btn-success" (click)="googleLogin()">
+            <i class="socicon-google with-icon"></i>
+          </button>
         </div>
       </section>
       <section class="col-12 col-sm-10 col-md-8 col-lg-6 return-btns" *ngIf="passForgot">
         <span (click)="changeForgotBtn()">Back to Log In</span>
         <span [routerLink]="['/users/register']">Register</span>
       </section>
-      <span class="col-sm-12 col-md-3 footer-msg-return" *ngIf="!passForgot">Don't have an account? <span [routerLink]="['/users/register']">Register</span></span>
+      <span class="col-sm-12 col-md-3 footer-msg-return" *ngIf="!passForgot">Don't have an account? <a [routerLink]="['/users/register']">Register</a></span>
     </div>
   </nb-card-body>
 </nb-card>
