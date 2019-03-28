@@ -1,7 +1,6 @@
 
 <!-- <div *ngIf="usersService.user | async; then authenticated else guest"> -->
-  <!-- template will replace this div -->
-<!-- </div> -->
+  
 
 
 <!-- User NOT logged in -->
@@ -29,25 +28,36 @@
  -->
 
  <nb-card>
-  <nb-card-header class="login-form-title">Login</nb-card-header>
+  <nb-card-header class="login-form-title">{{ !passForgot ? "Login": "Forgot Password" }}</nb-card-header>
   <nb-card-body>
     <div class="login-form row">
+      <span class="col-12 col-sm-10 col-md-8 col-lg-6 form-descrip" *ngIf="passForgot">Enter your email address and we’ll send a link to reset your password.</span>
       <div class="input-group col-12 col-sm-10 col-md-8 col-lg-6">
         <label>Email</label>
         <input type="text" nbInput fullWidth placeholder="Email">
       </div>
+      <ng-container *ngIf="!passForgot">
+        <div class="input-group col-12 col-sm-10 col-md-8 col-lg-6">
+          <label>Password</label>
+          <input type="password" nbInput fullWidth placeholder="Password">
+        </div>
+        <div class="input-group col-12 col-sm-10 col-md-8 col-lg-6 footer-forgot">
+          <nb-checkbox name="remember">Remember Me</nb-checkbox>
+          <span (click)="changeForgotBtn()" class="forget-button">Forgot Password?</span>
+        </div>
+      </ng-container>
       <div class="input-group col-12 col-sm-10 col-md-8 col-lg-6">
-        <label>Password</label>
-        <input type="password" nbInput fullWidth placeholder="Password">
+        <button nbButton status="success" class="btn-success btn-full-width"  aria-disabled="false" tabindex="0" fullWidth (click)="usersService.googleLogin()"> {{ !passForgot ? "Sign In": "Request Password" }} </button>
       </div>
-      <div class="input-group col-12 col-sm-10 col-md-8 col-lg-6">
-        <button nbButton status="success" class="btn-success btn-full-width"  aria-disabled="false" tabindex="0" fullWidth (click)="usersService.googleLogin()"> Sign In </button>
-      </div>
-      <section aria-label="Social sign in" class="links ng-star-inserted col-12 col-sm-10 col-md-8 col-lg-6"> 
+      <section aria-label="Social sign in" class="links ng-star-inserted col-12 col-sm-10 col-md-8 col-lg-6" *ngIf="!passForgot"> 
         <label>or enter with:</label>
         <div class="socials">
           <a href="" class="socicon-google with-icon ng-star-inserted"></a>
         </div>
+      </section>
+      <section class="col-12 col-sm-10 col-md-8 col-lg-6 return-btns" *ngIf="passForgot">
+        <span (click)="changeForgotBtn()">Back to Log In</span>
+        <span [routerLink]="['/users/register']">Register</span>
       </section>
     </div>
   </nb-card-body>
