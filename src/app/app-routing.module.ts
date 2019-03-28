@@ -5,6 +5,7 @@ import { DashboardComponent } from './pages/dashboard/dashboard.component';
 import { HistoricalDataComponent } from './pages/historical-data/historical-data.component';
 import { DashboardModule } from './pages/dashboard/dashboard.module';
 import { HistoricalDataModule } from './pages/historical-data/historical-data.module';
+import { RoomEditModule } from './pages/room-edit/room-edit.module';
 import { DashboardIdGuard } from './dashboard-id.guard';
 
 import { AuthGuard } from './pages/users/auth.guard';
@@ -26,6 +27,10 @@ const routes: Routes = [
     path: 'users',
     loadChildren: './pages/users/users.module#UsersModule',
   },
+  {
+    path: 'rooms',
+    loadChildren: './pages/room-edit/room-edit.module#RoomEditModule',
+  },
   { path: '', redirectTo: 'dashboard/none', pathMatch: 'full' },
   { path: '**', redirectTo: 'dashboard' },
 ];
@@ -36,6 +41,7 @@ const routes: Routes = [
     RouterModule.forRoot(routes, {enableTracing: false, useHash: false}),
     DashboardModule,
     HistoricalDataModule,
+    RoomEditModule 
   ],
   exports: [RouterModule],
 })
