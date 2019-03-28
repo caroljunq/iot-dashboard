@@ -13,7 +13,7 @@ import { ThemeModule } from '../../@theme/theme.module';
   imports: [
     CommonModule,
     UsersRoutingModule,
-    ThemeModule
+    ThemeModule,
   ],
 })
 export class UsersModule { }

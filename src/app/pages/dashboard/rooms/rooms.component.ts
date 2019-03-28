@@ -2,7 +2,7 @@ import { Component, HostBinding, OnDestroy } from '@angular/core';
 import { NbThemeService, NbMediaBreakpoint, NbMediaBreakpointsService } from '@nebular/theme';
 
 @Component({
-  selector: 'ngx-rooms',
+  selector: 'app-rooms',
   styleUrls: ['./rooms.component.scss'],
   template: `
     <nb-card [size]="breakpoint.width >= breakpoints.sm ? 'large' : 'medium'">

@@ -44,8 +44,8 @@ export class HeaderComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.userSub$ = this.usersService.user$.pipe(takeWhile(() => this.active)).subscribe(user => {
       if (!user) {
-        this.user = { name: 'Anon Obscurus', picture: 'assets/images/nick.png' };
-        this.userMenu = [];
+        this.user = null;
+        this.userMenu = null;
         return;
       }
       this.profileMenu.link = `/users/${user.authUser.uid}`;

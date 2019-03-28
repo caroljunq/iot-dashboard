@@ -1,33 +1,4 @@
-
-<!-- <div *ngIf="usersService.user | async; then authenticated else guest"> -->
-  
-
-
-<!-- User NOT logged in -->
-<!-- <ng-template #guest>
-<h3>Howdy, GUEST</h3>
-<p>Login to get started...</p>
-
-<button (click)="usersService.googleLogin()">
-    <i class="fa fa-google"></i> Connect Google
-</button>
-
-</ng-template> -->
-
-
-<!-- User logged in -->
-<!-- <ng-template #authenticated>
-<div *ngIf="usersService.user | async as user">
-    <h3>Howdy, {{ user.displayName }}</h3>
-    <img  [src]="user.photoURL">
-    <p>UID: {{ user.uid }}</p>
-    <p>Favorite Color: {{ user?.favoriteColor }} </p>
-    <button (click)="usersService.signOut()">Logout</button>
-</div>
-</ng-template>
- -->
-
- <nb-card>
+<nb-card>
   <nb-card-header class="login-form-title">{{ !passForgot ? "Login": "Forgot Password" }}</nb-card-header>
   <nb-card-body>
     <div class="login-form row">
@@ -47,12 +18,14 @@
         </div>
       </ng-container>
       <div class="input-group col-12 col-sm-10 col-md-8 col-lg-6">
-        <button nbButton status="success" class="btn-success btn-full-width"  aria-disabled="false" tabindex="0" fullWidth (click)="usersService.googleLogin()"> {{ !passForgot ? "Sign In": "Request Password" }} </button>
+        <button nbButton status="success" class="btn-success btn-full-width" aria-disabled="false" tabindex="0" fullWidth (click)="googleLogin()">
+          {{ !passForgot ? "Sign In": "Request Password" }}
+        </button>
       </div>
       <section aria-label="Social sign in" class="links ng-star-inserted col-12 col-sm-10 col-md-8 col-lg-6" *ngIf="!passForgot"> 
         <label>or enter with:</label>
         <div class="socials">
-          <a href="" class="socicon-google with-icon ng-star-inserted"></a>
+          <a (click)="googleLogin()" class="socicon-google with-icon ng-star-inserted"></a>
         </div>
       </section>
       <section class="col-12 col-sm-10 col-md-8 col-lg-6 return-btns" *ngIf="passForgot">
@@ -62,5 +35,3 @@
     </div>
   </nb-card-body>
 </nb-card>
-
-

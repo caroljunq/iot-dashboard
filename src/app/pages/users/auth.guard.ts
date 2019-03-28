@@ -13,6 +13,7 @@ import {
 import { Observable } from 'rxjs';
 import { take, map, tap } from 'rxjs/operators';
 
+import { LoginComponent } from './login/login.component';
 import { UsersService } from './users.service';
 
 @Injectable({
@@ -27,17 +28,26 @@ export class AuthGuard implements CanActivate, CanActivateChild, CanLoad {
 
   canActivate(
     next: ActivatedRouteSnapshot,
-    state: RouterStateSnapshot): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree {
-    // console.count('AuthGuard, canActivate');
+    state: RouterStateSnapshot,
+  ): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree {
+    // console.log(`[canActivate] url: '${state.url}', component: '${(<Function>next.component).name}',`,
     return this.usersService.user$.pipe(
       take(1),
-      map(user => !!user),
-      tap(loggedIn => {
-        if (!loggedIn) {
-          // console.log('access denied');
-          this.router.navigate(['/users/login']);
+      // tap((v) => console.log(`[canActivate] user: '${user}', component: '${(<Function>next.component).name}',`,),
+      map(user => {
+        if (next.component === LoginComponent) {
+          if (user) {
+            return this.router.parseUrl('/');
+          } else {
+            return true;
+          }
         }
+        if (!user) {
+          return this.router.parseUrl('/users/login');
+        }
+        return true;
       }),
+      // tap((v) => console.log(`[canActivate] => '${v}'`)),
     );
   }
   canActivateChild(

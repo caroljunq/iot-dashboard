@@ -1,7 +1,7 @@
 import { Router } from '@angular/router';
 import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
-import { switchMap, map, tap } from 'rxjs/operators';
+import { switchMap, map, tap, shareReplay, distinctUntilChanged } from 'rxjs/operators';
 import { AngularFireDatabase } from '@angular/fire/database';
 import { AngularFireAuth } from '@angular/fire/auth';
 import { auth } from 'firebase/app';
@@ -31,17 +31,31 @@ export const ACL = {
   providedIn: 'root',
 })
 export class UsersService {
-
   user$: Observable<DashUser>;
   role$: Observable<string | string[]>;
 
   constructor(
     protected angularFireDatabase: AngularFireDatabase,
     protected angularFireAuth: AngularFireAuth,
-    private router: Router,
+    protected router: Router,
   ) {
-    //// Get auth data, then get firestore user document || null
-    this.user$ = this.getUser();
+    this.user$ = this.angularFireAuth.authState.pipe(
+      // tap(v => console.log('[UsersService] authState', v)),
+      switchMap((authUser: firebase.User) => {
+        if (!authUser) {
+          return of(null);
+        }
+        return this.angularFireDatabase.object(`users/${authUser.uid}`).valueChanges().pipe(
+          map((storedUser: StoredUser) => ({
+            storedUser,
+            authUser,
+          })),
+        );
+      }),
+      distinctUntilChanged(),
+      // tap(v => console.log('[UsersService] user$', v)),
+      shareReplay(1),
+    );
     this.role$ = this.user$.pipe(
       map(user => {
         if (!user) {
@@ -55,23 +69,11 @@ export class UsersService {
         }
         return 'guest';
       }),
-      // tap(console.log),
     );
   }
 
-  private getUser(): Observable<DashUser> {
-    return this.angularFireAuth.authState.pipe(switchMap((authUser: firebase.User) => {
-      if (!authUser) {
-        return of(null);
-      }
-      // return this.afs.doc<DashUser>(`users/${user.uid}`).valueChanges()
-      return this.angularFireDatabase.object(`users/${authUser.uid}`).valueChanges().pipe(
-        map((storedUser: StoredUser) => ({
-          storedUser,
-          authUser,
-        })),
-      );
-    }));
+  getUser(id: string): Observable<StoredUser> {
+    return this.angularFireDatabase.object<StoredUser>(`users/${id}`).valueChanges();
   }
   getRole(): Observable<string | string[]> {
     return this.role$;
@@ -81,28 +83,39 @@ export class UsersService {
     return this.oAuthLogin(new auth.GoogleAuthProvider());
   }
 
-  private oAuthLogin(provider: auth.AuthProvider): Promise<void> {
-    return this.angularFireAuth.auth.signInWithPopup(provider).then((credential) => {
-      const userRef = this.angularFireDatabase.object<StoredUser>(`users/${credential.user.uid}`);
-
-      const data: StoredUser = {
+  protected async oAuthLogin(provider: auth.AuthProvider): Promise<void> {
+    try {
+      const credential = await this.angularFireAuth.auth.signInWithPopup(provider);
+      const baseStoreUser: StoredUser = {
         uid: credential.user.uid,
         email: credential.user.email,
         displayName: credential.user.displayName,
         photoURL: credential.user.photoURL,
-        isAdmin: false,
-        isValid: false,
       };
-
-      return userRef.set(data);
-    });
+      const userRef = this.angularFireDatabase.object<StoredUser>(`users/${credential.user.uid}`);
+      const storedUser = await userRef.valueChanges().toPromise();
+      if (storedUser) {
+        await userRef.update(baseStoreUser);
+      } else {
+        await userRef.set({
+          ...baseStoreUser,
+          isAdmin: false,
+          isValid: false,
+        });
+      }
+      return Promise.resolve();
+    } catch (e) {
+      return Promise.reject();
+    } finally {
+      // console.log('[UsersService] End oAuthLogin');
+    }
   }
 
-  updateUserData(user: DashUser): Promise<void> {
+  updateUser(user: StoredUser): Promise<void> {
     // Sets user data to firestore on login
     // const userRef: AngularFirestoreDocument<any> = this.afs.doc(`users/${user.uid}`);
-    const userRef = this.angularFireDatabase.object(`users/${user.authUser.uid}`);
-    return userRef.update(user.storedUser);
+    const userRef = this.angularFireDatabase.object<StoredUser>(`users/${user.uid}`);
+    return userRef.update(user);
   }
 
   signOut() {
