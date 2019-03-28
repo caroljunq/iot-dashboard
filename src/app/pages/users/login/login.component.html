@@ -41,7 +41,7 @@
         <input type="password" nbInput fullWidth placeholder="Password">
       </div>
       <div class="input-group col-12 col-sm-10 col-md-8 col-lg-6">
-        <button nbButton status="success" class="btn-success btn-full-width"  aria-disabled="false" tabindex="0" fullWidth> Sign In </button>
+        <button nbButton status="success" class="btn-success btn-full-width"  aria-disabled="false" tabindex="0" fullWidth (click)="usersService.googleLogin()"> Sign In </button>
       </div>
       <section aria-label="Social sign in" class="links ng-star-inserted col-12 col-sm-10 col-md-8 col-lg-6"> 
         <label>or enter with:</label>
