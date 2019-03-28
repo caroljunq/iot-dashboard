@@ -8,12 +8,14 @@ import { AngularFireModule } from '@angular/fire';
 import { AngularFireFunctionsModule, FunctionsRegionToken } from '@angular/fire/functions';
 import { AngularFireDatabaseModule } from '@angular/fire/database';
 import { AngularFireAuthModule } from '@angular/fire/auth';
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import { NbRoleProvider, NbSecurityModule } from '@nebular/security';
 
 import { CoreModule } from './@core/core.module';
 import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';
 import { ThemeModule } from './@theme/theme.module';
-import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import { UsersService, ACL } from './pages/users/users.service';
 
 import { environment } from 'environments/environment';
 
@@ -28,6 +30,7 @@ import { environment } from 'environments/environment';
     NgbModule.forRoot(),
     ThemeModule.forRoot(),
     CoreModule.forRoot(),
+    NbSecurityModule,
 
     AngularFireModule.initializeApp(environment.firebase, 'iot-dash'),
     AngularFireDatabaseModule,
@@ -36,8 +39,14 @@ import { environment } from 'environments/environment';
   ],
   bootstrap: [AppComponent],
   providers: [
+    NbSecurityModule.forRoot({
+      accessControl: {
+        ...ACL,
+      },
+    }).providers,
     { provide: APP_BASE_HREF, useValue: '/' },
     { provide: FunctionsRegionToken, useValue: environment.firebase.functionsRegionToken },
+    { provide: NbRoleProvider, useClass: UsersService },
   ],
 })
 export class AppModule {
