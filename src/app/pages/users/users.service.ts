@@ -1,7 +1,7 @@
 import { Router } from '@angular/router';
 import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
-import { switchMap, map, tap, shareReplay, distinctUntilChanged } from 'rxjs/operators';
+import { switchMap, map, tap, shareReplay, distinctUntilChanged, take } from 'rxjs/operators';
 import { AngularFireDatabase } from '@angular/fire/database';
 import { AngularFireAuth } from '@angular/fire/auth';
 import { auth } from 'firebase/app';
@@ -85,35 +85,41 @@ export class UsersService {
 
   protected async oAuthLogin(provider: auth.AuthProvider): Promise<void> {
     try {
+      // console.log('[UsersService] oAuthLogin()');
       const credential = await this.angularFireAuth.auth.signInWithPopup(provider);
       const baseStoreUser: StoredUser = {
         uid: credential.user.uid,
-        email: credential.user.email,
         displayName: credential.user.displayName,
         photoURL: credential.user.photoURL,
       };
-      const userRef = this.angularFireDatabase.object<StoredUser>(`users/${credential.user.uid}`);
-      const storedUser = await userRef.valueChanges().toPromise();
+      const storedUser = await this.getUser(credential.user.uid).pipe(take(1)).toPromise();
       if (storedUser) {
-        await userRef.update(baseStoreUser);
-      } else {
-        await userRef.set({
+        await this.updateUser({
+          ...storedUser,
           ...baseStoreUser,
+        });
+      } else {
+        await this.createUser({
+          ...baseStoreUser,
+          email: credential.user.email,
           isAdmin: false,
           isValid: false,
         });
       }
       return Promise.resolve();
     } catch (e) {
+      console.error('[UsersService.oAuthLogin]', e);
       return Promise.reject();
     } finally {
       // console.log('[UsersService] End oAuthLogin');
     }
   }
 
+  createUser(user: StoredUser): Promise<void> {
+    const userRef = this.angularFireDatabase.object<StoredUser>(`users/${user.uid}`);
+    return userRef.set(user);
+  }
   updateUser(user: StoredUser): Promise<void> {
-    // Sets user data to firestore on login
-    // const userRef: AngularFirestoreDocument<any> = this.afs.doc(`users/${user.uid}`);
     const userRef = this.angularFireDatabase.object<StoredUser>(`users/${user.uid}`);
     return userRef.update(user);
   }

@@ -30,10 +30,10 @@ export class AuthGuard implements CanActivate, CanActivateChild, CanLoad {
     next: ActivatedRouteSnapshot,
     state: RouterStateSnapshot,
   ): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree {
-    // console.log(`[canActivate] url: '${state.url}', component: '${(<Function>next.component).name}',`,
+    // console.log(`[canActivate] url: '${state.url}', component: '${(<Function>next.component).name}',`);
     return this.usersService.user$.pipe(
       take(1),
-      // tap((v) => console.log(`[canActivate] user: '${user}', component: '${(<Function>next.component).name}',`,),
+      // tap(user => console.log(`[canActivate] user: '${user}', component: '${(<Function>next.component).name}',`)),
       map(user => {
         if (next.component === LoginComponent) {
           if (user) {
@@ -47,7 +47,7 @@ export class AuthGuard implements CanActivate, CanActivateChild, CanLoad {
         }
         return true;
       }),
-      // tap((v) => console.log(`[canActivate] => '${v}'`)),
+      // tap(v => console.log(`[canActivate] => '${v}'`)),
     );
   }
   canActivateChild(
