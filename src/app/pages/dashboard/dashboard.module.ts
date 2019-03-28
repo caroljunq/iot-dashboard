@@ -25,7 +25,7 @@ import { DeviceMonitoringComponent } from './device-monitoring/device-monitoring
     StatusCardComponent, StatusCardDialogComponent,
     RoomSelectorComponent,
     DeviceMonitoringComponent,
-    RoomsComponent
+    RoomsComponent,
   ],
   exports: [
     DashboardComponent,
