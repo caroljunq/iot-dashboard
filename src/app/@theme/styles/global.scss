@@ -110,3 +110,16 @@ mwl-gauge.gauge-chart {
   font-size: 1.8rem !important;
   margin-bottom: 15px !important;
 }
+
+.mat-checkbox-checked.mat-accent .mat-checkbox-background{
+  background-color: #40dc7e !important;
+}
+
+.mat-checkbox-checked.mat-accent .mat-checkbox-background, .mat-checkbox-indeterminate.mat-accent .mat-checkbox-background {
+  background-color: #40dc7e !important;
+}
+
+.top-form-register{
+  display: flex;
+  align-items: center;
+}

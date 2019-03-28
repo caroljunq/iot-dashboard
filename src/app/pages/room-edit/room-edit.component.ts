@@ -4,12 +4,20 @@ import {SelectionModel} from '@angular/cdk/collections';
 
 export interface SensorData {
   key: number,
-  name: string;
+  name: string,
   max: number,
   min: number,
   type: string,
   unit: string
 }
+
+export interface UserData {
+  key: number,
+  name: string,
+  email: string,
+  type: string
+}
+
 
 /** Constants used to fill up our data base. */
 
@@ -26,57 +34,96 @@ const NAMES: string[] = [
 })
 export class RoomEditComponent implements OnInit {
 
-  
-  displayedColumns: string[] = ['select','name', 'type','min', 'max'];
-  dataSource: MatTableDataSource<SensorData>;
-  selection = new SelectionModel<SensorData>(true, []);
+  // Sensor table
+  displayedSensorColumns: string[] = ['select','name', 'type','min', 'max'];
+  sensorDataSource: MatTableDataSource<SensorData>;
+  sensorsSelection = new SelectionModel<SensorData>(true, []);
 
-  @ViewChild(MatPaginator) paginator: MatPaginator;
-  @ViewChild(MatSort) sort: MatSort;
+  @ViewChild(MatPaginator) paginatorSensor: MatPaginator;
+  @ViewChild(MatSort) sortSensor: MatSort;
+
+  // Users table
+  displayedUserColumns: string[] = ['select','name', 'email','type'];
+  userDataSource: MatTableDataSource<UserData>;
+  usersSelection = new SelectionModel<UserData>(true, []);
+
+  @ViewChild(MatPaginator) paginatorUser: MatPaginator;
+  @ViewChild(MatSort) sortUser: MatSort;
 
   constructor() {
-    // Create 100 users
+    const sensors = Array.from({length: 100}, (_, k) => createNewSensor(k + 1));
     const users = Array.from({length: 100}, (_, k) => createNewUser(k + 1));
 
     // Assign the data to the data source for the table to render
-    this.dataSource = new MatTableDataSource(users);
+    this.sensorDataSource = new MatTableDataSource(sensors);
+    this.userDataSource = new MatTableDataSource(users);
   }
 
   ngOnInit() {
-    this.dataSource.paginator = this.paginator;
-    this.dataSource.sort = this.sort;
+    this.sensorDataSource.paginator = this.paginatorSensor;
+    this.sensorDataSource.sort = this.sortSensor;
+
+    this.userDataSource.paginator = this.paginatorUser;
+    this.userDataSource.sort = this.sortUser;
   }
 
-  applyFilter(filterValue: string) {
-    this.dataSource.filter = filterValue.trim().toLowerCase();
+  applyFilterSensor(filterValue: string) {
+    this.sensorDataSource.filter = filterValue.trim().toLowerCase();
 
-    if (this.dataSource.paginator) {
-      this.dataSource.paginator.firstPage();
+    if (this.sensorDataSource.paginator) {
+      this.sensorDataSource.paginator.firstPage();
     }
   }
 
-  isAllSelected() {
-    const numSelected = this.selection.selected.length;
-    const numRows = this.dataSource.data.length;
+  isAllSensorSelected() {
+    const numSelected = this.sensorsSelection.selected.length;
+    const numRows = this.sensorDataSource.data.length;
     return numSelected === numRows;
   }
 
-  masterToggle() {
-    this.isAllSelected() ?
-        this.selection.clear() :
-        this.dataSource.data.forEach(row => this.selection.select(row));
+  masterSensorToggle() {
+    this.isAllSensorSelected() ?
+        this.sensorsSelection.clear() :
+        this.sensorDataSource.data.forEach(row => this.sensorsSelection.select(row));
   }
 
-  checkboxLabel(row?: SensorData): string {
+  checkboxSensorLabel(row?: SensorData): string {
     if (!row) {
-      return `${this.isAllSelected() ? 'select' : 'deselect'} all`;
+      return `${this.isAllSensorSelected() ? 'select' : 'deselect'} all`;
     }
-    return `${this.selection.isSelected(row) ? 'deselect' : 'select'} row ${row.key}`;
+    return `${this.sensorsSelection.isSelected(row) ? 'deselect' : 'select'} row ${row.key}`;
+  }
+
+
+  applyFilterUser(filterValue: string) {
+    this.userDataSource.filter = filterValue.trim().toLowerCase();
+
+    if (this.userDataSource.paginator) {
+      this.userDataSource.paginator.firstPage();
+    }
+  }
+
+  isAllUserSelected() {
+    const numSelected = this.usersSelection.selected.length;
+    const numRows = this.userDataSource.data.length;
+    return numSelected === numRows;
+  }
+
+  masterUserToggle() {
+    this.isAllUserSelected() ?
+        this.usersSelection.clear() :
+        this.userDataSource.data.forEach(row => this.usersSelection.select(row));
+  }
+
+  checkboxUserLabel(row?: UserData): string {
+    if (!row) {
+      return `${this.isAllUserSelected() ? 'select' : 'deselect'} all`;
+    }
+    return `${this.usersSelection.isSelected(row) ? 'deselect' : 'select'} row ${row.key}`;
   }
 }
 
-/** Builds and returns a new User. */
-  function createNewUser(id: number): SensorData {
+ function createNewSensor(id: number): SensorData {
     const name = NAMES[Math.round(Math.random() * (NAMES.length - 1))] + ' ' +
         NAMES[Math.round(Math.random() * (NAMES.length - 1))].charAt(0) + '.';
 
@@ -87,5 +134,17 @@ export class RoomEditComponent implements OnInit {
       min: id,
       max: id,
       unit: '%'
+    };
+  }
+
+  function createNewUser(id: number): UserData {
+    const name = NAMES[Math.round(Math.random() * (NAMES.length - 1))] + ' ' +
+        NAMES[Math.round(Math.random() * (NAMES.length - 1))].charAt(0) + '.';
+
+    return {
+      key: id,
+      name: name,
+      email: "teste@email.com",
+      type: 'administrador'
     };
   }
