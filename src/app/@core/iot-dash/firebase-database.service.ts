@@ -162,7 +162,7 @@ export class FirebaseDatabaseService {
     return sites.map(site => this.loadSiteSensorData(site, liveChartService, colors, echarts));
   }
 
-  createSensor(sensor: Device){
+  createSensor(sensor){
     console.log(sensor);
     return true;
   }
