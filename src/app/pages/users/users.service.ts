@@ -89,6 +89,8 @@ export class UsersService {
         displayName: rawUser.fullName,
         email: rawUser.email,
         photoURL: null,
+        isActive: false,
+        isAdmin: false,
       };
       await this.createUser(user);
       setTimeout(
@@ -190,10 +192,14 @@ export class UsersService {
               ...item,
               isCurrentUser: item.uid === user.storedUser.uid,
             })).sort((a, b) => {
+              if (!a) return -1;
+              if (!b) return 1;
               if (a.isCurrentUser) return -1;
               if (b.isCurrentUser) return 1;
               if (a.isActive && !b.isActive) return -1;
               if (!a.isActive && b.isActive) return 1;
+              if (!a.displayName) return -1;
+              if (!b.displayName) return 1;
               return a.displayName.localeCompare(b.displayName);
             }),
           ),
