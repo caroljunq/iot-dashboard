@@ -1,7 +1,6 @@
 import { FormBuilder } from '@angular/forms';
 import { UsersService } from './../users.service';
 import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-login',
@@ -17,7 +16,6 @@ export class LoginComponent implements OnInit {
 
   constructor(
     protected usersService: UsersService,
-    protected router: Router,
     protected formBuilder: FormBuilder,
   ) { }
 

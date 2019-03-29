@@ -21,7 +21,7 @@ export interface TimedValue<T> {
 }
 export interface Device {
   key: string;
-  location: string;
+  name: string;
   // ------ ACTOR -------
   iconClass?: string;
   // ------ SENSOR -------

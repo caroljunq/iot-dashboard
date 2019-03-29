@@ -1,0 +1,140 @@
+<nb-card>
+  <nb-card-header class="custom-form-title">{{!editoMode? "Create a room":"Edit room"}}</nb-card-header>
+  <nb-card-body class="row room-top-form">
+    <div class="input-group col-12 col-sm-10">
+      <label>Room name</label>
+      <input type="text" nbInput fullWidth placeholder="Room name">
+    </div>
+    <div class="col-12 col-sm-2">
+      <button nbButton hero status="success" fullWidth>Save</button>
+    </div>
+  </nb-card-body>
+</nb-card>
+<nb-card>
+  <nb-card-header>Select the sensors for this room</nb-card-header>
+  <nb-card-body>
+    <div class="col-12 no-padding">
+      <div class="left-inner-addon">
+        <i class="nb-search"></i>
+        <input size="medium" type="search" nbInput fullWidth (keyup)="applyFilterSensor($event.target.value)" placeholder="Search">
+      </div>
+    </div>
+    <div class="col-md-12 col-sm-12">
+      <table mat-table [dataSource]="sensorDataSource" #sortSensor="matSort" matSort matSortActive="ID" >
+        <ng-container matColumnDef="select">
+          <th mat-header-cell *matHeaderCellDef>
+            <mat-checkbox (change)="$event ? masterSensorToggle() : null"
+                          [checked]="sensorsSelection.hasValue() && isAllSensorSelected()"
+                          [indeterminate]="sensorsSelection.hasValue() && !isAllSensorSelected()"
+                          [aria-label]="checkboxSensorLabel()">
+            </mat-checkbox>
+          </th>
+          <td mat-cell *matCellDef="let row">
+            <mat-checkbox (click)="$event.stopPropagation()"
+                          (change)="$event ? sensorsSelection.toggle(row) : null"
+                          [checked]="sensorsSelection.isSelected(row)"
+                          [aria-label]="checkboxSensorLabel(row)">
+            </mat-checkbox >
+          </td>
+        </ng-container>   
+
+        <!-- Name Column -->
+        <ng-container matColumnDef="name">
+          <th class="header-name" mat-header-cell *matHeaderCellDef mat-sort-header> Name </th>
+          <td class="cell-name" mat-cell *matCellDef="let row"> {{row.name}} </td>
+        </ng-container>
+
+        <!-- Key Column -->
+        <ng-container matColumnDef="key">
+          <th class="header-key" mat-header-cell *matHeaderCellDef mat-sort-header> Key </th>
+          <td class="cell-key" mat-cell *matCellDef="let row"> {{row.key}} </td>
+        </ng-container>
+  
+
+        <!-- Type Column -->
+        <ng-container matColumnDef="type">
+          <th class="header-type" mat-header-cell *matHeaderCellDef mat-sort-header> Type </th>
+          <td class="cell-type" mat-cell *matCellDef="let row"> {{row.type}} </td>
+        </ng-container>
+
+        <!-- Min Column -->
+        <ng-container matColumnDef="min">
+          <th class="header-min" mat-header-cell *matHeaderCellDef mat-sort-header> Min </th>
+          <td class="header-min" mat-cell *matCellDef="let row"> {{row.min}} {{row.unit}} </td>
+        </ng-container>
+
+        <!-- Max Column -->
+        <ng-container matColumnDef="max">
+          <th class="header-max" mat-header-cell *matHeaderCellDef mat-sort-header> Max  </th>
+          <td class="cell-max" mat-cell *matCellDef="let row"> {{row.max}} {{row.unit}} </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedSensorColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedSensorColumns;"
+            (click)="sensorsSelection.toggle(row)">
+        </tr>
+      </table>
+
+      <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]" #pagSensor></mat-paginator>
+    </div>
+  </nb-card-body>
+</nb-card>
+
+<nb-card>
+  <nb-card-header>Allow users to access this room</nb-card-header>
+  <nb-card-body>
+    <div class="col-12 no-padding">
+      <div class="left-inner-addon">
+        <i class="nb-search"></i>
+        <input size="medium" type="search" nbInput fullWidth (keyup)="applyFilterUser($event.target.value)" placeholder="Search">
+      </div>
+    </div>
+    <div class="col-md-12 col-sm-12">
+      <table mat-table [dataSource]="userDataSource" #sortUser="matSort" matSort matSortActive="ID">
+        <ng-container matColumnDef="select">
+          <th class="cell-checkb" mat-header-cell *matHeaderCellDef>
+            <mat-checkbox (change)="$event ? masterUserToggle() : null"
+                          [checked]="usersSelection.hasValue() && isAllUserSelected()"
+                          [indeterminate]="usersSelection.hasValue() && !isAllUserSelected()"
+                          [aria-label]="checkboxUserLabel()">
+            </mat-checkbox>
+          </th>
+          <td class="cell-checkb" mat-cell *matCellDef="let row">
+            <mat-checkbox (click)="$event.stopPropagation()"
+                          (change)="$event ? usersSelection.toggle(row) : null"
+                          [checked]="usersSelection.isSelected(row)"
+                          [aria-label]="checkboxUserLabel(row)">
+            </mat-checkbox >
+          </td>
+        </ng-container>   
+  
+        <!-- Name Column -->
+        <ng-container matColumnDef="name">
+          <th class="header-name-user" mat-header-cell *matHeaderCellDef mat-sort-header> Name </th>
+          <td class="cell-name-user" mat-cell *matCellDef="let row"> {{row.name}} </td>
+        </ng-container>
+
+        <!-- Email Column -->
+        <ng-container matColumnDef="email">
+            <th class="header-email-user" mat-header-cell *matHeaderCellDef mat-sort-header> Email </th>
+            <td class="cell-email-user" mat-cell *matCellDef="let row"> {{row.email}} </td>
+          </ng-container>
+  
+        <!-- Type Column -->
+        <ng-container matColumnDef="type">
+          <th class="header-type-user" mat-header-cell *matHeaderCellDef mat-sort-header> Type </th>
+          <td class="cell-type-user" mat-cell *matCellDef="let row"> {{row.type}} </td>
+        </ng-container>
+  
+        <tr mat-header-row *matHeaderRowDef="displayedUserColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedUserColumns;"
+            (click)="usersSelection.toggle(row)">
+        </tr>
+      </table>
+  
+        <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]" #pagUser></mat-paginator>
+      </div>
+    </nb-card-body>
+  </nb-card>
+  
+  

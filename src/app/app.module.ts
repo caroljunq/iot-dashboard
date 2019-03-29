@@ -18,6 +18,7 @@ import { ThemeModule } from './@theme/theme.module';
 import { UsersService, ACL } from './pages/users/users.service';
 
 import { environment } from 'environments/environment';
+import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 
 @NgModule({
   declarations: [AppComponent],
@@ -48,6 +49,7 @@ import { environment } from 'environments/environment';
     { provide: FunctionsRegionToken, useValue: environment.firebase.functionsRegionToken },
     { provide: NbRoleProvider, useClass: UsersService },
   ],
+  schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
 export class AppModule {
 }

@@ -29,14 +29,14 @@ export function getSampleData(): RootData {
           'jtaq3sq65jjm274sn7': <Device>{
             iconClass: 'nb-lightbulb nb-roller-shades',
             key: 'jtaq3sq65jjm274sn7',
-            location: 'Actor #0 Secretaria Secretaria',
+            name: 'Actor #0 Secretaria Secretaria',
           },
         },
         name: 'Sala #1 Gesso Raio-X',
         sensors: {
           'jtaq3sq648vq5qbjjfh': <Device>{
             key: 'jtaq3sq648vq5qbjjfh',
-            location: 'Umidade #2',
+            name: 'Umidade #2',
             max: 80,
             min: 20,
             type: 'Umidade',
@@ -44,7 +44,7 @@ export function getSampleData(): RootData {
           },
           'jtaq3sq6j4dwqomqzhn': {
             key: 'jtaq3sq6j4dwqomqzhn',
-            location: 'Temperatura #1',
+            name: 'Temperatura #1',
             max: 25,
             min: 15,
             type: 'Temperatura',
@@ -52,7 +52,7 @@ export function getSampleData(): RootData {
           },
           'jtaq3sq6mzdmk90jivd': {
             key: 'jtaq3sq6mzdmk90jivd',
-            location: 'Umidade #0',
+            name: 'Umidade #0',
             max: 80,
             min: 20,
             type: 'Umidade',
@@ -65,19 +65,19 @@ export function getSampleData(): RootData {
           'jtaq3sq690wqngf8f6v': {
             'iconClass': 'nb-audio nb-coffee-maker',
             'key': 'jtaq3sq690wqngf8f6v',
-            'location': 'Actor #1 Gesso Raio-X',
+            'name': 'Actor #1 Gesso Raio-X',
           },
           'jtaq3sq6mu5em9wwibi': {
             'iconClass': 'nb-audio nb-roller-shades',
             'key': 'jtaq3sq6mu5em9wwibi',
-            'location': 'Actor #0 TV Gesso',
+            'name': 'Actor #0 TV Gesso',
           },
         },
         'name': 'Sala #0 Gesso Secretaria',
         'sensors': {
           'jtaq3sq54bpi1hgrrju': {
             'key': 'jtaq3sq54bpi1hgrrju',
-            'location': 'Temperatura #0',
+            'name': 'Temperatura #0',
             'max': 25,
             'min': 15,
             'type': 'Temperatura',
@@ -85,7 +85,7 @@ export function getSampleData(): RootData {
           },
           'jtaq3sq5r63ky31sldr': {
             'key': 'jtaq3sq5r63ky31sldr',
-            'location': 'Temperatura #1',
+            'name': 'Temperatura #1',
             'max': 25,
             'min': 15,
             'type': 'Temperatura',
@@ -93,7 +93,7 @@ export function getSampleData(): RootData {
           },
           'jtaq3sq6wfnt1dr4mo': {
             'key': 'jtaq3sq6wfnt1dr4mo',
-            'location': 'Umidade #3',
+            'name': 'Umidade #3',
             'max': 80,
             'min': 20,
             'type': 'Umidade',
@@ -101,7 +101,7 @@ export function getSampleData(): RootData {
           },
           'jtaq3sq6yrl35hwhpu': {
             'key': 'jtaq3sq6yrl35hwhpu',
-            'location': 'Umidade #2',
+            'name': 'Umidade #2',
             'max': 80,
             'min': 20,
             'type': 'Umidade',
@@ -114,19 +114,19 @@ export function getSampleData(): RootData {
           'jtaq3sq7mmpjybj23u': {
             'iconClass': 'nb-lightbulb nb-lightbulb',
             'key': 'jtaq3sq7mmpjybj23u',
-            'location': 'Actor #1 Cirurgia Gesso',
+            'name': 'Actor #1 Cirurgia Gesso',
           },
           'jtaq3sq7t1aqv3mjaa': {
             'iconClass': 'nb-lightbulb nb-audio',
             'key': 'jtaq3sq7t1aqv3mjaa',
-            'location': 'Actor #0 Gesso Secretaria',
+            'name': 'Actor #0 Gesso Secretaria',
           },
         },
         'name': 'Sala #2 Espera Gesso',
         'sensors': {
           'jtaq3sq6fxehwom4srl': {
             'key': 'jtaq3sq6fxehwom4srl',
-            'location': 'Temperatura #1',
+            'name': 'Temperatura #1',
             'max': 25,
             'min': 15,
             'type': 'Temperatura',
@@ -134,7 +134,7 @@ export function getSampleData(): RootData {
           },
           'jtaq3sq6iyg5rocavgo': {
             'key': 'jtaq3sq6iyg5rocavgo',
-            'location': 'Temperatura #0',
+            'name': 'Temperatura #0',
             'max': 25,
             'min': 15,
             'type': 'Temperatura',
@@ -142,7 +142,7 @@ export function getSampleData(): RootData {
           },
           'jtaq3sq7adlsav1ea9q': {
             'key': 'jtaq3sq7adlsav1ea9q',
-            'location': 'Umidade #2',
+            'name': 'Umidade #2',
             'max': 80,
             'min': 20,
             'type': 'Umidade',
@@ -205,7 +205,7 @@ export function getSampleData(): RootData {
   //     const device: Device = {
   //       key: sensorKey,
   //       type,
-  //       location: `${type} #${sensorIndex}`,
+  //       name: `${type} #${sensorIndex}`,
   //       unit: type === 'Temperatura' ? 'ºC' : '%',
   //       max: type === 'Temperatura' ? 25 : 80,
   //       min: type === 'Temperatura' ? 15 : 20,
@@ -226,7 +226,7 @@ export function getSampleData(): RootData {
   //     const actorKey = oneSixSixBits();
   //     siteActors[actorKey] = {
   //       key: actorKey,
-  //       location: `Actor #${actorIndex} ${someName()}`,
+  //       name: `Actor #${actorIndex} ${someName()}`,
   //       iconClass: someClass(),
   //     };
   //     // fake reports

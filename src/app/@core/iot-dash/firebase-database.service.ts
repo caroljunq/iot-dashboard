@@ -162,6 +162,22 @@ export class FirebaseDatabaseService {
     return sites.map(site => this.loadSiteSensorData(site, liveChartService, colors, echarts));
   }
 
+  createSensor(sensor: Device){
+    console.log(sensor);
+    return true;
+  }
+
+  getSensorByKey(id): Observable<Device> {
+    return of(<Device>{
+      key: 'fakeKey',
+      name: 'sensor1',
+      type: 'temperatura',
+      unit: 'ºC',
+      min: 15,
+      max: 12,
+    });
+  }
+
   getUserSites(dashUser: DashUser): any {
     return this.angularFireDatabase.list<string>(`userSites/${dashUser.authUser.uid}`).valueChanges().pipe(
       tap(userSites => console.log('[FirebaseDatabaseService.getUserSites]', {userSites})),

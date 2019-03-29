@@ -8,12 +8,6 @@ import { Site } from 'app/@core/iot-dash/iot-dash-models';
 import { LiveChartService } from 'app/@core/iot-dash/live-chart.service';
 import { FirebaseDatabaseService } from 'app/@core/iot-dash/firebase-database.service';
 
-interface CardSettings {
-  title: string;
-  iconClass: string;
-  type: string;
-}
-
 @Component({
   selector: 'app-dashboard',
   styleUrls: ['./dashboard.component.scss'],

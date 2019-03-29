@@ -18,7 +18,7 @@
   <div class="col" *ngFor="let actor of (site$ | async)?.actorsArray">
     <app-status-card
       type="primary"
-      [title]="actor.location"
+      [title]="actor.name"
       [on]="(actor.value$ | async)?.value"
       (valueChange)="actor.emiter($event)"
       [iconClass]="actor.iconClass"
@@ -30,7 +30,7 @@
 <div class="sensors-items" *ngIf="(site$ | async)?.sensorsArray?.length">
   <div class="sensor-item" *ngFor="let sensor of (site$ | async)?.sensorsArray">
     <app-device-monitoring
-      [title]="sensor.location"
+      [title]="sensor.name"
       [sensorData]="sensor.value$ | async"
       [sensor]="sensor"
     ></app-device-monitoring>

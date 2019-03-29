@@ -109,4 +109,43 @@ mwl-gauge.gauge-chart {
   text-align: center !important;
   font-size: 1.8rem !important;
   margin-bottom: 15px !important;
+  border-left: #40dca3 10px solid;
+  border-right: #40dca3 10px solid;
+}
+
+.mat-checkbox-checked.mat-accent .mat-checkbox-background{
+  background-color: #40dc7e !important;
+}
+
+.mat-checkbox-checked.mat-accent .mat-checkbox-background, .mat-checkbox-indeterminate.mat-accent .mat-checkbox-background {
+  background-color: #40dc7e !important;
+}
+
+th.mat-header-cell:first-of-type,td.mat-cell:first-of-type, td.mat-footer-cell:first-of-type, th.mat-header-cell:first-of-type{
+  padding: 10px;
+}
+
+.left-inner-addon {
+  position: relative;
+}
+
+.left-inner-addon{
+    
+  input {
+    padding: 0.75rem 2rem !important;
+  }
+}
+
+.left-inner-addon i {
+  position: absolute;
+  left: 0px;
+  padding: 7px 3px;
+  font-size: 2rem;
+  pointer-events: none;
+  color: #c6cdd4;
+  font-weight: 600;
+}
+
+.no-padding{
+  padding: 0;
 }
