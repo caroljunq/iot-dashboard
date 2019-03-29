@@ -5,7 +5,7 @@ import { DashboardComponent } from './pages/dashboard/dashboard.component';
 import { HistoricalDataComponent } from './pages/historical-data/historical-data.component';
 import { DashboardModule } from './pages/dashboard/dashboard.module';
 import { HistoricalDataModule } from './pages/historical-data/historical-data.module';
-import { DashboardIdGuard } from './dashboard-id.guard';
+import { DashboardIdGuard } from './pages/dashboard/dashboard-id.guard';
 
 import { AuthGuard } from './pages/users/auth.guard';
 // import { UsersModule } from './pages/users/users.module';
@@ -26,8 +26,8 @@ const routes: Routes = [
     path: 'users',
     loadChildren: './pages/users/users.module#UsersModule',
   },
-  { path: '', redirectTo: 'dashboard/none', pathMatch: 'full' },
-  { path: '**', redirectTo: 'dashboard' },
+  { path: '', redirectTo: 'dashboard/none', pathMatch: 'full', canActivate: [AuthGuard] },
+  { path: '**', redirectTo: 'dashboard/none', canActivate: [AuthGuard] },
 ];
 
 @NgModule({
