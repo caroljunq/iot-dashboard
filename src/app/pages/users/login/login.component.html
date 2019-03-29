@@ -1,70 +1,46 @@
-
-<!-- <div *ngIf="usersService.user | async; then authenticated else guest"> -->
-  
-
-
-<!-- User NOT logged in -->
-<!-- <ng-template #guest>
-<h3>Howdy, GUEST</h3>
-<p>Login to get started...</p>
-
-<button (click)="usersService.googleLogin()">
-    <i class="fa fa-google"></i> Connect Google
-</button>
-
-</ng-template> -->
-
-
-<!-- User logged in -->
-<!-- <ng-template #authenticated>
-<div *ngIf="usersService.user | async as user">
-    <h3>Howdy, {{ user.displayName }}</h3>
-    <img  [src]="user.photoURL">
-    <p>UID: {{ user.uid }}</p>
-    <p>Favorite Color: {{ user?.favoriteColor }} </p>
-    <button (click)="usersService.signOut()">Logout</button>
-</div>
-</ng-template>
- -->
-
- <nb-card>
+<nb-card>
   <nb-card-header class="custom-form-title">{{ !passForgot ? "Log In": "Forgot Password" }}</nb-card-header>
   <nb-card-body>
-    <div class="custom-form row">
-      <span class="col-12 col-sm-10 col-md-8 col-lg-6 form-descrip" *ngIf="passForgot">Enter your email address and we’ll send a link to reset your password.</span>
+    <form class="custom-form row" [formGroup]="loginForm" (ngSubmit)="onSubmit()" >
+      <span class="col-12 col-sm-10 col-md-8 col-lg-6 form-descrip" *ngIf="passForgot">
+        Enter your email address and we’ll send a link to reset your password.
+      </span>
       <div class="input-group col-12 col-sm-10 col-md-8 col-lg-6">
         <label>Email</label>
-        <input type="text" nbInput fullWidth placeholder="Email">
+        <input type="text" nbInput fullWidth placeholder="Email" formControlName="email">
       </div>
       <ng-container *ngIf="!passForgot">
         <div class="input-group col-12 col-sm-10 col-md-8 col-lg-6">
           <label>Password</label>
-          <input type="password" nbInput fullWidth placeholder="Password">
+          <input type="password" nbInput fullWidth placeholder="Password" formControlName="password">
         </div>
-        <!-- <div class="input-group col-12 col-sm-10 col-md-8 col-lg-6 space-bt">
-          <nb-checkbox name="remember">Remember Me</nb-checkbox>
-          <span (click)="changeForgotBtn()" class="forget-button">Forgot Password?</span>
-        </div> -->
       </ng-container>
       <div class="input-group col-12 col-sm-10 col-md-8 col-lg-6">
-        <button nbButton status="success" class="btn-success btn-full-width"  aria-disabled="false" tabindex="0" fullWidth (click)="usersService.googleLogin()"> {{ !passForgot ? "Sign In": "Request Password" }} </button>
+        <button nbButton fullWidth status="success" class="btn-success btn-full-width"
+          aria-disabled="false" tabindex="0"
+          type="submit"
+          [disabled]="!loginForm.valid">
+          {{ !passForgot ? 'Sign In': 'Request Password' }}
+        </button>
       </div>
       <div class="forgot-button row col-12 col-sm-10 col-md-8 col-lg-6" *ngIf="!passForgot">
         <span (click)="changeForgotBtn()">Forgot Password?</span>
       </div>
-      <section aria-label="Social sign in" class="links ng-star-inserted col-12 col-sm-10 col-md-8 col-lg-6" *ngIf="!passForgot"> 
+      <section aria-label="Social sign in" class="links col-12 col-sm-10 col-md-8 col-lg-6" *ngIf="!passForgot"> 
         <label>or enter with:</label>
         <div class="socials">
-          <a href="" class="socicon-google with-icon ng-star-inserted"></a>
+          <button nbButton outline status="success" size="large" class="btn-success" (click)="usersService.googleLogin()">
+            <i class="socicon-google with-icon"></i>
+          </button>
         </div>
       </section>
       <section class="col-12 col-sm-10 col-md-8 col-lg-6 return-btns" *ngIf="passForgot">
         <span (click)="changeForgotBtn()">Back to Log In</span>
         <span [routerLink]="['/users/register']">Register</span>
       </section>
-      <span class="col-sm-12 col-md-3 footer-msg-return" *ngIf="!passForgot">Don't have an account? <span [routerLink]="['/users/register']">Register</span></span>
-    </div>
+      <span class="col-sm-12 col-md-3 footer-msg-return" *ngIf="!passForgot">
+        Don't have an account? <a [routerLink]="['/users/register']">Register</a>
+      </span>
+    </form>
   </nb-card-body>
 </nb-card>
-
-

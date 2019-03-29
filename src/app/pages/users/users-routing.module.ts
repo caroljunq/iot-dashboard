@@ -5,13 +5,13 @@ import { LoginComponent } from './login/login.component';
 import { UsersListComponent } from './users-list/users-list.component';
 import { UserEditComponent } from './user-edit/user-edit.component';
 
-import { AuthGuard } from './auth.guard';
+import { AuthGuard, NoAuthGuard } from './auth.guard';
 
 const routes: Routes = [
-  { path: '', component: UsersListComponent, canActivate: [AuthGuard] },
-  { path: 'login', component: LoginComponent, canActivate: [] },
+  { path: 'login', component: LoginComponent, canActivate: [NoAuthGuard] },
+  { path: 'register', component: UserEditComponent, canActivate: [NoAuthGuard]},
+  { path: 'list', component: UsersListComponent, canActivate: [AuthGuard] },
   { path: ':id', component: UserEditComponent, canActivate: [AuthGuard] },
-  { path: 'register', component: UserEditComponent},
 ];
 
 @NgModule({

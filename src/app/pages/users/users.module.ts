@@ -6,6 +6,7 @@ import { LoginComponent } from './login/login.component';
 import { UsersListComponent } from './users-list/users-list.component';
 import { UserEditComponent } from './user-edit/user-edit.component';
 import { ThemeModule } from '../../@theme/theme.module';
+import { NoAuthGuard } from './auth.guard';
 
 
 @NgModule({
@@ -13,7 +14,10 @@ import { ThemeModule } from '../../@theme/theme.module';
   imports: [
     CommonModule,
     UsersRoutingModule,
-    ThemeModule
+    ThemeModule,
+  ],
+  providers: [
+    { provide: NoAuthGuard, useClass: NoAuthGuard },
   ],
 })
 export class UsersModule { }

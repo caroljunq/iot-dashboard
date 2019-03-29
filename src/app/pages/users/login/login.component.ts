@@ -1,5 +1,7 @@
+import { FormBuilder } from '@angular/forms';
 import { UsersService } from './../users.service';
 import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-login',
@@ -7,18 +9,30 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./login.component.scss'],
 })
 export class LoginComponent implements OnInit {
-
   passForgot: boolean = false;
-  
+  loginForm = this.formBuilder.group({
+    email: [''],
+    password: [''],
+  });
+
   constructor(
     protected usersService: UsersService,
+    protected router: Router,
+    protected formBuilder: FormBuilder,
   ) { }
 
   ngOnInit() {
   }
 
-
-  changeForgotBtn(){
+  changeForgotBtn() {
     this.passForgot = !this.passForgot;
+  }
+  onSubmit() {
+    console.log('[UserEditComponent.onSubmit]', this.loginForm.value);
+    if (this.loginForm.invalid) {
+      return;
+    }
+    const { email, password } = this.loginForm.value;
+    this.usersService.emailLogin(email, password);
   }
 }

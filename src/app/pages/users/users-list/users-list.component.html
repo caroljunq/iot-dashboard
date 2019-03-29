@@ -1,13 +1,31 @@
-<p>
-  users-list works!
-</p>
-<ul>
-  <li *ngFor="let item of [
-  'ion ion-android-people',
-  'ion people',
-  'ion-social-github',
-  'nb-bar-chart',
-  'nb-home'
-  ]" ><i [class]="item">{{ item }}</i></li>
-  <!-- <li><ion-icon name="people"></ion-icon></li> -->
-</ul>
+<nb-card *ngFor="let user of users$ | async">
+  <nb-card-body class="row">
+    <!-- size="small" "large" "large" "xlarge" -->
+    <div class="col-xs-12 col-sm-3">
+      <nb-user
+      size="large"
+      [badgeStatus]="user.badgeStatus"
+      [badgeText]="user.badgeText"
+      badgePosition="bottom right"
+      [name]="user.displayName"
+      [title]="user.title"
+      [picture]="user.photoURL"
+      ></nb-user>
+    </div>
+    <ng-container *nbIsGranted="['edit', 'admin']">
+      <div class="col-xs-12 col-sm-3">
+        <button nbButton size="xsmall" status="success" (click)="chageActive(user, !user.isActive)">
+          {{ !user.isActive ? "Ativar": "Desativar" }}
+        </button>
+      </div>
+      <div class="col-xs-12 col-sm-3">
+        <button nbButton size="xsmall" status="primary" (click)="chageAdmin(user, !user.isAdmin)">
+          {{ !user.isAdmin ? "Promover a Administrador": "Remover Administrador" }}
+        </button>
+      </div>
+    </ng-container>
+    <div class="col-xs-12 col-sm-3" *nbIsGranted="['edit', 'user']">
+      <a [routerLink]="['/users', user.uid]">Edit</a>
+    </div>
+  </nb-card-body>
+</nb-card>

@@ -12,7 +12,7 @@ import { AuthGuard } from './pages/users/auth.guard';
 // import { UsersModule } from './pages/users/users.module';
 
 const routes: Routes = [
-  { path: 'dashboard', redirectTo: 'dashboard/none', pathMatch: 'full', canActivate: [AuthGuard] },
+  { path: 'dashboard', redirectTo: 'dashboard/none', pathMatch: 'full', canActivate: [AuthGuard, DashboardIdGuard] },
   {
     path: 'dashboard/:id',
     component: DashboardComponent,
