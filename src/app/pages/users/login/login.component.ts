@@ -28,7 +28,6 @@ export class LoginComponent implements OnInit {
     this.passForgot = !this.passForgot;
   }
   onSubmit() {
-    console.log('[UserEditComponent.onSubmit]', this.loginForm.value);
     if (this.loginForm.invalid) {
       return;
     }
