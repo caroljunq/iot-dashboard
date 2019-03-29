@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { database } from 'firebase/app';
 import { AngularFireDatabase } from '@angular/fire/database';
-import { Observable } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import { map, filter, publishReplay, refCount, take } from 'rxjs/operators';
 
 import { environment } from 'environments/environment';
@@ -157,5 +157,16 @@ export class FirebaseDatabaseService {
   createSensor(sensor: Device){
     console.log(sensor);
     return true;
+  }
+
+  getSensorByKey(id):  Observable<Device>{
+    return of({
+      key: '203980sjhassda',
+      name: 'sensor1',
+      type: 'temperatura',
+      unit: '%',
+      min: 15,
+      max: 12
+    });
   }
 }

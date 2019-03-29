@@ -4,7 +4,7 @@
     <form class="custom-form row" [formGroup]="sensorForm" (ngSubmit)="onSubmit()">
       <div class="input-group col-12 col-sm-10 col-md-8 col-lg-6" *ngIf="editMode">
         <label>Key</label>
-        <input type="text" nbInput fullWidth placeholder="{{'teste'}}" [disabled]="true">
+        <input type="text" nbInput fullWidth placeholder="{{ sensorKey }}" [disabled]="true">
       </div>
       <div class="input-group col-12 col-sm-10 col-md-8 col-lg-6">
         <label>Sensor name</label>
