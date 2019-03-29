@@ -9,6 +9,8 @@ export class SensorEditComponent implements OnInit {
 
   constructor() { }
 
+  editMode = false;
+  
   ngOnInit() {
   }
 

@@ -30,6 +30,7 @@ const NAMES: string[] = [
 })
 export class RoomEditComponent implements OnInit {
 
+  editMode = false;
   // Sensor table
   displayedSensorColumns: string[] = ['select','name', 'type','min', 'max'];
   sensorDataSource: MatTableDataSource<SensorData>;

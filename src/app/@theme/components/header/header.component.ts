@@ -5,6 +5,8 @@ import { LayoutService } from '../../../@core/utils';
 import { UsersService } from 'app/pages/users/users.service';
 import { Subscription } from 'rxjs';
 import { takeWhile, filter } from 'rxjs/operators';
+import { Router } from "@angular/router";
+
 
 @Component({
   selector: 'app-header',
@@ -27,7 +29,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
     title: 'Log out',
     data: {
       click: () => this.logout(),
-    },
+    }
   };
   userMenu: NbMenuItem[] = [
     this.profileMenu,
@@ -39,6 +41,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
     private menuService: NbMenuService,
     private layoutService: LayoutService,
     protected usersService: UsersService,
+    private router: Router
   ) {}
 
   ngOnInit() {
@@ -70,7 +73,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
   }
 
   logout() {
-    this.usersService.signOut();
+    this.usersService.signOut()
   }
 
   toggleSidebar(): boolean {

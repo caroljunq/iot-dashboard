@@ -172,7 +172,7 @@ export class UsersService {
   }
 
   signOut() {
-    this.angularFireAuth.auth.signOut().then(() => this.router.navigate(['/']));
+    this.angularFireAuth.auth.signOut().then(() => this.router.navigate(['/users/login']));
   }
 
   getUsersList(): Observable<StoredUser[]> {

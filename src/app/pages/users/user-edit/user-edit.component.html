@@ -1,6 +1,6 @@
 <nb-card>
   <nb-card-header class="custom-form-title">
-    {{ !editMode ? 'Register' : 'Edit' }}
+    {{ !editMode ? 'Register User' : 'Edit User' }}
   </nb-card-header>
   <nb-card-body>
     <form [formGroup]="profileForm" (ngSubmit)="onSubmit()" class="custom-form row">

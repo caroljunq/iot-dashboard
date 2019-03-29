@@ -1,28 +1,34 @@
 <nb-card>
-  <nb-card-header class="custom-form-title">Create a sensor</nb-card-header>
-  <nb-card-body class="row room-top-form">
-    <div class="input-group col-12 col-sm-10">
-      <label>Sensor name</label>
-      <input type="text" nbInput fullWidth placeholder="Sensor name">
-    </div>
-    <div class="input-group col-12 col-sm-10">
-      <label>Type</label>
-      <input type="text" nbInput fullWidth placeholder="Type">
-    </div>
-    <div class="input-group col-12 col-sm-10">
-      <label>Unit</label>
-      <input type="text" nbInput fullWidth placeholder="Unit">
-    </div>
-    <div class="input-group col-12 col-sm-10">
-      <label>Max</label>
-      <input type="text" nbInput fullWidth placeholder="Max">
-    </div>
-    <div class="input-group col-12 col-sm-10">
-      <label>Min</label>
-      <input type="text" nbInput fullWidth placeholder="Min">
-    </div>
-    <div class="col-12 col-sm-2">
-      <button nbButton hero status="success" fullWidth>Save</button>
-    </div>
+  <nb-card-header class="custom-form-title">{{!editMode? "Create a sensor":"Edit sensor"}}</nb-card-header>
+  <nb-card-body>
+    <form class="custom-form row">
+      <div class="input-group col-12 col-sm-10 col-md-8 col-lg-6">
+        <label>Sensor name</label>
+        <input type="text" nbInput fullWidth placeholder="Sensor name">
+      </div>
+      <div class="input-group col-12 col-sm-10 col-md-8 col-lg-6">
+        <label>Type</label>
+        <input type="text" nbInput fullWidth placeholder="Type">
+      </div>
+      <div class="input-group col-12 col-sm-10 col-md-8 col-lg-6">
+        <label>Unit</label>
+        <input type="text" nbInput fullWidth placeholder="Unit">
+      </div>
+      <div class="input-group col-12 col-sm-10 col-md-8 col-lg-6">
+        <label>Max</label>
+        <input type="text" nbInput fullWidth placeholder="Max">
+      </div>
+      <div class="input-group col-12 col-sm-10 col-md-8 col-lg-6">
+        <label>Min</label>
+        <input type="text" nbInput fullWidth placeholder="Min">
+      </div>
+      <div class="input-group col-12 col-sm-10 col-md-8 col-lg-6">
+          <button nbButton fullWidth status="success" class="btn-success btn-full-width"
+            aria-disabled="false" tabindex="0"
+            type="submit">
+            Save
+          </button>
+        </div>
+    </form>
   </nb-card-body>
 </nb-card>
