@@ -6,8 +6,8 @@ export interface TimedValue<T> {
   timestamp: number;
 }
 export interface Device {
-  key: string;
-  location: string;
+  key?: string;
+  name: string;
   // Umidade: 20 - 80
   // Temperatura: 15 - 25
   type: string | 'Temperatura' | 'Umidade';

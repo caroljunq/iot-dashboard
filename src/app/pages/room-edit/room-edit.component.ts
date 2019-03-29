@@ -2,8 +2,8 @@ import { Component, OnInit,ViewChild } from '@angular/core';
 import { MatPaginator, MatSort, MatTableDataSource} from '@angular/material';
 import {SelectionModel} from '@angular/cdk/collections';
 
-export interface SensorData {
-  key: number,
+interface SensorData {
+  key: string,
   name: string,
   max: number,
   min: number,
@@ -11,7 +11,7 @@ export interface SensorData {
   unit: string
 }
 
-export interface UserData {
+interface UserData {
   key: number,
   name: string,
   email: string,
@@ -32,7 +32,7 @@ export class RoomEditComponent implements OnInit {
 
   editMode = false;
   // Sensor table
-  displayedSensorColumns: string[] = ['select','name', 'type','min', 'max'];
+  displayedSensorColumns: string[] = ['select','name', 'key','type','min', 'max'];
   sensorDataSource: MatTableDataSource<SensorData>;
   sensorsSelection = new SelectionModel<SensorData>(true, []);
 
@@ -125,7 +125,7 @@ export class RoomEditComponent implements OnInit {
         NAMES[Math.round(Math.random() * (NAMES.length - 1))].charAt(0) + '.';
 
     return {
-      key: id,
+      key: '187323azIZAkkksj',
       name: name,
       type: 'temperatura',
       min: id,

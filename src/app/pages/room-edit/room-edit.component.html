@@ -44,6 +44,13 @@
           <td class="cell-name" mat-cell *matCellDef="let row"> {{row.name}} </td>
         </ng-container>
 
+        <!-- Key Column -->
+        <ng-container matColumnDef="key">
+          <th class="header-key" mat-header-cell *matHeaderCellDef mat-sort-header> Key </th>
+          <td class="cell-key" mat-cell *matCellDef="let row"> {{row.key}} </td>
+        </ng-container>
+  
+
         <!-- Type Column -->
         <ng-container matColumnDef="type">
           <th class="header-type" mat-header-cell *matHeaderCellDef mat-sort-header> Type </th>

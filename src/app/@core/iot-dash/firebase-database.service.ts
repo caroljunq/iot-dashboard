@@ -153,4 +153,9 @@ export class FirebaseDatabaseService {
   loadSitesArraySensorData(sites: Site[], liveChartService: LiveChartService, colors, echarts): Site[] {
     return sites.map(site => this.loadSiteSensorData(site, liveChartService, colors, echarts));
   }
+
+  createSensor(sensor: Device){
+    console.log(sensor);
+    return true;
+  }
 }

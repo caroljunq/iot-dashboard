@@ -36,7 +36,7 @@ export function getSampleData(): RootData {
       const device: Device = {
         key: sensorKey,
         type,
-        location: `${type} #${sensorIndex}`,
+        name: `${type} #${sensorIndex}`,
         unit: type === 'Temperatura' ? 'ºC' : '%',
         max: type === 'Temperatura' ? 25 : 80,
         min: type === 'Temperatura' ? 15 : 20,
@@ -57,7 +57,7 @@ export function getSampleData(): RootData {
       const actorKey = oneSixSixBits();
       siteActors[actorKey] = {
         key: actorKey,
-        location: `Actor #${actorIndex} ${someName()}`,
+        name: `Actor #${actorIndex} ${someName()}`,
         iconClass: someClass(),
       };
       // fake reports

@@ -355,7 +355,7 @@ export class LiveChartService {
     // }];
     return deviceTimeSeriesArr.reduce<EChartOption>(
       (acc: EChartOption, deviceTimeSeries) => {
-        (<any>acc.legend).data.push(deviceTimeSeries.device.location);
+        (<any>acc.legend).data.push(deviceTimeSeries.device.name);
         (<any[]>acc.xAxis).push({
           ...baseChartXAxis(colors, echarts),
           axisLine: { lineStyle: { color: deviceTimeSeries.color } },
@@ -369,7 +369,7 @@ export class LiveChartService {
           // ),
         });
         acc.series.push({
-          name: deviceTimeSeries.device.location,
+          name: deviceTimeSeries.device.name,
           type: 'line',
           // xAxisIndex: 1,
           smooth: true,
@@ -412,12 +412,12 @@ export class LiveChartService {
     this.charts[device.key] = this.getLastSensorValues(device).pipe(
       map(deviceTimeSereies => {
         const base = baseSensorChartOpts(colors, echarts);
-        base.legend.data = [device.location];
+        base.legend.data = [device.name];
         base.xAxis[0].data = deviceTimeSereies.timeSeries.map(
           timedValue => (new Date(<number>timedValue.timestamp)).toLocaleTimeString(),
         );
         base.series = [{
-          name: device.location,
+          name: device.name,
           type: 'line',
           data: deviceTimeSereies.timeSeries.map(
             timedValue => timedValue.value,

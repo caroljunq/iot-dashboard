@@ -6,9 +6,9 @@ import { SensorEditComponent } from './sensor-edit.component';
 import { AuthGuard } from '../users/auth.guard';
 
 const routes: Routes = [
-  { path: '', component: SensorEditComponent},
-  { path: 'create', component: SensorEditComponent},
-  { path: ':id', component: SensorEditComponent},
+  { path: '', component: SensorEditComponent,canActivate: [AuthGuard]},
+  { path: 'create', component: SensorEditComponent,canActivate: [AuthGuard]},
+  { path: ':id', component: SensorEditComponent,canActivate: [AuthGuard]},
 ];
 
 @NgModule({
