@@ -65,7 +65,7 @@ export class UsersService {
         if (user.storedUser.isAdmin) {
           return 'admin';
         }
-        if (user.storedUser.isValid) {
+        if (user.storedUser.isActive) {
           return 'user';
         }
         return 'guest';
@@ -80,40 +80,69 @@ export class UsersService {
     return this.role$;
   }
 
-  googleLogin() {
-    return this.oAuthLogin(new auth.GoogleAuthProvider());
+  async emailUserCreate(rawUser: {email: string, password: string, fullName: string}): Promise<DashUser> {
+    try {
+      const credential: auth.UserCredential =
+      await this.angularFireAuth.auth.createUserWithEmailAndPassword(rawUser.email, rawUser.password);
+      const user: StoredUser = {
+        uid: credential.user.uid,
+        displayName: rawUser.fullName,
+        email: rawUser.email,
+        photoURL: null,
+      };
+      await this.createUser(user);
+      setTimeout(
+        // wait 10ms for user$ to reach AuthGuard
+        () => this.router.navigate(['/']),
+        10,
+      );
+      return Promise.resolve(await this.getUserFormCredential(credential));
+    } catch (e) {
+      console.error('[UsersService.login]', e);
+      return Promise.reject();
+    }
   }
 
-  protected async oAuthLogin(provider: auth.AuthProvider): Promise<void> {
+  googleLogin(): Promise<DashUser> {
+    return this.login(
+      () => this.angularFireAuth.auth.signInWithPopup(new auth.GoogleAuthProvider()),
+    );
+  }
+  emailLogin(email: string, password: string): Promise<DashUser> {
+    return this.login(
+      () => this.angularFireAuth.auth.signInWithEmailAndPassword(email, password),
+    );
+  }
+  protected async login(credentialFn: () => Promise<auth.UserCredential>): Promise<DashUser> {
     try {
-      // console.log('[UsersService] oAuthLogin()');
-      const credential = await this.angularFireAuth.auth.signInWithPopup(provider);
-      const baseStoreUser: StoredUser = {
+      const credential: auth.UserCredential = await credentialFn();
+      const user = await this.getUserFormCredential(credential);
+      setTimeout(
+        // wait 10ms for user$ to reach AuthGuard
+        () => this.router.navigate(['/']),
+        10,
+      );
+      return Promise.resolve(user);
+    } catch (e) {
+      console.error('[UsersService.login]', e);
+      return Promise.reject();
+    }
+  }
+
+  protected async getUserFormCredential(credential: auth.UserCredential): Promise<DashUser> {
+    const storedUser = await this.getUser(credential.user.uid).pipe(take(1)).toPromise();
+    const authUser: firebase.User = credential.user;
+    if (!storedUser) {
+      await this.createUser({
         uid: credential.user.uid,
         displayName: credential.user.displayName,
         photoURL: credential.user.photoURL,
-      };
-      const storedUser = await this.getUser(credential.user.uid).pipe(take(1)).toPromise();
-      if (storedUser) {
-        await this.updateUser({
-          ...storedUser,
-          ...baseStoreUser,
-        });
-      } else {
-        await this.createUser({
-          ...baseStoreUser,
-          email: credential.user.email,
-          isAdmin: false,
-          isValid: false,
-        });
-      }
-      return Promise.resolve();
-    } catch (e) {
-      console.error('[UsersService.oAuthLogin]', e);
-      return Promise.reject();
-    } finally {
-      // console.log('[UsersService] End oAuthLogin');
+        email: credential.user.email,
+        isAdmin: false,
+        isActive: false,
+      });
     }
+    return Promise.resolve({storedUser, authUser});
   }
 
   createUser(user: StoredUser): Promise<void> {
@@ -121,7 +150,7 @@ export class UsersService {
     return userRef.set(user);
   }
   updateUser(user: StoredUser): Promise<void> {
-    // const allowedFields = [ 'uid', 'displayName', 'photoURL', 'name', 'email', 'isValid', 'isAdmin'];
+    // const allowedFields = [ 'uid', 'displayName', 'photoURL', 'name', 'email', 'isActive', 'isAdmin'];
     // user = <StoredUser>Object.entries(user).map(
     //   i => ({k: i[0], v: i[1]}),
     // ).filter(
@@ -135,7 +164,7 @@ export class UsersService {
       'displayName': user.displayName || '',
       'photoURL': user.photoURL || '',
       'email': user.email || '',
-      'isValid': user.isValid || false,
+      'isActive': user.isActive || false,
       'isAdmin': user.isAdmin || false,
     };
     const userRef = this.angularFireDatabase.object<StoredUser>(`users/${user.uid}`);
@@ -163,8 +192,8 @@ export class UsersService {
             })).sort((a, b) => {
               if (a.isCurrentUser) return -1;
               if (b.isCurrentUser) return 1;
-              if (a.isValid && !b.isValid) return -1;
-              if (!a.isValid && b.isValid) return 1;
+              if (a.isActive && !b.isActive) return -1;
+              if (!a.isActive && b.isActive) return 1;
               return a.displayName.localeCompare(b.displayName);
             }),
           ),

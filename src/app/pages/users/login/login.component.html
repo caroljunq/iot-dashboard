@@ -12,13 +12,9 @@
           <label>Password</label>
           <input type="password" nbInput fullWidth placeholder="Password">
         </div>
-        <!-- <div class="input-group col-12 col-sm-10 col-md-8 col-lg-6 space-bt">
-          <nb-checkbox name="remember">Remember Me</nb-checkbox>
-          <span (click)="changeForgotBtn()" class="forget-button">Forgot Password?</span>
-        </div> -->
       </ng-container>
       <div class="input-group col-12 col-sm-10 col-md-8 col-lg-6">
-        <button nbButton status="success" class="btn-success btn-full-width" aria-disabled="false" tabindex="0" fullWidth (click)="googleLogin()">
+        <button nbButton status="success" class="btn-success btn-full-width" aria-disabled="false" tabindex="0" fullWidth (click)="usersService.googleLogin()">
           {{ !passForgot ? "Sign In": "Request Password" }}
         </button>
       </div>
@@ -28,7 +24,7 @@
       <section aria-label="Social sign in" class="links col-12 col-sm-10 col-md-8 col-lg-6" *ngIf="!passForgot"> 
         <label>or enter with:</label>
         <div class="socials">
-          <button nbButton outline status="success" size="large" class="btn-success" (click)="googleLogin()">
+          <button nbButton outline status="success" size="large" class="btn-success" (click)="usersService.googleLogin()">
             <i class="socicon-google with-icon"></i>
           </button>
         </div>

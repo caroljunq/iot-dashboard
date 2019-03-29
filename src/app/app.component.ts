@@ -16,7 +16,7 @@ const baseMenu = [
   {
     title: 'Users',
     icon: 'ion-android-people',
-    link: 'users',
+    link: 'users/list',
   },
 ];
 

@@ -48,14 +48,15 @@ export class HeaderComponent implements OnInit, OnDestroy {
         this.userMenu = null;
         return;
       }
-      this.profileMenu.link = `/users/${user.authUser.uid}`;
+      this.profileMenu.link = `/users/${user.storedUser.uid}`;
       this.userMenu = [
         this.profileMenu,
         this.logoutMenu,
       ];
       this.user = {
-        name: user.authUser.displayName,
-        picture: user.authUser.photoURL,
+        name: user.storedUser.displayName,
+        picture: user.storedUser.photoURL,
+        color: user.storedUser.color,
       };
     });
     this.menuService.onItemClick().pipe(

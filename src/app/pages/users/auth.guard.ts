@@ -22,8 +22,8 @@ import { UsersService } from './users.service';
 export class AuthGuard implements CanActivate, CanActivateChild, CanLoad {
 
   constructor(
-    private usersService: UsersService,
-    private router: Router,
+    protected usersService: UsersService,
+    protected router: Router,
   ) { }
 
   canActivate(
@@ -59,5 +59,23 @@ export class AuthGuard implements CanActivate, CanActivateChild, CanLoad {
     route: Route,
     segments: UrlSegment[]): Observable<boolean> | Promise<boolean> | boolean {
     return true;
+  }
+}
+
+@Injectable()
+export class NoAuthGuard extends AuthGuard {
+  canActivate(
+    next: ActivatedRouteSnapshot,
+    state: RouterStateSnapshot,
+  ): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree {
+    return this.usersService.user$.pipe(
+      take(1),
+      map(user => {
+        if (!user) {
+          return true;
+        }
+        return this.router.parseUrl('/');
+      }),
+    );
   }
 }

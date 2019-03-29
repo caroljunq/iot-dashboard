@@ -19,17 +19,6 @@ export class LoginComponent implements OnInit {
   ngOnInit() {
   }
 
-  googleLogin() {
-    this.usersService.googleLogin().then(
-      () => setTimeout(
-        // wait 10ms for user$ to reach AuthGuard
-        () => this.router.navigate(['/']),
-        10,
-      ),
-      () => null,
-    );
-  }
-
   changeForgotBtn() {
     this.passForgot = !this.passForgot;
   }

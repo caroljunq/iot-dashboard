@@ -18,8 +18,9 @@
       <nb-user
         *ngIf="user; else noUserBlock"
         [nbContextMenu]="userMenu"
-        [name]="user?.name"
-        [picture]="user?.picture"
+        [name]="user.name"
+        [picture]="user.picture"
+        [color]="user.color"
       ></nb-user>
       <ng-template #noUserBlock>
         <a routerLink="/users/login">

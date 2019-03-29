@@ -1,36 +1,51 @@
 <nb-card>
-  <nb-card-header class="custom-form-title">Register</nb-card-header>
+  <nb-card-header class="custom-form-title">
+    {{ !editMode ? 'Register' : 'Edit' }}
+  </nb-card-header>
   <nb-card-body>
-    <div class="custom-form row">
+    <form [formGroup]="profileForm" (ngSubmit)="onSubmit()" class="custom-form row">
       <div class="input-group col-12 col-sm-10 col-md-8 col-lg-6">
-        <label>Full name</label>
-        <input type="text" nbInput fullWidth placeholder="Full name">
+        <label>
+          Full name
+        </label>
+        <input type="text" nbInput fullWidth placeholder="Full name" formControlName="fullName">
       </div>
       <div class="input-group col-12 col-sm-10 col-md-8 col-lg-6">
         <label>Email address</label>
-        <input type="text" nbInput fullWidth placeholder="Email">
+        <input type="text" nbInput fullWidth placeholder="Email" formControlName="emailAddress">
       </div>
       <div class="input-group col-12 col-sm-10 col-md-8 col-lg-6">
         <label>Password</label>
-        <input type="password" nbInput fullWidth placeholder="Password">
+        <input type="password" nbInput fullWidth [placeholder]="!editMode ? 'Password' : 'Não modificada'" formControlName="password">
       </div>
       <div class="input-group col-12 col-sm-10 col-md-8 col-lg-6">
         <label>Repeat password</label>
-        <input type="password" nbInput fullWidth placeholder="Confirm Password">
+        <input type="password" nbInput fullWidth [placeholder]="!editMode ? 'Repeat Password' : 'Não modificada'" formControlName="repeatPassword">
+      </div>
+      <div *ngIf="!editMode" class="input-group col-12 col-sm-10 col-md-8 col-lg-6">
+        <nb-checkbox name="terms" formControlName="termsConditions">
+          Agree to <a href="#" class="terms-conditions">Terms & Conditions</a>
+        </nb-checkbox>
       </div>
       <div class="input-group col-12 col-sm-10 col-md-8 col-lg-6">
-        <nb-checkbox name="terms">Agree to <a href="#" class="terms-conditions">Terms & Conditions</a></nb-checkbox>
+        <button nbButton fullWidth status="success" class="btn-success btn-full-width"
+          aria-disabled="false" tabindex="0"
+          type="submit"
+          [disabled]="!profileForm.valid">
+          {{ !editMode ? 'Register' : 'Save' }}
+        </button>
       </div>
-      <div class="input-group col-12 col-sm-10 col-md-8 col-lg-6">
-        <button nbButton status="success" class="btn-success btn-full-width"  aria-disabled="false" tabindex="0" fullWidth> Register </button>
-      </div>
-      <section aria-label="Social sign in" class="links ng-star-inserted col-12 col-sm-10 col-md-8 col-lg-6"> 
+      <section *ngIf="!editMode" aria-label="Social sign in" class="links ng-star-inserted col-12 col-sm-10 col-md-8 col-lg-6"> 
         <label>or register with:</label>
         <div class="socials">
-          <a href="" target="_blank" class="socicon-google with-icon ng-star-inserted"></a>
+          <button nbButton outline status="success" size="large" class="btn-success" (click)="usersService.googleLogin()">
+            <i class="socicon-google with-icon"></i>
+          </button>
         </div>
       </section>
-      <span class="col-sm-12 col-md-3 footer-msg-return">Already have an account? <span [routerLink]="['/users/login']">Log in</span></span>
-    </div>
+      <span *ngIf="!editMode" class="col-sm-12 col-md-3 footer-msg-return">
+        Already have an account? <a [routerLink]="['/users/login']">Log in</a>
+      </span>
+    </form>
   </nb-card-body>
 </nb-card>

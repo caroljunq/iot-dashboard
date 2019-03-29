@@ -14,8 +14,8 @@
     </div>
     <ng-container *nbIsGranted="['edit', 'admin']">
       <div class="col-xs-12 col-sm-3">
-        <button nbButton size="xsmall" status="success" (click)="chageActive(user, !user.isValid)">
-          {{ !user.isValid ? "Ativar": "Desativar" }}
+        <button nbButton size="xsmall" status="success" (click)="chageActive(user, !user.isActive)">
+          {{ !user.isActive ? "Ativar": "Desativar" }}
         </button>
       </div>
       <div class="col-xs-12 col-sm-3">

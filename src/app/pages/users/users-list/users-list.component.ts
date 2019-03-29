@@ -11,7 +11,7 @@ interface ListedUser extends StoredUser {
   title: 'inativo'| 'usuário'| 'administrador';
 }
 function mkListedUser(user: StoredUser): ListedUser {
-  const { isValid, isAdmin } = user;
+  const { isActive, isAdmin } = user;
   if (isAdmin) {
     return <ListedUser>{
       ...user,
@@ -20,7 +20,7 @@ function mkListedUser(user: StoredUser): ListedUser {
       title: 'administrador',
     };
   }
-  if (isValid) {
+  if (isActive) {
     return <ListedUser>{
       ...user,
       badgeStatus: 'info',
@@ -57,8 +57,8 @@ export class UsersListComponent implements OnInit {
   ngOnInit() {
   }
 
-  chageActive(user: StoredUser, isValid: boolean) {
-    this.update({...user, isValid});
+  chageActive(user: StoredUser, isActive: boolean) {
+    this.update({...user, isActive});
   }
   chageAdmin(user: StoredUser, isAdmin: boolean) {
     this.update({...user, isAdmin});
