@@ -18,14 +18,10 @@ export interface UserData {
   type: string
 }
 
-
-/** Constants used to fill up our data base. */
-
 const NAMES: string[] = [
   'Maia', 'Asher', 'Olivia', 'Atticus', 'Amelia', 'Jack', 'Charlotte', 'Theodore', 'Isla', 'Oliver',
   'Isabella', 'Jasper', 'Cora', 'Levi', 'Violet', 'Arthur', 'Mia', 'Thomas', 'Elizabeth'
 ];
-
 
 @Component({
   selector: 'app-room-edit',
@@ -39,16 +35,16 @@ export class RoomEditComponent implements OnInit {
   sensorDataSource: MatTableDataSource<SensorData>;
   sensorsSelection = new SelectionModel<SensorData>(true, []);
 
-  @ViewChild(MatPaginator) paginatorSensor: MatPaginator;
-  @ViewChild(MatSort) sortSensor: MatSort;
+  @ViewChild("pagSensor") paginatorSensor: MatPaginator;
+  @ViewChild("sortSensor") sortSensor: MatSort;
 
   // Users table
   displayedUserColumns: string[] = ['select','name', 'email','type'];
   userDataSource: MatTableDataSource<UserData>;
   usersSelection = new SelectionModel<UserData>(true, []);
 
-  @ViewChild(MatPaginator) paginatorUser: MatPaginator;
-  @ViewChild(MatSort) sortUser: MatSort;
+  @ViewChild("pagUser") paginatorUser: MatPaginator;
+  @ViewChild("sortUser") sortUser: MatSort;
 
   constructor() {
     const sensors = Array.from({length: 100}, (_, k) => createNewSensor(k + 1));

@@ -119,7 +119,27 @@ mwl-gauge.gauge-chart {
   background-color: #40dc7e !important;
 }
 
-.top-form-register{
-  display: flex;
-  align-items: center;
+th.mat-header-cell:first-of-type,td.mat-cell:first-of-type, td.mat-footer-cell:first-of-type, th.mat-header-cell:first-of-type{
+  padding: 10px;
+}
+
+.left-inner-addon {
+  position: relative;
+}
+
+.left-inner-addon{
+    
+  input {
+    padding: 0.75rem 2rem !important;
+  }
+}
+
+.left-inner-addon i {
+  position: absolute;
+  left: 0px;
+  padding: 7px 3px;
+  font-size: 2rem;
+  pointer-events: none;
+  color: #c6cdd4;
+  font-weight: 600;
 }
