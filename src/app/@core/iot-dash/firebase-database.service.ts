@@ -159,7 +159,7 @@ export class FirebaseDatabaseService {
     return true;
   }
 
-  getSensorByKey(id):  Observable<Device>{
+  getSensorByKey(id): Observable<Device>{
     return of({
       key: '203980sjhassda',
       name: 'sensor1',
@@ -168,5 +168,10 @@ export class FirebaseDatabaseService {
       min: 15,
       max: 12
     });
+  }
+
+  createSite(site){
+    console.log(site);
+    return true;
   }
 }
