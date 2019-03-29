@@ -1,21 +1,26 @@
 <nb-card>
   <nb-card-header class="custom-form-title">{{ !passForgot ? "Log In": "Forgot Password" }}</nb-card-header>
   <nb-card-body>
-    <div class="custom-form row">
-      <span class="col-12 col-sm-10 col-md-8 col-lg-6 form-descrip" *ngIf="passForgot">Enter your email address and we’ll send a link to reset your password.</span>
+    <form class="custom-form row" [formGroup]="loginForm" (ngSubmit)="onSubmit()" >
+      <span class="col-12 col-sm-10 col-md-8 col-lg-6 form-descrip" *ngIf="passForgot">
+        Enter your email address and we’ll send a link to reset your password.
+      </span>
       <div class="input-group col-12 col-sm-10 col-md-8 col-lg-6">
         <label>Email</label>
-        <input type="text" nbInput fullWidth placeholder="Email">
+        <input type="text" nbInput fullWidth placeholder="Email" formControlName="email">
       </div>
       <ng-container *ngIf="!passForgot">
         <div class="input-group col-12 col-sm-10 col-md-8 col-lg-6">
           <label>Password</label>
-          <input type="password" nbInput fullWidth placeholder="Password">
+          <input type="password" nbInput fullWidth placeholder="Password" formControlName="password">
         </div>
       </ng-container>
       <div class="input-group col-12 col-sm-10 col-md-8 col-lg-6">
-        <button nbButton status="success" class="btn-success btn-full-width" aria-disabled="false" tabindex="0" fullWidth (click)="usersService.googleLogin()">
-          {{ !passForgot ? "Sign In": "Request Password" }}
+        <button nbButton fullWidth status="success" class="btn-success btn-full-width"
+          aria-disabled="false" tabindex="0"
+          type="submit"
+          [disabled]="!loginForm.valid">
+          {{ !passForgot ? 'Sign In': 'Request Password' }}
         </button>
       </div>
       <div class="forgot-button row col-12 col-sm-10 col-md-8 col-lg-6" *ngIf="!passForgot">
@@ -33,7 +38,9 @@
         <span (click)="changeForgotBtn()">Back to Log In</span>
         <span [routerLink]="['/users/register']">Register</span>
       </section>
-      <span class="col-sm-12 col-md-3 footer-msg-return" *ngIf="!passForgot">Don't have an account? <a [routerLink]="['/users/register']">Register</a></span>
-    </div>
+      <span class="col-sm-12 col-md-3 footer-msg-return" *ngIf="!passForgot">
+        Don't have an account? <a [routerLink]="['/users/register']">Register</a>
+      </span>
+    </form>
   </nb-card-body>
 </nb-card>
