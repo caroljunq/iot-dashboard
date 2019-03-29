@@ -1,24 +1,8 @@
 import { Component } from '@angular/core';
 import { NbMenuItem } from '@nebular/theme';
 import { Observable } from 'rxjs';
-import { map, startWith } from 'rxjs/operators';
 
-import { StateService } from 'app/@core/utils';
-import { FirebaseDatabaseService } from 'app/@core/iot-dash/firebase-database.service';
-import { Site } from 'app/@core/iot-dash/iot-dash-models';
-
-const baseMenu = [
-  {
-    title: 'Historical Data',
-    icon: 'nb-bar-chart',
-    link: 'historical-data',
-  },
-  {
-    title: 'Users',
-    icon: 'ion-android-people',
-    link: 'users/list',
-  },
-];
+import { AppService } from './app.service';
 
 @Component({
   selector: 'app-app',
@@ -26,24 +10,23 @@ const baseMenu = [
   styleUrls: ['app.component.scss'],
 })
 export class AppComponent {
-  sidebar$: Observable<{}>;
-  sites$: Observable<Site[]>;
   menu$: Observable<NbMenuItem[]>;
+  baseMenu = [
+    {
+      title: 'Historical Data',
+      icon: 'nb-bar-chart',
+      link: 'historical-data',
+    },
+    {
+      title: 'Users',
+      icon: 'ion-android-people',
+      link: 'users/list',
+    },
+  ];
 
   constructor(
-    protected stateService: StateService,
-    private firebaseDatabaseService: FirebaseDatabaseService,
+    protected appService: AppService,
   ) {
-    this.sidebar$ = this.stateService.onSidebarState();
-    this.menu$ = this.firebaseDatabaseService.getSites().pipe(
-      map(
-        sites => sites.map(site => ({
-          title: site.name || 'Dashboard',
-          icon: site.icon || 'nb-home',
-          link: 'dashboard/' + site.key,
-        })).concat(baseMenu),
-      ),
-      startWith(baseMenu),
-    );
+    this.menu$ = this.appService.getMenu(this.baseMenu);
   }
 }

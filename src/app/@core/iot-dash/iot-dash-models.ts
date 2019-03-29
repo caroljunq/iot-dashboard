@@ -1,4 +1,18 @@
 import { Observable } from 'rxjs';
+export interface StoredUser {
+  uid: string;
+  isActive: boolean;
+  isAdmin: boolean;
+  name?: string;
+  // google auth
+  displayName: string;
+  photoURL?: string;
+  // email auth
+  email?: string;
+  // internal
+  isCurrentUser?: boolean;
+  color?: string;
+}
 
 export interface TimedValue<T> {
   key?: string;
@@ -6,14 +20,18 @@ export interface TimedValue<T> {
   timestamp: number;
 }
 export interface Device {
-  key?: string;
+  key: string;
   name: string;
+  // ------ ACTOR -------
+  iconClass?: string;
+  // ------ SENSOR -------
   // Umidade: 20 - 80
   // Temperatura: 15 - 25
-  type: string | 'Temperatura' | 'Umidade';
-  unit: string | 'ºC' | '%';
-  max: number;
-  min: number;
+  type?: string | 'Temperatura' | 'Umidade';
+  unit?: string | 'ºC' | '%';
+  max?: number;
+  min?: number;
+  // ------ INTERNAL -------
   value$?: Observable<TimedValue<number>>;
   emiter?: (number) => any;
   aggregate$?: Observable<TimedAggregate>;
@@ -31,8 +49,10 @@ export interface Site {
 
 export interface RootData {
   sites: {[key: string]: Site};
-  sensorData: {[key: string]: TimedValue<number>};
-  actorData: {[key: string]: TimedValue<boolean>};
+  sensorData: {[deviceKey: string]: {[key: string]: TimedValue<number>}};
+  actorData: {[deviceKey: string]: {[key: string]: TimedValue<boolean>}};
+  users: {[key: string]: StoredUser};
+  userSites: {[userUid: string]: {[siteKey: string]: string}};
 }
 
 export interface TimedAggregate {

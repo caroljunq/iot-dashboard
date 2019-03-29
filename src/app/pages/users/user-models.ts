@@ -1,18 +1,9 @@
 import { AngularFireAuth } from '@angular/fire/auth';
+import { StoredUser } from 'app/@core/iot-dash/iot-dash-models';
 
 export interface DashUser {
   storedUser: StoredUser;
   authUser: firebase.User;
 }
 
-export interface StoredUser {
-  uid: string;
-  displayName: string;
-  photoURL: string;
-  name?: string;
-  email?: string;
-  isActive?: boolean;
-  isAdmin?: boolean;
-  isCurrentUser?: boolean;
-  color?: string;
-}
+export { StoredUser } from 'app/@core/iot-dash/iot-dash-models';

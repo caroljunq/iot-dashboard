@@ -1,15 +1,36 @@
 {
   "rules": {
-    ".read": true,
-    ".write": true,
+    ".read": "root.child('users/'+auth.uid+'/isAdmin').val() === true",
+    ".write": "root.child('users/'+auth.uid+'/isAdmin').val() === true",
+    "actorData": {
+      "$actorId": {
+        ".indexOn": "timestamp"
+      }
+    },
     "sensorData": {
       "$sensorId": {
         ".indexOn": "timestamp"
       }
     },
-    "actorData": {
-      "$actorId": {
-        ".indexOn": "timestamp"
+    "sites": {
+      "$siteId": {
+        ".read": "auth.uid != null && root.child('userSites/'+auth.uid+'/'+$siteId).exists()"
+      }
+    },
+    "siteFake": {
+      ".read": true,
+      ".write": true,
+    },
+    "users": {
+      "$uid": {
+        ".read": "auth.uid != null && auth.uid === $uid",
+        ".write": "auth.uid != null && auth.uid === $uid"
+      }
+    },
+    "userSites": {
+      "$uid": {
+        ".read": "auth.uid != null && auth.uid === $uid",
+        ".write": "root.child('users/'+auth.uid+'/isAdmin').val() === true"
       }
     }
   }

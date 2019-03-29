@@ -13,7 +13,7 @@ import {
 } from '@angular/router';
 import { Observable } from 'rxjs';
 
-import { FirebaseDatabaseService } from './@core/iot-dash/firebase-database.service';
+import { FirebaseDatabaseService } from '../../@core/iot-dash/firebase-database.service';
 
 @Injectable({
   providedIn: 'root',

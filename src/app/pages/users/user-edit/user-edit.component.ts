@@ -73,7 +73,6 @@ export class UserEditComponent implements OnInit, OnDestroy {
   }
 
   onSubmit() {
-    console.log('[UserEditComponent.onSubmit]', this.profileForm.value);
     if (this.profileForm.invalid) {
       return;
     }
