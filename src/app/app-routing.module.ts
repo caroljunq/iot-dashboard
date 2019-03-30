@@ -5,7 +5,7 @@ import { DashboardComponent } from './pages/dashboard/dashboard.component';
 import { HistoricalDataComponent } from './pages/historical-data/historical-data.component';
 import { DashboardModule } from './pages/dashboard/dashboard.module';
 import { HistoricalDataModule } from './pages/historical-data/historical-data.module';
-import { DashboardIdGuard } from './pages/dashboard/dashboard-id.guard';
+import { DashboardIdGuard } from './pages/dashboard/dashboard.service';
 import { RoomEditModule } from './pages/room-edit/room-edit.module';
 import { SensorsModule } from './pages/sensors/sensors.module';
 

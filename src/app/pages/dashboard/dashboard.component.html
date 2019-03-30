@@ -2,7 +2,7 @@
   <div class="col-md-6 col-sm-6 col-12">
     <div class="form-group">
     <label>Room</label>
-    <span class="config-val">{{ (site$ | async)?.name }}</span>
+    <span class="config-val">{{ site?.name }}</span>
   </div>
   </div>
   <div class="col-md-3 col-sm-3 col-6">
@@ -14,8 +14,8 @@
     <span class="config-val">{{ currentDate | async | date:'HH:mm' }}</span>
   </div>
 </div>
-<div class="row" *ngIf="(site$ | async)?.actorsArray?.length">
-  <div class="col" *ngFor="let actor of (site$ | async)?.actorsArray">
+<div class="row" *ngIf="site?.actorsArray?.length">
+  <div class="col" *ngFor="let actor of site?.actorsArray">
     <app-status-card
       type="primary"
       [title]="actor.name"
@@ -26,9 +26,12 @@
     </app-status-card>
   </div>
 </div>
+<div class="col" *ngFor="let device of site?.devicesArray">
+  {{ device.value$ | async | json }}
+</div>
 
-<div class="sensors-items" *ngIf="(site$ | async)?.sensorsArray?.length">
-  <div class="sensor-item" *ngFor="let sensor of (site$ | async)?.sensorsArray">
+<div class="sensors-items" *ngIf="site?.sensorsArray?.length">
+  <div class="sensor-item" *ngFor="let sensor of site?.sensorsArray">
     <app-device-monitoring
       [title]="sensor.name"
       [sensorData]="sensor.value$ | async"
@@ -36,8 +39,8 @@
     ></app-device-monitoring>
   </div>
 </div>
-<div class="row" *ngIf="(site$ | async)?.sensorsArray?.length">
-  <div class="col-md-12 col-sm-12" *ngFor="let sensor of (site$ | async)?.sensorsArray">
+<div class="row" *ngIf="site?.sensorsArray?.length">
+  <div class="col-md-12 col-sm-12" *ngFor="let sensor of site?.sensorsArray">
     <nb-card>
       <nb-card-body>
         <div echarts [options]="sensor.chart$ | async" class="echart"></div>
@@ -45,9 +48,3 @@
     </nb-card>
   </div>
 </div>
-
-<!-- <div class="row">
-  <div class="col-xxxl-9 col-xl-12">
-    <app-rooms></app-rooms>
-  </div>
-</div> -->

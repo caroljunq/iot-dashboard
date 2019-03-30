@@ -6,7 +6,7 @@ import { map, filter, publishReplay, refCount, take, catchError, tap, switchMap 
 
 import { environment } from 'environments/environment';
 import { getSampleData } from './setup-dash';
-import { Site, Device, TimedValue } from './iot-dash-models';
+import { Site, Device, TimedValue, TimedAggregate } from './iot-dash-models';
 import { LiveChartService } from './live-chart.service';
 import { AngularFireFunctions } from '@angular/fire/functions';
 import { DashUser } from './../../pages/users/user-models';
@@ -17,28 +17,30 @@ import { DashUser } from './../../pages/users/user-models';
 export class FirebaseDatabaseService {
   constructor(protected angularFireDatabase: AngularFireDatabase) {
     // if (!environment.production) {
-    //   this.angularFireDatabase.object('/').update(getSampleData());
-    //   const sub = this.angularFireDatabase.list<Site>('/sites').valueChanges().pipe(take(1)).subscribe(sampleData => {
-    //     sub.unsubscribe();
-    //     // update
-    //     sampleData.forEach(
-    //       site => Object.values(site.sensors).forEach(
-    //         (sensor: Device) => {
-    //           setInterval(
-    //             () => this.setSensorValue(
-    //               sensor.key,
-    //               Math.random() * (sensor.max - sensor.min) + sensor.min,
-    //             ).then(() => null),
-    //             100 * Math.floor(Math.random() * 10 + 10),
-    //           );
-    //         },
-    //       ),
-    //     );
-    //   });
+    //   // this.angularFireDatabase.object('/').update(getSampleData());
     // }
   }
 
-  // sites$: Observable<Site[]>;
+  sites$: Observable<Site[]>;
+  getSites(): Observable<Site[]> {
+    if (this.sites$) {
+      return this.sites$;
+    }
+    console.trace('getSites');
+    this.sites$ = this.angularFireDatabase.list<Site>('sites').valueChanges().pipe(
+      // tap(v => console.log(v)),
+      publishReplay(),
+      refCount(),
+      filter(v => !!v),
+    );
+    return this.sites$;
+  }
+  getSite(key: string): Observable<Site> {
+    return this.angularFireDatabase.object<Site>(`sites/${key}`).valueChanges();
+  }
+  getSensorSites(key: string): Observable<Device[]> {
+    return this.angularFireDatabase.list<Device>(`sites/${key}/sensors`).valueChanges();
+  }
 
   // getSites(): Observable<Site[]> {
   //   if (this.sites$) {
@@ -189,11 +191,21 @@ export class FirebaseDatabaseService {
     return this.angularFireDatabase.object<Device>(`sensors/${id}`).valueChanges();
   }
 
+
   updateDevice(id: string, device: Device){
     return this.angularFireDatabase.object(`sensors/${id}`).update(device);
+
+  getUserSites(dashUser: DashUser): any {
+    return this.angularFireDatabase.list<string>(`userSites/${dashUser.authUser.uid}`).valueChanges().pipe(
+      // tap(userSites => console.log('[FirebaseDatabaseService.getUserSites]', {userSites})),
+      switchMap(userSites => combineLatest(userSites.map(
+        userSite => this.getSite(userSite),
+      ))),
+    );
+
   }
 
   getAllSensors():Observable<Device[]>{
     return this.angularFireDatabase.list<Device>('sensors').valueChanges();
-  } 
+  }
 }

@@ -41,13 +41,14 @@ export interface Device {
   chart$?: Observable<any>;
 }
 export interface Site {
-  key?: string;
+  key: string;
   name: string;
-  sensors: {[sensorId: string]: string};
+  devices: {[sensorId: string]: string};
   actors: {[sensorId: string]: string};
 }
 
 export interface RootData {
+  devices: {[key: string]: Device};
   sites: {[key: string]: Site};
   sensorData: {[deviceKey: string]: {[key: string]: TimedValue<number>}};
   actorData: {[deviceKey: string]: {[key: string]: TimedValue<boolean>}};
