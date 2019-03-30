@@ -1,6 +1,7 @@
+import { AngularFireDatabase } from '@angular/fire/database';
 import { Component } from '@angular/core';
 import { NbMenuItem } from '@nebular/theme';
-import { Observable, of } from 'rxjs';
+import { Observable, of, combineLatest } from 'rxjs';
 import { switchMap, map, startWith } from 'rxjs/operators';
 
 import { DashUser } from './pages/users/user-models';
@@ -43,6 +44,7 @@ export class AppComponent {
   constructor(
     protected usersService: UsersService,
     protected firebaseDatabaseService: FirebaseDatabaseService,
+    protected angularFireDatabase: AngularFireDatabase,
   ) {
     this.menu$ = this.getMenu(this.baseMenu, this.fakeMenu);
   }
@@ -61,11 +63,15 @@ export class AppComponent {
           return of(fakeMenu);
         }
         if (dashUser.storedUser.isAdmin) {
-          return this.firebaseDatabaseService.getSites().pipe(
+          return this.angularFireDatabase.list<Site>('sites').valueChanges().pipe(
             map(siteToMenuItem),
           );
         }
-        return this.firebaseDatabaseService.getUserSites(dashUser).pipe(
+        return this.angularFireDatabase.list<string>(`userSites/${dashUser.authUser.uid}`).valueChanges().pipe(
+          // tap(userSites => console.log('[FirebaseDatabaseService.getUserSites]', {userSites})),
+          switchMap(userSites => combineLatest(userSites.map(
+            userSite => this.angularFireDatabase.object<Site>(`sites/${userSite}`).valueChanges(),
+          ))),
           map(siteToMenuItem),
         );
       }),

@@ -25,7 +25,7 @@
          <!-- Status Column -->
          <ng-container matColumnDef="status">
           <th class="header-status" mat-header-cell *matHeaderCellDef mat-sort-header> Status </th>
-          <td class="cell-status" mat-cell *matCellDef="let row"> {{ row.active ? "Enabled":"Disabled"}} </td>
+          <td class="cell-status" mat-cell *matCellDef="let row"> {{ row.isActive? "Enabled":"Disabled"}} </td>
         </ng-container>
 
          <!-- Actor Column -->

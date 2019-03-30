@@ -12,26 +12,26 @@ import { Observable, of } from 'rxjs';
 
 
 interface SensorData {
-  key: string,
-  name: string,
-  max: number,
-  min: number,
-  type: string,
-  unit: string
+  key: string;
+  name: string;
+  max: number;
+  min: number;
+  type: string;
+  unit: string;
 }
 
 interface UserData {
-  key: number,
-  name: string,
-  email: string,
-  type: string
+  key: number;
+  name: string;
+  email: string;
+  type: string;
 }
 
 const NAMES: string[] = [
   'Maia', 'Asher', 'Olivia', 'Atticus', 'Amelia', 'Jack', 'Charlotte', 'Theodore', 'Isla', 'Oliver',
-  'Isabella', 'Jasper', 'Cora', 'Levi', 'Violet', 'Arthur', 'Mia', 'Thomas', 'Elizabeth'
+  'Isabella', 'Jasper', 'Cora', 'Levi', 'Violet', 'Arthur', 'Mia', 'Thomas', 'Elizabeth',
 ];
-interface SiteForm{
+interface SiteForm {
   name: string;
   sensors: [];
   actors: [];
@@ -40,38 +40,38 @@ interface SiteForm{
 @Component({
   selector: 'app-room-edit',
   templateUrl: './room-edit.component.html',
-  styleUrls: ['./room-edit.component.scss']
+  styleUrls: ['./room-edit.component.scss'],
 })
 export class RoomEditComponent implements OnInit {
 
 
   roomForm = this.formBuilder.group({
-    name: ['',Validators.required]
+    name: ['', Validators.required],
   });
 
   editMode = false;
 
 
   // Sensor table
-  displayedSensorColumns: string[] = ['select','name', 'key','type','min', 'max'];
+  displayedSensorColumns: string[] = ['select', 'name', 'key', 'type', 'min', 'max'];
   sensorDataSource: MatTableDataSource<SensorData>;
   sensorsSelection = new SelectionModel<SensorData>(true, []);
 
-  @ViewChild("pagSensor") paginatorSensor: MatPaginator;
-  @ViewChild("sortSensor") sortSensor: MatSort;
+  @ViewChild('pagSensor') paginatorSensor: MatPaginator;
+  @ViewChild('sortSensor') sortSensor: MatSort;
 
   // Users table
-  displayedUserColumns: string[] = ['select','name', 'email','type'];
+  displayedUserColumns: string[] = ['select', 'name', 'email', 'type'];
   userDataSource: MatTableDataSource<UserData>;
   usersSelection = new SelectionModel<UserData>(true, []);
 
-  @ViewChild("pagUser") paginatorUser: MatPaginator;
-  @ViewChild("sortUser") sortUser: MatSort;
+  @ViewChild('pagUser') paginatorUser: MatPaginator;
+  @ViewChild('sortUser') sortUser: MatSort;
 
   constructor(
     protected route: ActivatedRoute,
     private firebaseDatabaseService: FirebaseDatabaseService,
-    protected formBuilder: FormBuilder
+    protected formBuilder: FormBuilder,
   ) {
     const sensors = Array.from({length: 100}, (_, k) => createNewSensor(k + 1));
     const users = Array.from({length: 100}, (_, k) => createNewUser(k + 1));
@@ -144,16 +144,16 @@ export class RoomEditComponent implements OnInit {
     return `${this.usersSelection.isSelected(row) ? 'deselect' : 'select'} row ${row.key}`;
   }
 
-  createRoom(){
-    console.log(this.sensorsSelection.selected)
-    // this.firebaseDatabaseService.createSite('teste23123');
+  createRoom() {
+    console.log(this.sensorsSelection.selected);
+    this.firebaseDatabaseService.createSite('teste23123');
   }
 
-  onSubmit(){
-    if(this.roomForm.valid && !this.editMode){
-      return 
-    }else{
-      return
+  onSubmit() {
+    if (this.roomForm.valid && !this.editMode) {
+      return this.createRoom();
+    } else {
+      return;
     }
   }
 
@@ -169,7 +169,7 @@ export class RoomEditComponent implements OnInit {
       type: 'temperatura',
       min: id,
       max: id,
-      unit: '%'
+      unit: '%',
     };
   }
 
@@ -180,7 +180,7 @@ export class RoomEditComponent implements OnInit {
     return {
       key: id,
       name: name,
-      email: "teste@email.com",
-      type: 'administrador'
+      email: 'teste@email.com',
+      type: 'administrador',
     };
   }

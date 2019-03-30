@@ -21,7 +21,7 @@ interface ProfileForm {
   styleUrls: ['./user-edit.component.scss'],
 })
 export class UserEditComponent implements OnInit, OnDestroy {
-  active = true;
+  isActive = true;
   profileForm = this.formBuilder.group({
     fullName: [''],
     emailAddress: [''],
@@ -37,7 +37,7 @@ export class UserEditComponent implements OnInit, OnDestroy {
     protected formBuilder: FormBuilder,
   ) {
     this.route.paramMap.pipe(
-      takeWhile(() => this.active),
+      takeWhile(() => this.isActive),
       switchMap<ParamMap, StoredUser>(paramMap => {
         const id = paramMap.get('id');
         if (id) {
@@ -69,7 +69,7 @@ export class UserEditComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.active = false;
+    this.isActive = false;
   }
 
   onSubmit() {

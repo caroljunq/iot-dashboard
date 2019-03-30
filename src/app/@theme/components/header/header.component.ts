@@ -16,7 +16,7 @@ import { Router } from "@angular/router";
 export class HeaderComponent implements OnInit, OnDestroy {
   @Input() position = 'normal';
   // used to finish subscriptions by takeWhile
-  active = true;
+  isActive = true;
 
   user: any = { name: 'Nick Jones', picture: 'assets/images/nick.png' };
   userSub$: Subscription;
@@ -45,7 +45,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit() {
-    this.userSub$ = this.usersService.user$.pipe(takeWhile(() => this.active)).subscribe(user => {
+    this.userSub$ = this.usersService.user$.pipe(takeWhile(() => this.isActive)).subscribe(user => {
       if (!user) {
         this.user = null;
         this.userMenu = null;
@@ -63,13 +63,13 @@ export class HeaderComponent implements OnInit, OnDestroy {
       };
     });
     this.menuService.onItemClick().pipe(
-      takeWhile(() => this.active),
+      takeWhile(() => this.isActive),
       filter(click => this.logoutMenu === click.item),
     ).subscribe(click => click.item.data.click());
   }
 
   ngOnDestroy() {
-    this.active = false;
+    this.isActive = false;
   }
 
   logout() {

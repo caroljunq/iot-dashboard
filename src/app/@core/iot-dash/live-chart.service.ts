@@ -314,17 +314,6 @@ export class LiveChartService {
 
   constructor(public firebaseDatabaseService: FirebaseDatabaseService) { }
 
-  getLastSensorValues(device: Device, index: number = 0, limit = 15): Observable<DeviceTimeSeries> {
-    return this.firebaseDatabaseService.getLastSensorValues(device.key, limit)
-    .pipe(
-      map<TimedValue<number>[], DeviceTimeSeries>(timeSeries => ({
-        device,
-        timeSeries,
-        color: seriesColors[index],
-      })),
-    );
-  }
-
   simplifyTimeSeries(deviceTimeSeriesArr: DeviceTimeSeries[]): {
     mainAxis: any[],
     dataAxis: number[][],
@@ -379,54 +368,5 @@ export class LiveChartService {
       },
       base,
     );
-  }
-
-  getSiteSensorsComposedChart(params: { siteKey; colors; echarts }): Observable<EChartOption> {
-    const { siteKey, colors, echarts } = params;
-    if (this.charts.hasOwnProperty(siteKey)) {
-      return this.charts[siteKey];
-    }
-
-    this.charts[siteKey] = this.firebaseDatabaseService.getSensorSites(siteKey).pipe(
-      mergeMap<Device[], DeviceTimeSeries[]>(
-        // Device[] => Observable<TimedValue<number>[][]>
-        (devices: Device[]) => combineLatest(
-          // Device[] => Observable<TimedValue<number>[]>[]
-          devices.map((device, index) => this.getLastSensorValues(device, index)),
-        ),
-      ),
-      map(deviceTimeSeriesArr => this.deviceTimeSeriesToChartOpts(deviceTimeSeriesArr, colors)),
-      // filter(v => false),
-      startWith(baseChartOpts(colors, echarts)),
-    );
-
-    return this.charts[siteKey];
-  }
-
-  getSensorsChart(params: { colors, echarts, device: Device }): Observable<EChartOption> {
-    const { colors, echarts, device } = params;
-    if (this.charts.hasOwnProperty(device.key)) {
-      return this.charts[device.key];
-    }
-
-    this.charts[device.key] = this.getLastSensorValues(device).pipe(
-      map(DeviceTimeSeries => {
-        const base = baseSensorChartOpts(colors, echarts);
-        base.legend.data = [device.name];
-        base.xAxis[0].data = DeviceTimeSeries.timeSeries.map(
-          timedValue => (new Date(<number>timedValue.timestamp)).toLocaleTimeString(),
-        );
-        base.series = [{
-          name: device.name,
-          type: 'line',
-          data: DeviceTimeSeries.timeSeries.map(
-            timedValue => timedValue.value,
-          ),
-        }];
-        return base;
-      }),
-      startWith(baseSensorChartOpts(colors, echarts)),
-    );
-    return this.charts[device.key];
   }
 }

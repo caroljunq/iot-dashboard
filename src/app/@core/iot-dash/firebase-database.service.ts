@@ -20,21 +20,6 @@ export class FirebaseDatabaseService {
     //   // this.angularFireDatabase.object('/').update(getSampleData());
     // }
   }
-
-  sites$: Observable<Site[]>;
-  getSites(): Observable<Site[]> {
-    if (this.sites$) {
-      return this.sites$;
-    }
-    console.trace('getSites');
-    this.sites$ = this.angularFireDatabase.list<Site>('sites').valueChanges().pipe(
-      // tap(v => console.log(v)),
-      publishReplay(),
-      refCount(),
-      filter(v => !!v),
-    );
-    return this.sites$;
-  }
   getSite(key: string): Observable<Site> {
     return this.angularFireDatabase.object<Site>(`sites/${key}`).valueChanges();
   }
@@ -42,171 +27,165 @@ export class FirebaseDatabaseService {
     return this.angularFireDatabase.list<Device>(`sites/${key}/sensors`).valueChanges();
   }
 
-  getSites(): Observable<Site[]> {
-    if (this.sites$) {
-      return this.sites$;
-    }
-    this.sites$ = this.angularFireDatabase.object<{ [key: string]: Site }>('sites').valueChanges().pipe(
-      catchError(err => {
-        console.error(err);
-        return of();
-      }),
-      map(value =>
-        Object.entries(value).map(
-          siteEntry =>
-            <Site>{
-              ...siteEntry[1],
-              key: siteEntry[0],
-              sensorsArray: Object.entries(siteEntry[1].sensors || {}).map(
-                sensorEntry =>
-                  <Device>{
-                    key: sensorEntry[0],
-                    ...sensorEntry[1],
-                  },
-              ),
-              actorsArray: Object.entries(siteEntry[1].actors || {}).map(
-                sensorEntry =>
-                  <Device>{
-                    key: sensorEntry[0],
-                    ...sensorEntry[1],
-                  },
-              ),
-            },
-        ),
-      ),
-      // tap(v => console.log(v)),
-      publishReplay(),
-      refCount(),
-      filter(v => !!v),
-    );
-    return this.sites$;
+  // getSites(): Observable<Site[]> {
+  //   if (this.sites$) {
+  //     return this.sites$;
+  //   }
+  //   this.sites$ = this.angularFireDatabase.object<{ [key: string]: Site }>('sites').valueChanges().pipe(
+  //     catchError(err => {
+  //       console.error(err);
+  //       return of();
+  //     }),
+  //     map(value =>
+  //       Object.entries(value).map(
+  //         siteEntry =>
+  //           <Site>{
+  //             ...siteEntry[1],
+  //             key: siteEntry[0],
+  //             sensorsArray: Object.entries(siteEntry[1].sensors || {}).map(
+  //               sensorEntry =>
+  //                 <Device>{
+  //                   key: sensorEntry[0],
+  //                   ...sensorEntry[1],
+  //                 },
+  //             ),
+  //             actorsArray: Object.entries(siteEntry[1].actors || {}).map(
+  //               sensorEntry =>
+  //                 <Device>{
+  //                   key: sensorEntry[0],
+  //                   ...sensorEntry[1],
+  //                 },
+  //             ),
+  //           },
+  //       ),
+  //     ),
+  //     // tap(v => console.log(v)),
+  //     publishReplay(),
+  //     refCount(),
+  //     filter(v => !!v),
+  //   );
+  //   return this.sites$;
+  // }
+
+  // getSite(key: string): Observable<Site> {
+  //   return this.angularFireDatabase.object<Site>(`sites/${key}`).valueChanges();
+  // }
+  // getSensorSites(key: string): Observable<Device[]> {
+  //   return this.angularFireDatabase.list<Device>(`sites/${key}/sensors`).valueChanges();
+  // }
+
+  // getLast<T>(path: string, limit = 1): Observable<T[]> {
+  //   return this.angularFireDatabase.list<T>(
+  //     path,
+  //     ref => ref.orderByChild('timestamp').limitToLast(limit),
+  //   ).valueChanges();
+  // }
+
+  // getLastSensorValues(key: string, limit = 1) {
+  //   return this.getLast<TimedValue<number>>(`sensorData/${key}`, limit);
+  // }
+  // getSensorValue(key: string) {
+  //   return this.getLastSensorValues(key).pipe(
+  //     map(list => list[0]),
+  //     filter(value => value !== null && value !== undefined),
+  //   );
+  // }
+
+  // setSensorValue(key: string, value: number) {
+  //   return this.angularFireDatabase
+  //     .list<TimedValue<number>>(`sensorData/${key}`)
+  //     .push({
+  //       value,
+  //       timestamp: <number>database.ServerValue.TIMESTAMP,
+  //     });
+  // }
+
+  // setActorValue(key: string, value: any) {
+  //   return this.angularFireDatabase
+  //     .list<TimedValue<any>>(`actorData/${key}`)
+  //     .push({
+  //       value,
+  //       timestamp: <number>database.ServerValue.TIMESTAMP,
+  //     });
+  // }
+  // getActorValue(key: string): Observable<TimedValue<any>> {
+  //   return this.getLast<TimedValue<any>>(`actorData/${key}`).pipe(
+  //     map(list => list[0]),
+  //     filter(value => value !== null && value !== undefined),
+  //     map(timedValue => ({ ...timedValue, value: !!timedValue.value })),
+  //   );
+  // }
+
+  // loadSensorData(sensor: Device, liveChartService: LiveChartService, colors, echarts): Device {
+  //   if (!sensor.value$) {
+  //     sensor.value$ = this.getSensorValue(sensor.key);
+  //   }
+  //   if (!sensor.chart$) {
+  //     sensor.chart$ = liveChartService.getSensorsChart({
+  //       colors: colors,
+  //       echarts: echarts,
+  //       device: sensor,
+  //     });
+  //   }
+  //   return sensor;
+  // }
+  // loadSiteSensorData(site: Site, liveChartService: LiveChartService, colors, echarts): Site {
+  //   if (!site) {
+  //     return site;
+  //   }
+  //   site.sensorsArray = (site.sensorsArray || []).map(
+  //     sensor => this.loadSensorData(sensor, liveChartService, colors, echarts),
+  //   );
+  //   site.actorsArray = (site.actorsArray || []).map(actor => {
+  //     if (!actor.value$) {
+  //       actor.value$ = this.getActorValue(actor.key);
+  //     }
+  //     if (!actor.emiter) {
+  //       actor.emiter = (next) => this.setActorValue(actor.key, next);
+  //     }
+  //     return actor;
+  //   });
+  //   return site;
+  // }
+  // loadSitesArraySensorData(sites: Site[], liveChartService: LiveChartService, colors, echarts): Site[] {
+  //   return sites.map(site => this.loadSiteSensorData(site, liveChartService, colors, echarts));
+  // }
+
+
+  createSite(site) {
+    console.trace(site);
+    // return true;
+    throw new Error('Method not implemented.');
   }
 
-  getSite(key: string): Observable<Site> {
-    return this.angularFireDatabase.object<Site>(`sites/${key}`).valueChanges();
-  }
-  getSensorSites(key: string): Observable<Device[]> {
-    return this.angularFireDatabase.list<Device>(`sites/${key}/sensors`).valueChanges();
-  }
+  // getUserSites(dashUser: DashUser): any {
+  //   return this.angularFireDatabase.list<string>(`userSites/${dashUser.authUser.uid}`).valueChanges().pipe(
+  //     tap(userSites => console.log('[FirebaseDatabaseService.getUserSites]', {userSites})),
+  //     switchMap(userSites => combineLatest(userSites.map(
+  //       userSite => this.getSite(userSite),
+  //     ))),
+  //   );
+  // }
 
-  getLast<T>(path: string, limit = 1): Observable<T[]> {
-    return this.angularFireDatabase.list<T>(
-      path,
-      ref => ref.orderByChild('timestamp').limitToLast(limit),
-    ).valueChanges();
-  }
-
-  getLastSensorValues(key: string, limit = 1) {
-    return this.getLast<TimedValue<number>>(`sensorData/${key}`, limit);
-  }
-  getSensorValue(key: string) {
-    return this.getLastSensorValues(key).pipe(
-      map(list => list[0]),
-      filter(value => value !== null && value !== undefined),
-    );
-  }
-
-  setSensorValue(key: string, value: number) {
-    return this.angularFireDatabase
-      .list<TimedValue<number>>(`sensorData/${key}`)
-      .push({
-        value,
-        timestamp: <number>database.ServerValue.TIMESTAMP,
-      });
-  }
-
-  setActorValue(key: string, value: any) {
-    return this.angularFireDatabase
-      .list<TimedValue<any>>(`actorData/${key}`)
-      .push({
-        value,
-        timestamp: <number>database.ServerValue.TIMESTAMP,
-      });
-  }
-  getActorValue(key: string): Observable<TimedValue<any>> {
-    return this.getLast<TimedValue<any>>(`actorData/${key}`).pipe(
-      map(list => list[0]),
-      filter(value => value !== null && value !== undefined),
-      map(timedValue => ({ ...timedValue, value: !!timedValue.value })),
-    );
-  }
-
-  loadSensorData(sensor: Device, liveChartService: LiveChartService, colors, echarts): Device {
-    if (!sensor.value$) {
-      sensor.value$ = this.getSensorValue(sensor.key);
-    }
-    if (!sensor.chart$) {
-      sensor.chart$ = liveChartService.getSensorsChart({
-        colors: colors,
-        echarts: echarts,
-        device: sensor,
-      });
-    }
-    return sensor;
-  }
-  loadSiteSensorData(site: Site, liveChartService: LiveChartService, colors, echarts): Site {
-    if (!site) {
-      return site;
-    }
-    site.sensorsArray = (site.sensorsArray || []).map(
-      sensor => this.loadSensorData(sensor, liveChartService, colors, echarts),
-    );
-    site.actorsArray = (site.actorsArray || []).map(actor => {
-      if (!actor.value$) {
-        actor.value$ = this.getActorValue(actor.key);
-      }
-      if (!actor.emiter) {
-        actor.emiter = (next) => this.setActorValue(actor.key, next);
-      }
-      return actor;
-    });
-    return site;
-  }
-  loadSitesArraySensorData(sites: Site[], liveChartService: LiveChartService, colors, echarts): Site[] {
-    return sites.map(site => this.loadSiteSensorData(site, liveChartService, colors, echarts));
-  }
-
-
-  createSite(site){
-    console.log(site);
-    return true;
-  }
-
-  getUserSites(dashUser: DashUser): any {
-    return this.angularFireDatabase.list<string>(`userSites/${dashUser.authUser.uid}`).valueChanges().pipe(
-      tap(userSites => console.log('[FirebaseDatabaseService.getUserSites]', {userSites})),
-      switchMap(userSites => combineLatest(userSites.map(
-        userSite => this.getSite(userSite),
-      ))),
-    );
-  }
-
-  createDevice(device: Device){
-    let deviceRef = this.angularFireDatabase.database.ref('sensors').push();
+  createDevice(device: Device) {
+    const deviceRef = this.angularFireDatabase.database.ref('sensors').push();
     device.key = deviceRef.key;
     return deviceRef.update(device);
   }
 
-  getSensorById(id: string): Observable<Device>{
+  getSensorById(id: string): Observable<Device> {
     return this.angularFireDatabase.object<Device>(`sensors/${id}`).valueChanges();
   }
 
 
-  updateDevice(id: string, device: Device){
+  updateDevice(id: string, device: Device) {
     return this.angularFireDatabase.object(`sensors/${id}`).update(device);
   }
 
-  getUserSites(dashUser: DashUser): any {
-    return this.angularFireDatabase.list<string>(`userSites/${dashUser.authUser.uid}`).valueChanges().pipe(
-      // tap(userSites => console.log('[FirebaseDatabaseService.getUserSites]', {userSites})),
-      switchMap(userSites => combineLatest(userSites.map(
-        userSite => this.getSite(userSite),
-      ))),
-    );
-
-  }
-
-  getAllDevices():Observable<Device[]>{
+  getAllSensors(): Observable<Device[]> {
     return this.angularFireDatabase.list<Device>('sensors').valueChanges();
+  }
+  createSensor(arg0: Device): any {
+    throw new Error('Method not implemented.');
   }
 }
