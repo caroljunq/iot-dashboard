@@ -117,7 +117,7 @@ export class DevicesEditComponent implements OnInit {
       });
       this.saveBtn = false;
       this.showToast('Device created.', 'SUCCESS', NbToastStatus.SUCCESS);
-      this.router.navigateByUrl('/rooms');
+      this.router.navigateByUrl('/sensors/list');
     } catch (e) {
       this.saveBtn = true;
       this.showToast('Device not created. Try again.', 'WARNING', NbToastStatus.DANGER);
@@ -137,7 +137,7 @@ export class DevicesEditComponent implements OnInit {
         isActor: this.sensorForm.value.isActor,
       });
       this.showToast('Device updated.', 'SUCCESS', NbToastStatus.SUCCESS);
-      // this.router.navigateByUrl('/rooms');
+      this.router.navigateByUrl('/sensors/list');
     } catch (e) {
       this.showToast('Device not updated. Try again.', 'WARNING', NbToastStatus.DANGER);
     }
