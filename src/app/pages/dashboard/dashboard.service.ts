@@ -34,7 +34,7 @@ function mapTimedValueToDeviceTimeSereies(device: Device, index: number) {
 }
 const FAKE_SITE = {
   site: /* Site = */{
-    key: 'fakeKey',
+    key: 'fake',
     name: 'Sala Teste',
     devices: {
       'deviceKey1': 'deviceKey1',
@@ -157,9 +157,9 @@ export class DashboardService implements CanActivate {
     if (this.sitesCache.hasOwnProperty(key) && this.sitesCache[key]) {
       return this.sitesCache[key];
     }
-    console.log('[getSite]', key);
+    // console.log('[getSite]', key);
     this.sitesCache[key] = this.themeService.getJsTheme().pipe(
-      tap(v => console.log('[themeService]', v)),
+      // tap(v => console.log('[themeService]', v)),
       switchMap<NbJSThemeOptions, LoadedSite>(
         theme => {
           const colors = theme.variables;
@@ -198,7 +198,7 @@ export class DashboardService implements CanActivate {
       ),
       publishReplay(1),
       refCount(),
-      tap(v => console.log('[main]', v)),
+      // tap(v => console.log('[main]', v)),
     );
     return this.sitesCache[key];
   }
@@ -213,12 +213,12 @@ export class DashboardService implements CanActivate {
     echarts: string | NbJSThemeVariable | string[],
   ) {
     return siteFn(siteKey).pipe(
-      tap(v => console.log('[siteFn]', v)),
+      // tap(v => console.log('[siteFn]', v)),
       switchMap(
         (site: Site) => combineLatest(
           Object.keys(site.devices).map(deviceFn),
         ).pipe(
-          tap(v => console.log('[deviceFn]', v)),
+          // tap(v => console.log('[deviceFn]', v)),
           map(devices => {
             const loadedDevices: LoadedDevice<number|boolean>[] = devices.map((device, index) => {
               const value$ = deviceDataFn(device.key, 1).pipe(
@@ -325,7 +325,7 @@ export class DashboardService implements CanActivate {
         `userSites/${user.authUser.uid}`,
         ref => ref.limitToFirst(1),
       ).valueChanges().pipe(take(1)).toPromise();
-      console.log({sites});
+      // console.log({sites});
       // console.log('[canActivate]', this.router.parseUrl(`/dashboard/${sites[0]}`));
       return Promise.resolve(
         this.router.parseUrl(`/dashboard/${sites[0]}`),
