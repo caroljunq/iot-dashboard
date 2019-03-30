@@ -7,7 +7,7 @@ import { DashboardModule } from './pages/dashboard/dashboard.module';
 import { HistoricalDataModule } from './pages/historical-data/historical-data.module';
 import { DashboardIdGuard } from './pages/dashboard/dashboard.service';
 import { RoomEditModule } from './pages/room-edit/room-edit.module';
-import { SensorsModule } from './pages/sensors/sensors.module';
+import { DevicesModule } from './pages/devices/devices.module';
 
 import { AuthGuard } from './pages/users/auth.guard';
 // import { UsersModule } from './pages/users/users.module';
@@ -18,7 +18,10 @@ const routes: Routes = [
   { path: 'historical-data', component: HistoricalDataComponent, canActivate: [AuthGuard] },
   { path: 'users', loadChildren: './pages/users/users.module#UsersModule' },
   { path: 'rooms', loadChildren: './pages/room-edit/room-edit.module#RoomEditModule' },
-  { path: 'sensors', loadChildren: './pages/sensors/sensors.module#SensorsModule' },
+  {
+    path: 'sensors',
+    loadChildren: './pages/devices/devices.module#DevicesModule',
+  },
   { path: '', redirectTo: 'dashboard/none', pathMatch: 'full', canActivate: [AuthGuard] },
   { path: '**', redirectTo: 'dashboard/none', canActivate: [AuthGuard] },
 ];

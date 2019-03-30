@@ -12,11 +12,11 @@ import { NbGlobalLogicalPosition, NbGlobalPosition, NbToastrService } from '@neb
 import { NbToastStatus } from '@nebular/theme/components/toastr/model';
 
 @Component({
-  selector: 'app-sensor-edit',
-  templateUrl: './sensor-edit.component.html',
-  styleUrls: ['./sensor-edit.component.scss'],
+  selector: 'app-devices-edit',
+  templateUrl: './devices-edit.component.html',
+  styleUrls: ['./devices-edit.component.scss']
 })
-export class SensorEditComponent implements OnInit {
+export class DevicesEditComponent implements OnInit {
 
   sensorForm = this.formBuilder.group({
     name: ['', Validators.required],
@@ -55,7 +55,7 @@ export class SensorEditComponent implements OnInit {
         const id = paramMap.get('id');
         if (id) {
           this.editMode = true;
-          return this.firebaseDatabaseService.getSensorById(id);
+          return this.firebaseDatabaseService.getDeviceById(id);
         }
         return of(<Device>{
           key: '',
@@ -117,7 +117,7 @@ export class SensorEditComponent implements OnInit {
       });
       this.saveBtn = false;
       this.showToast('Device created.', 'SUCCESS', NbToastStatus.SUCCESS);
-      this.router.navigateByUrl('/rooms');
+      this.router.navigateByUrl('/sensors/list');
     } catch (e) {
       this.saveBtn = true;
       this.showToast('Device not created. Try again.', 'WARNING', NbToastStatus.DANGER);
@@ -137,7 +137,7 @@ export class SensorEditComponent implements OnInit {
         isActor: this.sensorForm.value.isActor,
       });
       this.showToast('Device updated.', 'SUCCESS', NbToastStatus.SUCCESS);
-      // this.router.navigateByUrl('/rooms');
+      this.router.navigateByUrl('/sensors/list');
     } catch (e) {
       this.showToast('Device not updated. Try again.', 'WARNING', NbToastStatus.DANGER);
     }
