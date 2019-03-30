@@ -22,7 +22,7 @@ export class DashboardComponent implements OnDestroy {
   ) {
     this.route.paramMap.pipe(
       takeWhile(() => this.alive),
-      switchMap(params => this.dashboardService.getSite(params.get('id'))),
+      switchMap(params => this.dashboardService.getLoadedSite(params.get('id'))),
       // tap(v => console.log('[DashboardComponent]', v, v.sensorsArray.map(s => s.value$.subscribe(
       //   value => console.log('value', value),
       //   error => console.log('error', error),

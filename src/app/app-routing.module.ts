@@ -13,25 +13,11 @@ import { AuthGuard } from './pages/users/auth.guard';
 // import { UsersModule } from './pages/users/users.module';
 
 const routes: Routes = [
-  { path: 'dashboard', redirectTo: 'dashboard/none', pathMatch: 'full', canActivate: [AuthGuard, DashboardIdGuard] },
-  {
-    path: 'dashboard/:id',
-    component: DashboardComponent,
-    canActivate: [AuthGuard, DashboardIdGuard],
-  },
-  {
-    path: 'historical-data',
-    component: HistoricalDataComponent,
-    canActivate: [AuthGuard],
-  },
-  {
-    path: 'users',
-    loadChildren: './pages/users/users.module#UsersModule',
-  },
-  {
-    path: 'rooms',
-    loadChildren: './pages/room-edit/room-edit.module#RoomEditModule',
-  },
+  // { path: 'dashboard', redirectTo: 'dashboard/none', pathMatch: 'full', canActivate: [AuthGuard, DashboardIdGuard] },
+  { path: 'dashboard/:id', component: DashboardComponent, canActivate: [AuthGuard, DashboardIdGuard] },
+  { path: 'historical-data', component: HistoricalDataComponent, canActivate: [AuthGuard] },
+  { path: 'users', loadChildren: './pages/users/users.module#UsersModule' },
+  { path: 'rooms', loadChildren: './pages/room-edit/room-edit.module#RoomEditModule' },
   {
     path: 'sensors',
     loadChildren: './pages/devices/devices.module#DevicesModule',
