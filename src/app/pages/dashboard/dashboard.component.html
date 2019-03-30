@@ -14,6 +14,7 @@
     <span class="config-val">{{ currentDate | async | date:'HH:mm' }}</span>
   </div>
 </div>
+
 <div class="row" *ngIf="site?.actorsArray?.length">
   <div class="col" *ngFor="let actor of site?.actorsArray">
     <app-status-card
@@ -26,9 +27,6 @@
     </app-status-card>
   </div>
 </div>
-<div class="col" *ngFor="let device of site?.devicesArray">
-  {{ device.value$ | async | json }}
-</div>
 
 <div class="sensors-items" *ngIf="site?.sensorsArray?.length">
   <div class="sensor-item" *ngFor="let sensor of site?.sensorsArray">
@@ -39,6 +37,7 @@
     ></app-device-monitoring>
   </div>
 </div>
+
 <div class="row" *ngIf="site?.sensorsArray?.length">
   <div class="col-md-12 col-sm-12" *ngFor="let sensor of site?.sensorsArray">
     <nb-card>

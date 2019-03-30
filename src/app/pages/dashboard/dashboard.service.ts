@@ -14,12 +14,11 @@ import {
   catchError,
 } from 'rxjs/operators';
 import { Observable, combineLatest, of, BehaviorSubject } from 'rxjs';
-import { AngularFireDatabase, AngularFireList } from '@angular/fire/database';
+import { AngularFireDatabase } from '@angular/fire/database';
 import { NbThemeService } from '@nebular/theme';
 import { NbJSThemeOptions, NbJSThemeVariable } from '@nebular/theme/services/js-themes/theme.options';
 
 import { DeviceTimeSeries, EChartOption, seriesColors } from 'app/@core/iot-dash/live-chart.service';
-import { DashUser } from './../users/user-models';
 import { Site, Device, TimedValue } from 'app/@core/iot-dash/iot-dash-models';
 import { UsersService } from '../users/users.service';
 import { LiveChartService, baseSensorChartOpts } from 'app/@core/iot-dash/live-chart.service';
@@ -27,8 +26,8 @@ import { oneSixSixBits } from 'app/@core/iot-dash/setup-dash';
 
 export interface LoadedDevice<T> extends Device {
   value$: Observable<TimedValue<T>>;
-  emiter: (value: T) => void;
   chart$: Observable<EChartOption>;
+  emiter: (value: T) => void;
 }
 export interface LoadedSite extends Site {
   devicesArray: LoadedDevice<Number|boolean>[];
@@ -81,8 +80,8 @@ const FAKE_SITE = {
       isActive: true,
       type: 'boolean',
       unit: '',
-      min: 0,
-      max: 1,
+      min: null,
+      max: null,
     },
   },
   deviceData: /* {[key: string]: {[key: string]: TimedValue<number|boolean>}} = */{
@@ -140,14 +139,12 @@ function cachedFn<V>() {
   };
 }
 
-
 @Injectable({
   providedIn: 'root',
 })
 export class DashboardService implements CanActivate {
 
   firebaseDataSource = {
-    siteFn: (siteKey: string) => this.angularFireDatabase.object<Site>(`sites/${siteKey}/`).valueChanges(),
     deviceFn: (deviceKey: string) => this.angularFireDatabase.object<Device>(`devices/${deviceKey}`).valueChanges(),
     deviceDataFn: (deviceKey: string, limit = 1) => this.angularFireDatabase.list<TimedValue<number|boolean>>(
       `deviceData/${deviceKey}`,
@@ -161,20 +158,21 @@ export class DashboardService implements CanActivate {
     },
   };
   fakeDataSource = valueSources => ({
-    siteFn: (siteKey: string) => of(FAKE_SITE.site),
     deviceFn: (deviceKey: string) => of(Object.values(FAKE_SITE.devices).find(device => device.key === deviceKey)),
     deviceDataFn: (deviceKey: string, limit: number) => valueSources.find(
       device => device.key === deviceKey,
     ).valueSource.asObservable().pipe(
       // tap(v => console.log('[valueSource]', v)),
-      map(i => Object.values<TimedValue<number|boolean>>(
+      map(i => {
+        const deviceDataArray = Object.values<TimedValue<number|boolean>>(
           FAKE_SITE.deviceData[deviceKey],
-        ).sort(
+        );
+        return deviceDataArray.sort(
           (a, b) => a.timestamp - b.timestamp,
-        ).slice(0, limit),
-      ),
-      // tap(v => console.log('[valueSource]', v)),
-      shareReplay(),
+        ).slice(deviceDataArray.length - limit, deviceDataArray.length);
+      }),
+      // tap(v => console.count('deviceKey')),
+      // shareReplay(),
     ),
     deviceDataNextFn: (deviceKey: string, value: number | boolean) => {
       const nextValue = {timestamp: Date.now(), value};
@@ -198,8 +196,8 @@ export class DashboardService implements CanActivate {
     return this.themeService.getJsTheme().pipe(
       // tap(v => console.log('[themeService]', v)),
       switchMap<NbJSThemeOptions, LoadedSite>(theme => {
-        const colors = theme.variables;
-        const echarts = theme.variables.echarts;
+        const colors: NbJSThemeVariable = theme.variables;
+        const echarts: string | NbJSThemeVariable | string[] = theme.variables.echarts;
         let dataSource = this.firebaseDataSource;
         if (!key || key === 'fake') {
           const valueSources = Object.values(FAKE_SITE.devices).map(device => ({
@@ -221,74 +219,69 @@ export class DashboardService implements CanActivate {
             }
           }
         }
-        return this.innerGetSite(
-          key,
-          dataSource.siteFn,
-          dataSource.deviceFn,
-          dataSource.deviceDataFn,
-          dataSource.deviceDataNextFn,
-          colors,
-          echarts,
+        //
+        return this.getAuthSite(key).pipe(
+          filter(site => !!site),
+          switchMap(
+            (site: Site) => combineLatest(
+              Object.keys(site.devices).map(deviceKey => dataSource.deviceFn(deviceKey)),
+            ).pipe(
+              map(devices => {
+                const loadedDevices: LoadedDevice<number|boolean>[] = devices.map((device, index) => {
+                  const value$: Observable<TimedValue<number|boolean>> = dataSource.deviceDataFn(device.key, 1).pipe(
+                    filter(value => value !== null && value !== undefined),
+                    map(list => list[0]),
+                    startWith({timestamp: Date.now(), value: device.min}),
+                    // tap(v => console.count(site.name)),
+                  );
+                  const chart$ = dataSource.deviceDataFn(device.key, 15).pipe(
+                    mapTimedValueToDeviceTimeSereies(device, index),
+                    map(deviceTimeSeries => {
+                      const base = baseSensorChartOpts(colors, echarts);
+                      base.legend.data = [device.name];
+                      base.xAxis[0].data = deviceTimeSeries.timeSeries.map(
+                        timedValue => (new Date(<number>timedValue.timestamp)).toLocaleTimeString(),
+                      );
+                      base.series = [{
+                        name: device.name,
+                        type: 'line',
+                        data: deviceTimeSeries.timeSeries.map(
+                          timedValue => timedValue.value,
+                        ),
+                      }];
+                      return base;
+                    }),
+                    startWith(baseSensorChartOpts(colors, echarts)),
+                    shareReplay(1),
+                    // tap(v => console.count(site.name)),
+                  );
+                  const emiter = (value) => dataSource.deviceDataNextFn(device.key, value);
+                  // if (!device.isActor) setInterval(
+                  //   () => emiter(Math.random() * (device.max - device.min) + device.min),
+                  //   1000,
+                  // );
+                  return {
+                    ...device,
+                    value$,
+                    chart$,
+                    emiter,
+                  };
+                });
+                const loadedSite: LoadedSite = {
+                  ...site,
+                  devicesArray: loadedDevices,
+                  sensorsArray: loadedDevices.filter((device: Device) => !device.isActor),
+                  actorsArray: loadedDevices.filter((device: Device) => device.isActor),
+                };
+                return loadedSite;
+              }),
+            ),
+          ),
         );
       }),
       publishReplay(1),
       refCount(),
       // tap(v => console.log('[main]', v)),
-    );
-  }
-
-  protected innerGetSite(
-    siteKey: string,
-    siteFn: (siteKey: string) => Observable<Site>,
-    deviceFn: (deviceKey: string) => Observable<Device>,
-    deviceDataFn: (deviceKey: string, limit: number) => Observable<TimedValue<number | boolean>[]>,
-    deviceDataNextFn: (deviceKey: string, value: number | boolean) => void,
-    colors: NbJSThemeVariable,
-    echarts: string | NbJSThemeVariable | string[],
-  ) {
-    return siteFn(siteKey).pipe(
-      tap(v => console.log('[siteFn]', v)),
-      filter(v => !!v),
-      switchMap(
-        (site: Site) => combineLatest(
-          Object.keys(site.devices).map(deviceKey => deviceFn(deviceKey)),
-        ).pipe(
-          tap(v => console.log('[deviceFn]', v)),
-          map(devices => {
-            const loadedDevices: LoadedDevice<number|boolean>[] = devices.map((device, index) => {
-              const value$ = deviceDataFn(device.key, 1).pipe(
-                // tap(v => console.log('[deviceDataFn, 1]', v)),
-                filter(value => value !== null && value !== undefined),
-                map(list => list[0]),
-              );
-              const chart$ = this.getSensorChart(
-                colors,
-                echarts,
-                device.key,
-                deviceDataFn(device.key, 15).pipe(
-                  // tap(v => console.log('[deviceDataFn, 15]', v)),
-                  mapTimedValueToDeviceTimeSereies(device, index),
-                ),
-              );
-              const emiter = (value) => deviceDataNextFn(device.key, value);
-              return {
-                ...device,
-                value$,
-                emiter,
-                chart$,
-              };
-            });
-            const loadedSite: LoadedSite = {
-              ...site,
-              devicesArray: loadedDevices,
-              sensorsArray: loadedDevices.filter((device: Device) => !device.isActor),
-              actorsArray: loadedDevices.filter((device: Device) => device.isActor),
-            };
-            return loadedSite;
-         }),
-        ),
-      ),
-      // tap(v => console.log('[switchMap]', v)),
     );
   }
 
@@ -333,44 +326,12 @@ export class DashboardService implements CanActivate {
     );
   }
 
-  @cachedFn()
-  getSensorChart(colors, echarts, device, data$: Observable<DeviceTimeSeries>) {
-    return data$.pipe(
-      map(deviceTimeSeries => {
-        const base = baseSensorChartOpts(colors, echarts);
-        base.legend.data = [device.name];
-        base.xAxis[0].data = deviceTimeSeries.timeSeries.map(
-          timedValue => (new Date(<number>timedValue.timestamp)).toLocaleTimeString(),
-        );
-        base.series = [{
-          name: device.name,
-          type: 'line',
-          data: deviceTimeSeries.timeSeries.map(
-            timedValue => timedValue.value,
-          ),
-        }];
-        return base;
-      }),
-      startWith(baseSensorChartOpts(colors, echarts)),
-    );
-  }
-
-  getDeviceValue(key: string) {
-    //
-  }
-  setDeviceValue(key: string, value: boolean | number) {
-    //
-  }
-  getDeviceValueChart(key: string) {
-    //
-  }
-
   canActivate(
     next: ActivatedRouteSnapshot,
     state: RouterStateSnapshot,
   ): Observable<boolean | UrlTree> {
     const key = next.params.id;
-    console.log('[canActivate]', {key, comp: next.component});
+    // console.log('[canActivate]', {key, comp: next.component});
     return this.getAuthSite(key).pipe(
       take(1),
       map(site => {

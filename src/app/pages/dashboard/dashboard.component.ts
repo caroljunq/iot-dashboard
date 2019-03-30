@@ -1,8 +1,13 @@
-import { Component, ChangeDetectionStrategy, OnDestroy } from '@angular/core';
+import { Component, ChangeDetectionStrategy, OnDestroy, DoCheck, ChangeDetectorRef } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { NbThemeService } from '@nebular/theme';
-import { Observable, interval, combineLatest, of } from 'rxjs';
-import { tap, filter, switchMap, publishReplay, refCount, map, takeWhile } from 'rxjs/operators';
+import { Observable, interval, combineLatest, of, Subscription } from 'rxjs';
+import {
+  tap,
+  switchMap,
+  map,
+  takeWhile,
+} from 'rxjs/operators';
 
 import { DashboardService, LoadedSite } from './dashboard.service';
 
@@ -13,6 +18,7 @@ import { DashboardService, LoadedSite } from './dashboard.service';
 })
 export class DashboardComponent implements OnDestroy {
   site: LoadedSite;
+  siteSubscription: Subscription;
   currentDate = interval(1000).pipe( map(() => Date.now()));
   alive = true;
 
@@ -20,19 +26,21 @@ export class DashboardComponent implements OnDestroy {
     protected route: ActivatedRoute,
     protected dashboardService: DashboardService,
   ) {
-    this.route.paramMap.pipe(
+    this.siteSubscription = this.route.paramMap.pipe(
       takeWhile(() => this.alive),
       switchMap(params => this.dashboardService.getLoadedSite(params.get('id'))),
-      // tap(v => console.log('[DashboardComponent]', v, v.sensorsArray.map(s => s.value$.subscribe(
-      //   value => console.log('value', value),
-      //   error => console.log('error', error),
-      //   () => console.log('complete'),
-      // )))),
     ).subscribe(
-      site => this.site = site,
+      site => {
+        this.site = site;
+        // console.log('new site value', site);
+      },
+      // error => console.log('error', error),
+      // () => console.log('complete'),
     );
   }
+
   ngOnDestroy(): void {
     this.alive = false;
+    this.siteSubscription.unsubscribe();
   }
 }
