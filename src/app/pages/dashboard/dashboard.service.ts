@@ -1,7 +1,18 @@
 import { database } from 'firebase/app';
 import { Injectable } from '@angular/core';
 import { CanActivate, Router, ActivatedRouteSnapshot, RouterStateSnapshot, UrlTree } from '@angular/router';
-import { map, switchMap, publishReplay, refCount, filter, startWith, tap, take, distinct, shareReplay } from 'rxjs/operators';
+import {
+  map,
+  switchMap,
+  publishReplay,
+  refCount,
+  filter,
+  startWith,
+  tap,
+  take,
+  shareReplay,
+  catchError,
+} from 'rxjs/operators';
 import { Observable, combineLatest, of, BehaviorSubject } from 'rxjs';
 import { AngularFireDatabase, AngularFireList } from '@angular/fire/database';
 import { NbThemeService } from '@nebular/theme';
@@ -100,6 +111,33 @@ const FAKE_SITE = {
   },
 };
 
+function cachedFn<V>() {
+  const cache = new Map<string, V>();
+  return function (target: any, propertyKey: string, descriptor: PropertyDescriptor) {
+    const original = descriptor.value;
+    if (typeof original === 'function') {
+      descriptor.value = function(...args): V {
+        const key: string = args.join(', ');
+        // console.log('Arguments: ', {key, args});
+        try {
+          if (!cache.has(key)) {
+            // console.log('Cache Miss');
+            cache.set(key, original.apply(this, args));
+          }
+          const result = cache.get(key);
+          // console.log('Result: ', {propertyKey, key, args, result });
+          return result;
+        } catch (e) {
+          // console.log('Error: ', e);
+          throw e;
+        }
+      };
+    }
+    return descriptor;
+  };
+}
+
+
 @Injectable({
   providedIn: 'root',
 })
@@ -152,55 +190,48 @@ export class DashboardService implements CanActivate {
     protected liveChartService: LiveChartService,
   ) { }
 
-  sitesCache: Object = {};
-  getSite(key: string): Observable<LoadedSite> {
-    if (this.sitesCache.hasOwnProperty(key) && this.sitesCache[key]) {
-      return this.sitesCache[key];
-    }
-    // console.log('[getSite]', key);
-    this.sitesCache[key] = this.themeService.getJsTheme().pipe(
+  @cachedFn()
+  getLoadedSite(key: string): Observable<LoadedSite> {
+    return this.themeService.getJsTheme().pipe(
       // tap(v => console.log('[themeService]', v)),
-      switchMap<NbJSThemeOptions, LoadedSite>(
-        theme => {
-          const colors = theme.variables;
-          const echarts = theme.variables.echarts;
-          let dataSource = this.firebaseDataSource;
-          if (key === 'fake') {
-            const valueSources = Object.values(FAKE_SITE.devices).map(device => ({
-              ...device,
-              valueSource: new BehaviorSubject<TimedValue<number|boolean>>(
-                (Object.values<TimedValue<number | boolean>>(FAKE_SITE.deviceData[device.key])[0]),
-              ),
-            }));
-            dataSource = this.fakeDataSource(valueSources);
-            for (const device of valueSources) {
-              if (!device.isActor) {
-                setInterval(
-                  () => dataSource.deviceDataNextFn(
-                    device.key,
-                    Math.random() * (device.max - device.min) + device.min,
-                  ),
-                  1000,
-                );
-              }
+      switchMap<NbJSThemeOptions, LoadedSite>(theme => {
+        const colors = theme.variables;
+        const echarts = theme.variables.echarts;
+        let dataSource = this.firebaseDataSource;
+        if (!key || key === 'fake') {
+          const valueSources = Object.values(FAKE_SITE.devices).map(device => ({
+            ...device,
+            valueSource: new BehaviorSubject<TimedValue<number|boolean>>(
+              (Object.values<TimedValue<number | boolean>>(FAKE_SITE.deviceData[device.key])[0]),
+            ),
+          }));
+          dataSource = this.fakeDataSource(valueSources);
+          for (const device of valueSources) {
+            if (!device.isActor) {
+              setInterval(
+                () => dataSource.deviceDataNextFn(
+                  device.key,
+                  Math.random() * (device.max - device.min) + device.min,
+                ),
+                1000,
+              );
             }
           }
-          return this.innerGetSite(
-            key,
-            dataSource.siteFn,
-            dataSource.deviceFn,
-            dataSource.deviceDataFn,
-            dataSource.deviceDataNextFn,
-            colors,
-            echarts,
-          );
-        },
-      ),
+        }
+        return this.innerGetSite(
+          key,
+          dataSource.siteFn,
+          dataSource.deviceFn,
+          dataSource.deviceDataFn,
+          dataSource.deviceDataNextFn,
+          colors,
+          echarts,
+        );
+      }),
       publishReplay(1),
       refCount(),
       // tap(v => console.log('[main]', v)),
     );
-    return this.sitesCache[key];
   }
 
   protected innerGetSite(
@@ -213,12 +244,13 @@ export class DashboardService implements CanActivate {
     echarts: string | NbJSThemeVariable | string[],
   ) {
     return siteFn(siteKey).pipe(
-      // tap(v => console.log('[siteFn]', v)),
+      tap(v => console.log('[siteFn]', v)),
+      filter(v => !!v),
       switchMap(
         (site: Site) => combineLatest(
-          Object.keys(site.devices).map(deviceFn),
+          Object.keys(site.devices).map(deviceKey => deviceFn(deviceKey)),
         ).pipe(
-          // tap(v => console.log('[deviceFn]', v)),
+          tap(v => console.log('[deviceFn]', v)),
           map(devices => {
             const loadedDevices: LoadedDevice<number|boolean>[] = devices.map((device, index) => {
               const value$ = deviceDataFn(device.key, 1).pipe(
@@ -257,13 +289,50 @@ export class DashboardService implements CanActivate {
     );
   }
 
-  charts = {};
-  getSensorChart(colors, echarts, device, data$: Observable<DeviceTimeSeries>) {
-    if (this.charts.hasOwnProperty(device.key)) {
-      return this.charts[device.key];
+  @cachedFn()
+  getAuthSite(key: string): Observable<Site> {
+    if (!key || key === 'fake') {
+      return of(FAKE_SITE.site);
     }
+    return this.usersService.user$.pipe(
+      take(1),
+      switchMap(user => {
+        // if no AuthN || AuthZ
+        if (!user || !user.storedUser.isActive) {
+          return of(FAKE_SITE.site);
+        }
+        // try read
+        return this.angularFireDatabase.object<Site>(
+          `sites/${key}/`,
+        ).valueChanges().pipe(
+          catchError(error => {
+            // if AuthZ error on read
+            console.error(error);
+            // take first user's site
+            return this.angularFireDatabase.list<string>(
+              `userSites/${user.authUser.uid}`,
+              ref => ref.limitToFirst(1),
+            ).valueChanges().pipe(
+              take(1),
+              switchMap(sitesKeys => {
+                if (!sitesKeys || sitesKeys.length === 0 || sitesKeys[0].length === 0) {
+                  // user has zero AuthZ sites
+                  return of(FAKE_SITE.site);
+                }
+                return this.angularFireDatabase.object<Site>(
+                  `sites/${sitesKeys[0]}/`,
+                ).valueChanges();
+              }),
+            );
+          }),
+        );
+      }),
+    );
+  }
 
-    this.charts[device.key] = data$.pipe(
+  @cachedFn()
+  getSensorChart(colors, echarts, device, data$: Observable<DeviceTimeSeries>) {
+    return data$.pipe(
       map(deviceTimeSeries => {
         const base = baseSensorChartOpts(colors, echarts);
         base.legend.data = [device.name];
@@ -281,7 +350,6 @@ export class DashboardService implements CanActivate {
       }),
       startWith(baseSensorChartOpts(colors, echarts)),
     );
-    return this.charts[device.key];
   }
 
   getDeviceValue(key: string) {
@@ -294,47 +362,28 @@ export class DashboardService implements CanActivate {
     //
   }
 
-  async canActivate(
+  canActivate(
     next: ActivatedRouteSnapshot,
     state: RouterStateSnapshot,
-  ): Promise<boolean | UrlTree> {
-    // if (next.component)
+  ): Observable<boolean | UrlTree> {
     const key = next.params.id;
-    // console.log('[canActivate]', {key, comp: next.component});
-    if (key === 'fake') {
-      // console.log('[canActivate]', true);
-      return Promise.resolve(true);
-    }
-    const user: DashUser = await this.usersService.user$.pipe(take(1)).toPromise();
-    if (user.storedUser.isAdmin) {
-      // console.log('[canActivate]', true);
-      return Promise.resolve(true);
-    }
-    try {
-      const site: Site = await this.angularFireDatabase.object<Site>(
-        `sites/${key}/`,
-      ).valueChanges().pipe(take(1)).toPromise();
-      next.data['site'] = site;
-      // console.log('[canActivate]', true);
-      return Promise.resolve(true);
-    } catch (error) {
-      console.error(error);
-    }
-    try {
-      const sites: string[] = await this.angularFireDatabase.list<string>(
-        `userSites/${user.authUser.uid}`,
-        ref => ref.limitToFirst(1),
-      ).valueChanges().pipe(take(1)).toPromise();
-      // console.log({sites});
-      // console.log('[canActivate]', this.router.parseUrl(`/dashboard/${sites[0]}`));
-      return Promise.resolve(
-        this.router.parseUrl(`/dashboard/${sites[0]}`),
-      );
-    } catch (error) {
-      console.error(error);
-    }
-    // console.log('[canActivate]', this.router.parseUrl(`/`));
-    return Promise.resolve(this.router.parseUrl(`/`));
+    console.log('[canActivate]', {key, comp: next.component});
+    return this.getAuthSite(key).pipe(
+      take(1),
+      map(site => {
+        if (!site) {
+          throw new Error('No Site Resolved');
+        }
+        if (site.key === key) {
+          return true;
+        }
+        return this.router.parseUrl(`/dashboard/${key.key}`);
+      }),
+      catchError(error => {
+        console.error(error);
+        return of(this.router.parseUrl(`/`));
+      }),
+    );
   }
 }
 

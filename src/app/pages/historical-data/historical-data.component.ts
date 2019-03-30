@@ -3,13 +3,13 @@ import { interval } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { FormControl } from '@angular/forms';
 import { NbThemeService } from '@nebular/theme';
-import * as jspdf from 'jspdf';  
-import html2canvas from 'html2canvas'; 
+import * as jspdf from 'jspdf';
+import html2canvas from 'html2canvas';
 
 @Component({
-  selector: 'ngx-historical-data',
+  selector: 'app-historical-data',
   templateUrl: './historical-data.component.html',
-  styleUrls: ['./historical-data.component.scss']
+  styleUrls: ['./historical-data.component.scss'],
 })
 
 export class HistoricalDataComponent implements AfterViewInit, OnDestroy {
@@ -20,7 +20,7 @@ export class HistoricalDataComponent implements AfterViewInit, OnDestroy {
   formControl: FormControl;
   ngModelDate: Date;
 
-  constructor(private theme: NbThemeService) { 
+  constructor(private theme: NbThemeService) {
     this.currentDate = interval(2000).pipe( map(() => Date.now()));
     this.formControl = new FormControl(new Date());
     this.ngModelDate = new Date();
@@ -34,71 +34,71 @@ export class HistoricalDataComponent implements AfterViewInit, OnDestroy {
 
       this.options  = {
         title: {
-          text: 'Temperature'
+          text: 'Temperature',
         },
         tooltip: {
-          trigger: 'axis'
+          trigger: 'axis',
         },
         legend: {
-          data:['Sensor1','Sensor2']
+          data: ['Sensor1', 'Sensor2'],
         },
         toolbox: {
           show: true,
           feature: {
             saveAsImage: {
               name: 'temperature_' + Date.now(),
-              title: 'Save as png'
+              title: 'Save as png',
             },
-          }
+          },
         },
         xAxis:  {
           type: 'category',
           boundaryGap: false,
-          data: ['25-03-19','26-03-19','27-03-19','28-03-19','29-03-19','30-03-19','31-03-19']
+          data: ['25-03-19', '26-03-19', '27-03-19', '28-03-19', '29-03-19', '30-03-19', '31-03-19'],
         },
         yAxis: {
           type: 'value',
           axisLabel: {
-            formatter: '{value} °C'
-          }
+            formatter: '{value} °C',
+          },
         },
         series: [
         {
-          name:'Sensor1',
-          type:'line',
-          data:[11, 11, 15, 13, 12, 13, 10],
+          name: 'Sensor1',
+          type: 'line',
+          data: [11, 11, 15, 13, 12, 13, 10],
           markLine: {
             data: [
-              { type: 'average', name: 'Avg'}
-            ]
-          }
+              { type: 'average', name: 'Avg'},
+            ],
+          },
         },
         {
-          name:'Sensor2',
-          type:'line',
-          data:[1, -2, 2, 5, 3, 2, 0],
+          name: 'Sensor2',
+          type: 'line',
+          data: [1, -2, 2, 5, 3, 2, 0],
           markLine: {
             data: [
-              {type: 'average', name: 'Avg',},
+              {type: 'average', name: 'Avg'},
               {
                 symbol: 'none',
                 x: '90%',
-                yAxis: 'max'
-              }, 
+                yAxis: 'max',
+              },
               {
                 symbol: 'circle',
                 label: {
                   normal: {
                     position: 'start',
-                    formatter: 'Max'
-                  }
+                    formatter: 'Max',
+                  },
                 },
                 type: 'max',
-                  name: 'Highest Point'
-                }]
-          }
-        }
-      ]
+                  name: 'Highest Point',
+                }],
+          },
+        },
+      ],
     };
 
   });
@@ -108,21 +108,23 @@ export class HistoricalDataComponent implements AfterViewInit, OnDestroy {
     this.themeSubscription.unsubscribe();
   }
 
-  printReport(){  
-    var data = document.getElementById('printable-report');  
-    html2canvas(data).then(canvas => {  
-      // Few necessary setting options  
-      var imgWidth = 208;   
-      var pageHeight = 295;    
-      var imgHeight = canvas.height * imgWidth / canvas.width;  
-      var heightLeft = imgHeight;  
-  
-      const contentDataURL = canvas.toDataURL('image/png')  
-      let pdf = new jspdf('p', 'mm', 'a4'); // A4 size page of PDF  
-      var position = 0;  
-      pdf.addImage(contentDataURL, 'PNG', 0, position, imgWidth, imgHeight)  
-      pdf.save('report.pdf'); // Generated PDF   
-    });  
-  }  
+  printReport() {
+    const data = document.getElementById('printable-report');
+    html2canvas(data).then(canvas => {
+      // Few necessary setting options
+      const imgWidth = 208;
+      const pageHeight = 295;
+      const imgHeight = canvas.height * imgWidth / canvas.width;
+      const heightLeft = imgHeight;
+
+      const contentDataURL = canvas.toDataURL('image/png');
+      // A4 size page of PDF
+      const pdf = new jspdf('p', 'mm', 'a4');
+      const position = 0;
+      pdf.addImage(contentDataURL, 'PNG', 0, position, imgWidth, imgHeight);
+      // Generated PDF
+      pdf.save('report.pdf');
+    });
+  }
 }
 
