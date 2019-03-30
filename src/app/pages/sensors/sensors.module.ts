@@ -6,9 +6,11 @@ import { NgxEchartsModule } from 'ngx-echarts';
 import { NbDialogModule } from '@nebular/theme';
 
 import { ThemeModule } from '../../@theme/theme.module';
-import { SensorEditComponent } from './sensor-edit.component';
+import { SensorEditComponent } from './sensor-edit/sensor-edit.component';
+import { SensorListComponent } from './sensor-list/sensor-list.component';
 
-import { SensorEditRoutingModule } from './sensor-edit-routing.module';
+
+import { SensorsRoutingModule } from './sensors-routing.module';
 
 
 // angular material
@@ -29,7 +31,7 @@ import {
     NgxEchartsModule,
     NbDialogModule.forChild(),
     CommonModule,
-    SensorEditRoutingModule,
+    SensorsRoutingModule,
     MatButtonModule,
     MatFormFieldModule,
     MatInputModule,
@@ -38,10 +40,10 @@ import {
     MatPaginatorModule,
     MatCheckboxModule
   ],
-  declarations: [ SensorEditComponent ],
-  exports: [ SensorEditComponent ],
+  declarations: [ SensorEditComponent, SensorListComponent  ],
+  exports: [ SensorEditComponent, SensorListComponent ],
   entryComponents: [  ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
-export class SensorEditModule { }
+export class SensorsModule { }
 
