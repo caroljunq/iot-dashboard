@@ -26,19 +26,26 @@
         <label>Min</label>
         <input type="text" nbInput fullWidth placeholder="12.5" formControlName="min">
       </div>
-      <div class="input-group col-12 col-sm-10 col-md-8 col-lg-6">
-        <nb-checkbox formControlName="isActor">
-          Actor
-        </nb-checkbox>
+      <div class="input-group col-12 col-sm-10 col-md-8 col-lg-6 row">
+        <div class="col-3 col-sm-3 no-pad-left">
+          <nb-checkbox formControlName="isActor">
+            Actor
+          </nb-checkbox>
+        </div>
+        <div class="col-3 col-sm-3 no-pad-left">
+          <nb-checkbox formControlName="active">
+            Active
+          </nb-checkbox>
+        </div>
       </div>
       <div class="input-group col-12 col-sm-10 col-md-8 col-lg-6">
-          <button nbButton fullWidth status="success" class="btn-success btn-full-width"
-            aria-disabled="false" tabindex="0"
-            [disabled]="!sensorForm.valid || !saveBtn"
-            type="submit">
-            Save
-          </button>
-        </div>
+        <button nbButton fullWidth status="success" class="btn-success btn-full-width"
+          aria-disabled="false" tabindex="0"
+          [disabled]="!sensorForm.valid || !saveBtn"
+          type="submit">
+          Save
+        </button>
+      </div>
     </form>
   </nb-card-body>
 </nb-card>

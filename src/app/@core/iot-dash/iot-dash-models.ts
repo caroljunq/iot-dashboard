@@ -33,6 +33,7 @@ export interface Device {
   unit?: string | 'ºC' | '%';
   max?: number | 0;
   min?: number | 0;
+  active?: boolean | true,
   // ------ INTERNAL -------
   value$?: Observable<TimedValue<number>>;
   emiter?: (number) => any;

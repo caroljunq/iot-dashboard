@@ -24,17 +24,19 @@ export class SensorEditComponent implements OnInit {
     unit: ['',Validators.required],
     max: ['',Validators.required],
     min: ['',Validators.required],
-    isActor: [false]
+    isActor: [false],
+    active: [true]
   });
 
   editMode = false;
   sensorKey: string = '';
+  sensorStatus: boolean = true;
 
   saveBtn = true;
 
   //toast config
   destroyByClick = false;
-  duration = 3000;
+  duration = 4000;
   hasIcon = true;
   position: NbGlobalPosition = NbGlobalLogicalPosition.BOTTOM_END;
   preventDuplicates = false;
@@ -63,18 +65,21 @@ export class SensorEditComponent implements OnInit {
           max: null,
           min: null,
           isActor: false,
+          active: true,
         });
       }),
     ).subscribe(
       (sensor) =>{ 
-        this.sensorKey = sensor.key,
+        this.sensorStatus = sensor.active;
+        this.sensorKey = sensor.key;
         this.sensorForm.setValue({
           name: sensor.name,
           type: sensor.type,
           unit: sensor.unit,
           max: sensor.max,
           min: sensor.min,
-          isActor: sensor.isActor
+          isActor: sensor.isActor,
+          active: sensor.active
         })
       },
     );
