@@ -188,4 +188,8 @@ export class FirebaseDatabaseService {
   getSensorById(id: string): Observable<Device>{
     return this.angularFireDatabase.object<Device>(`sensors/${id}`).valueChanges();
   }
+
+  updateDevice(id: string, device: Device){
+    return this.angularFireDatabase.object(`sensors/${id}`).update(device);
+  }
 }

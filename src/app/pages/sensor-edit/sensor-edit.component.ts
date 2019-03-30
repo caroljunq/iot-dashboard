@@ -2,23 +2,14 @@ import { Component, OnInit } from '@angular/core';
 import { FirebaseDatabaseService } from 'app/@core/iot-dash/firebase-database.service';
 import { Validators, FormBuilder } from '@angular/forms';
 
-import { switchMap, takeWhile, map } from 'rxjs/operators';
+import { switchMap } from 'rxjs/operators';
 import { ActivatedRoute, ParamMap, Router } from '@angular/router';
-import { Device, TimedValue } from 'app/@core/iot-dash/iot-dash-models';
+import { Device } from 'app/@core/iot-dash/iot-dash-models';
 import { Observable, of } from 'rxjs';
 
 //Toast
-import { NbGlobalLogicalPosition, NbGlobalPhysicalPosition, NbGlobalPosition, NbToastrService } from '@nebular/theme';
+import { NbGlobalLogicalPosition, NbGlobalPosition, NbToastrService } from '@nebular/theme';
 import { NbToastStatus } from '@nebular/theme/components/toastr/model';
-
-interface SensorForm {
-  name: string;
-  type: string;
-  unit: string;
-  max: number;
-  min: number;
-  isActor: boolean
-}
 
 @Component({
   selector: 'app-sensor-edit',
@@ -126,12 +117,29 @@ export class SensorEditComponent implements OnInit {
     }
   }
 
+  async updateDevice(){
+    try {
+      let newDevice = await this.firebaseDatabaseService.updateDevice(this.sensorKey,{
+        name: this.sensorForm.value.name,
+        type: this.sensorForm.value.type,
+        min: this.sensorForm.value.min,
+        max: this.sensorForm.value.max,
+        unit: this.sensorForm.value.unit,
+        isActor: this.sensorForm.value.isActor
+      })
+      this.showToast('Device updated.','SUCCESS',NbToastStatus.SUCCESS);
+      // this.router.navigateByUrl('/rooms');
+    } catch(e) {
+      this.showToast('Device not updated. Try again.','WARNING',NbToastStatus.DANGER);
+    }
+  }
+
   onSubmit(){
     if(!this.editMode && this.sensorForm.valid){
       this.createDevice();
-    }else{
-      return
+    }
+    if(this.editMode && this.sensorForm.valid){
+      this.updateDevice();
     }  
   }
-
 }
