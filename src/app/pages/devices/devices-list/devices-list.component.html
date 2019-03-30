@@ -4,58 +4,60 @@
     <div class="col-12 no-padding">
       <div class="left-inner-addon">
         <i class="nb-search"></i>
-        <input size="medium" type="search" nbInput fullWidth (keyup)="applyFilterDevices($event.target.value)" placeholder="Search">
+        <input size="medium" type="search" nbInput fullWidth (keyup)="applyFilter($event.target.value)" placeholder="Search">
       </div>
     </div>
-    <div class="col-md-12 col-sm-12">
-      <table mat-table [dataSource]="devicesDataSource" matSort>
 
+    <div class="col-md-12 col-sm-12">
+      <table mat-table [dataSource]="dataSource" matSort>
         <!-- Key Column -->
         <ng-container matColumnDef="key">
-          <th class="header-key" mat-header-cell *matHeaderCellDef mat-sort-header> Key </th>
-          <td class="cell-key" mat-cell *matCellDef="let row"> {{row.key}} </td>
+          <th mat-header-cell *matHeaderCellDef mat-sort-header> Key </th>
+          <td mat-cell *matCellDef="let row"> {{row.key}} </td>
         </ng-container>
 
         <!-- Name Column -->
         <ng-container matColumnDef="name">
-          <th class="header-name" mat-header-cell *matHeaderCellDef mat-sort-header> Name </th>
-          <td class="cell-name" mat-cell *matCellDef="let row"> {{row.name}} </td>
+          <th mat-header-cell *matHeaderCellDef mat-sort-header> Name </th>
+          <td mat-cell *matCellDef="let row"> {{row.name}} </td>
         </ng-container>
 
-         <!-- Status Column -->
-         <ng-container matColumnDef="status">
-          <th class="header-status" mat-header-cell *matHeaderCellDef mat-sort-header> Status </th>
-          <td class="cell-status" mat-cell *matCellDef="let row"> {{ row.isActive? "Enabled":"Disabled"}} </td>
+        <!-- Status Column -->
+        <ng-container matColumnDef="status">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header> Status </th>
+          <td mat-cell *matCellDef="let row"> {{row.isActive ? "Enabled": "Disabled"}} </td>
         </ng-container>
 
-         <!-- Actor Column -->
-         <ng-container matColumnDef="actor">
-          <th class="header-actor" mat-header-cell *matHeaderCellDef mat-sort-header> Actor </th>
-          <td class="cell-actor" mat-cell *matCellDef="let row"> {{ row.isActor ? "Yes":"No"}} </td>
+        <!-- actor Column -->
+        <ng-container matColumnDef="actor">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header> Actor </th>
+          <td mat-cell *matCellDef="let row"> {{row.isActor ? "Yes": "No"}} </td>
         </ng-container>
 
         <!-- Type Column -->
         <ng-container matColumnDef="type">
-          <th class="header-type" mat-header-cell *matHeaderCellDef mat-sort-header> Type </th>
-          <td class="cell-type" mat-cell *matCellDef="let row"> {{row.type}} </td>
+          <th mat-header-cell *matHeaderCellDef mat-sort-header> Type </th>
+          <td mat-cell *matCellDef="let row"> {{row.type}} </td>
         </ng-container>
 
         <!-- Min Column -->
         <ng-container matColumnDef="min">
-          <th class="header-min" mat-header-cell *matHeaderCellDef mat-sort-header> Min </th>
-          <td class="header-min" mat-cell *matCellDef="let row"> {{row.min}} {{row.unit}} </td>
+          <th mat-header-cell *matHeaderCellDef mat-sort-header> Min </th>
+          <td mat-cell *matCellDef="let row"> {{row.min}} </td>
         </ng-container>
 
         <!-- Max Column -->
         <ng-container matColumnDef="max">
-          <th class="header-max" mat-header-cell *matHeaderCellDef mat-sort-header> Max  </th>
-          <td class="cell-max" mat-cell *matCellDef="let row"> {{row.max}} {{row.unit}} </td>
+          <th mat-header-cell *matHeaderCellDef mat-sort-header> Max </th>
+          <td mat-cell *matCellDef="let row"> {{row.max}} </td>
         </ng-container>
 
-        <tr mat-header-row *matHeaderRowDef="displayedDeviceColumns"></tr>
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;">
+        </tr>
       </table>
 
-      <mat-paginator [pageSizeOptions]="[10, 25, 100]"></mat-paginator>
+      <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]"></mat-paginator>
     </div>
   </nb-card-body>
 </nb-card>

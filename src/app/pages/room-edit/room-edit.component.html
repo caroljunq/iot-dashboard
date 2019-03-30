@@ -1,5 +1,5 @@
 <nb-card>
-  <nb-card-header class="custom-form-title">{{!editoMode? "Create a room":"Edit room"}}</nb-card-header>
+  <nb-card-header class="custom-form-title">{{!editMode? "Create a room":"Edit room"}}</nb-card-header>
   <nb-card-body>
     <form class="row room-top-form" [formGroup]="roomForm" (ngSubmit)="onSubmit()">
       <div class="input-group col-12 col-sm-10">

@@ -55,7 +55,7 @@ export class DevicesEditComponent implements OnInit {
         const id = paramMap.get('id');
         if (id) {
           this.editMode = true;
-          return this.firebaseDatabaseService.getSensorById(id);
+          return this.firebaseDatabaseService.getDeviceById(id);
         }
         return of(<Device>{
           key: '',

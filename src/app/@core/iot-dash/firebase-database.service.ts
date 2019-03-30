@@ -173,19 +173,15 @@ export class FirebaseDatabaseService {
     return deviceRef.update(device);
   }
 
-  getSensorById(id: string): Observable<Device> {
+  getDeviceById(id: string): Observable<Device> {
     return this.angularFireDatabase.object<Device>(`sensors/${id}`).valueChanges();
   }
-
 
   updateDevice(id: string, device: Device) {
     return this.angularFireDatabase.object(`sensors/${id}`).update(device);
   }
 
-  getAllSensors(): Observable<Device[]> {
+  getAllDevices(): Observable<Device[]> {
     return this.angularFireDatabase.list<Device>('sensors').valueChanges();
-  }
-  createSensor(arg0: Device): any {
-    throw new Error('Method not implemented.');
   }
 }

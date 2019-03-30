@@ -1,42 +1,43 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { FirebaseDatabaseService } from 'app/@core/iot-dash/firebase-database.service';
 import { MatPaginator, MatSort, MatTableDataSource} from '@angular/material';
-
 import { Device } from 'app/@core/iot-dash/iot-dash-models';
 
-@Component({
-  selector: 'app-devices-list',
-  templateUrl: './devices-list.component.html',
-  styleUrls: ['./devices-list.component.scss']
-})
+ @Component({
+   selector: 'app-devices-list',
+   templateUrl: './devices-list.component.html',
+   styleUrls: ['./devices-list.component.scss']
+ })
 
-export class DevicesListComponent implements OnInit {
+ export class DevicesListComponent implements OnInit {
 
-  devices = [];
-  displayedDeviceColumns: string[] = ['key','name','status','actor','type','min', 'max'];
-  devicesDataSource: MatTableDataSource<Device>;
+  displayedColumns: string[] = ['key','name','status','actor','type','max','min'];
+  dataSource: MatTableDataSource<Device>;
+  devices: Device[];
 
-  @ViewChild(MatPaginator) paginatorDevice: MatPaginator;
-  @ViewChild(MatSort) sortDevice: MatSort;
+  @ViewChild(MatPaginator) paginator: MatPaginator;
+  @ViewChild(MatSort) sort: MatSort;
 
-  constructor(
-    private firebaseDatabaseService: FirebaseDatabaseService,
-  ){
-    // this.firebaseDatabaseService.getAllDevices().subscribe(devs =>
-    //   console.log(devs))
+  constructor(private firebaseDatabaseService: FirebaseDatabaseService) {
+
+    this.firebaseDatabaseService.getAllDevices().subscribe(devs =>{
+      this.devices = devs;
+      this.dataSource = new MatTableDataSource(this.devices);
+    })
+
+    this.dataSource = new MatTableDataSource(this.devices);
   }
 
   ngOnInit() {
-    this.devicesDataSource.paginator = this.paginatorDevice;
-    this.devicesDataSource.sort = this.sortDevice;
+    this.dataSource.paginator = this.paginator;
+    this.dataSource.sort = this.sort;
   }
 
-  applyFilterDevice(filterValue: string) {
-    this.devicesDataSource.filter = filterValue.trim().toLowerCase();
+  applyFilter(filterValue: string) {
+    this.dataSource.filter = filterValue.trim().toLowerCase();
 
-    if (this.devicesDataSource.paginator) {
-      this.devicesDataSource.paginator.firstPage();
+    if (this.dataSource.paginator) {
+      this.dataSource.paginator.firstPage();
     }
   }
-
 }
