@@ -5,12 +5,12 @@ import { tap, map, mergeMap, startWith, filter } from 'rxjs/operators';
 import { Device, TimedValue } from './iot-dash-models';
 import { FirebaseDatabaseService } from 'app/@core/iot-dash/firebase-database.service';
 
-interface EChartOption {
+export interface EChartOption {
   [key: string]: {};
   series: any[];
 }
 
-function baseChartOpts(colors, echarts, emtpy = false): EChartOption {
+export function baseChartOpts(colors, echarts, emtpy = false): EChartOption {
   return {
     backgroundColor: echarts.bg,
     color: emtpy ? [] : [colors.success, colors.info],
@@ -183,7 +183,7 @@ function baseChartOpts(colors, echarts, emtpy = false): EChartOption {
     ],
   };
 }
-function baseChartXAxis(colors, echarts) {
+export function baseChartXAxis(colors, echarts) {
   return {
     type: 'category',
     axisTick: {
@@ -210,7 +210,7 @@ function baseChartXAxis(colors, echarts) {
     data: [],
   };
 }
-function baseSensorChartOpts(colors, echarts, emtpy = false) {
+export function baseSensorChartOpts(colors, echarts, emtpy = false) {
   return {
     backgroundColor: echarts.bg,
     color: emtpy ? [colors.danger] : [colors.danger, colors.primary, colors.info],
@@ -290,12 +290,12 @@ function baseSensorChartOpts(colors, echarts, emtpy = false) {
   };
 }
 
-interface DeviceTimeSereies {
+export interface DeviceTimeSeries {
   device: any;
   timeSeries: TimedValue<number>[];
   color: string;
 }
-const seriesColors = [
+export const seriesColors = [
   '#40dc7e',
   '#4ca6ff',
   '#dedede',
@@ -314,10 +314,10 @@ export class LiveChartService {
 
   constructor(public firebaseDatabaseService: FirebaseDatabaseService) { }
 
-  getLastSensorValues(device: Device, index: number = 0, limit = 15): Observable<DeviceTimeSereies> {
+  getLastSensorValues(device: Device, index: number = 0, limit = 15): Observable<DeviceTimeSeries> {
     return this.firebaseDatabaseService.getLastSensorValues(device.key, limit)
     .pipe(
-      map<TimedValue<number>[], DeviceTimeSereies>(timeSeries => ({
+      map<TimedValue<number>[], DeviceTimeSeries>(timeSeries => ({
         device,
         timeSeries,
         color: seriesColors[index],
@@ -325,7 +325,7 @@ export class LiveChartService {
     );
   }
 
-  simplifyTimeSeries(deviceTimeSeriesArr: DeviceTimeSereies[]): {
+  simplifyTimeSeries(deviceTimeSeriesArr: DeviceTimeSeries[]): {
     mainAxis: any[],
     dataAxis: number[][],
   } {
@@ -345,7 +345,7 @@ export class LiveChartService {
     };
   }
 
-  deviceTimeSeriesToChartOpts(deviceTimeSeriesArr: DeviceTimeSereies[], colors) {
+  deviceTimeSeriesToChartOpts(deviceTimeSeriesArr: DeviceTimeSeries[], colors) {
     const base = baseChartOpts(colors, echarts, true);
     base.color = seriesColors.slice(0, deviceTimeSeriesArr.length);
     // const simplified = this.simplifyTimeSeries(deviceTimeSeriesArr);
@@ -388,7 +388,7 @@ export class LiveChartService {
     }
 
     this.charts[siteKey] = this.firebaseDatabaseService.getSensorSites(siteKey).pipe(
-      mergeMap<Device[], DeviceTimeSereies[]>(
+      mergeMap<Device[], DeviceTimeSeries[]>(
         // Device[] => Observable<TimedValue<number>[][]>
         (devices: Device[]) => combineLatest(
           // Device[] => Observable<TimedValue<number>[]>[]
@@ -410,16 +410,16 @@ export class LiveChartService {
     }
 
     this.charts[device.key] = this.getLastSensorValues(device).pipe(
-      map(deviceTimeSereies => {
+      map(DeviceTimeSeries => {
         const base = baseSensorChartOpts(colors, echarts);
         base.legend.data = [device.name];
-        base.xAxis[0].data = deviceTimeSereies.timeSeries.map(
+        base.xAxis[0].data = DeviceTimeSeries.timeSeries.map(
           timedValue => (new Date(<number>timedValue.timestamp)).toLocaleTimeString(),
         );
         base.series = [{
           name: device.name,
           type: 'line',
-          data: deviceTimeSereies.timeSeries.map(
+          data: DeviceTimeSeries.timeSeries.map(
             timedValue => timedValue.value,
           ),
         }];

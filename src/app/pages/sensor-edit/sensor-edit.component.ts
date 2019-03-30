@@ -77,7 +77,8 @@ export class SensorEditComponent implements OnInit {
   }
 
   createDevice(){
-    this.firebaseDatabaseService.createSensor({
+    this.firebaseDatabaseService.createSensor(<Device>{
+      key: null,
       name: this.sensorForm.value.name,
       type: this.sensorForm.value.type,
       min: this.sensorForm.value.min,

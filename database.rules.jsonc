@@ -12,14 +12,35 @@
         ".indexOn": "timestamp"
       }
     },
+    "devices": {
+      "$deviceId": {
+        // Device {
+        //   key: string;
+        //   name: string;
+        //   // ------ ACTOR -------
+        //   iconClass?: string;
+        //   // ------ SENSOR -------
+        //   // Umidade: 20 - 80
+        //   // Temperatura: 15 - 25
+        //   type?: string | 'Temperatura' | 'Umidade';
+        //   unit?: string | 'ºC' | '%';
+        //   max?: number;
+        //   min?: number;
+        ".read": "auth.uid != null && root.child('userSites/'+auth.uid+'/'+$siteId).exists()"
+      }
+    },
     "sites": {
       "$siteId": {
+        // key?: string;
+        // name: string;
+        // sensors: {[key: string]: Device};
+        // actors: {[key: string]: Device};
         ".read": "auth.uid != null && root.child('userSites/'+auth.uid+'/'+$siteId).exists()"
       }
     },
     "siteFake": {
       ".read": true,
-      ".write": true,
+      ".write": true
     },
     "users": {
       "$uid": {

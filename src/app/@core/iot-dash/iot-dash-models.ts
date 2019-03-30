@@ -22,32 +22,23 @@ export interface TimedValue<T> {
 export interface Device {
   key: string;
   name: string;
-  // ------ ACTOR -------
-  iconClass?: string;
+  isActor: boolean;
   // ------ SENSOR -------
   // Umidade: 20 - 80
   // Temperatura: 15 - 25
-  type?: string | 'Temperatura' | 'Umidade';
-  unit?: string | 'ºC' | '%';
-  max?: number;
-  min?: number;
-  // ------ INTERNAL -------
-  value$?: Observable<TimedValue<number>>;
-  emiter?: (number) => any;
-  aggregate$?: Observable<TimedAggregate>;
-  chart$?: Observable<any>;
+  type: string | 'Temperatura' | 'Umidade';
+  unit: string | 'ºC' | '%';
+  max: number;
+  min: number;
 }
 export interface Site {
-  key?: string;
+  key: string;
   name: string;
-  sensors: {[key: string]: Device};
-  actors: {[key: string]: Device};
-  sensorsArray?: Device[];
-  actorsArray?: Device[];
-  icon?: string;
+  devices: {[key: string]: string};
 }
 
 export interface RootData {
+  devices: {[key: string]: Device};
   sites: {[key: string]: Site};
   sensorData: {[deviceKey: string]: {[key: string]: TimedValue<number>}};
   actorData: {[deviceKey: string]: {[key: string]: TimedValue<boolean>}};
