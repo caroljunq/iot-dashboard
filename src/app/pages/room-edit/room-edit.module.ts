@@ -8,6 +8,7 @@ import { NbDialogModule } from '@nebular/theme';
 import { ThemeModule } from '../../@theme/theme.module';
 import { RoomEditComponent } from './room-edit.component';
 
+
 import { RoomEditRoutingModule } from './room-edit-routing.module';
 
 // angular material
@@ -18,9 +19,8 @@ import {
   MatSortModule,
   MatTableModule,
   MatPaginatorModule,
-  MatCheckboxModule
+  MatCheckboxModule,
 } from '@angular/material';
-
 
 @NgModule({
   imports: [
@@ -43,4 +43,3 @@ import {
   schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
 export class RoomEditModule { }
-

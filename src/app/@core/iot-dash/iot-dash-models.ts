@@ -1,3 +1,4 @@
+
 import { Observable } from 'rxjs';
 export interface StoredUser {
   uid: string;
@@ -20,21 +21,30 @@ export interface TimedValue<T> {
   timestamp: number;
 }
 export interface Device {
-  key: string;
+  key?: string;
   name: string;
   isActor: boolean;
+  // ------ ACTOR -------
+  iconClass?: string;
   // ------ SENSOR -------
   // Umidade: 20 - 80
   // Temperatura: 15 - 25
-  type: string | 'Temperatura' | 'Umidade';
-  unit: string | 'ºC' | '%';
-  max: number;
-  min: number;
+  type?: string | 'Temperatura' | 'Umidade';
+  unit?: string | 'ºC' | '%';
+  max?: number | 0;
+  min?: number | 0;
+  active?: boolean | true,
+  // ------ INTERNAL -------
+  value$?: Observable<TimedValue<number>>;
+  emiter?: (number) => any;
+  aggregate$?: Observable<TimedAggregate>;
+  chart$?: Observable<any>;
 }
 export interface Site {
   key: string;
   name: string;
-  devices: {[key: string]: string};
+  devices: {[sensorId: string]: string};
+  actors: {[sensorId: string]: string};
 }
 
 export interface RootData {

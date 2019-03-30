@@ -41,7 +41,7 @@
                           [aria-label]="checkboxSensorLabel(row)">
             </mat-checkbox >
           </td>
-        </ng-container>   
+        </ng-container>
 
         <!-- Name Column -->
         <ng-container matColumnDef="name">
@@ -54,7 +54,7 @@
           <th class="header-key" mat-header-cell *matHeaderCellDef mat-sort-header> Key </th>
           <td class="cell-key" mat-cell *matCellDef="let row"> {{row.key}} </td>
         </ng-container>
-  
+
 
         <!-- Type Column -->
         <ng-container matColumnDef="type">
@@ -111,8 +111,8 @@
                           [aria-label]="checkboxUserLabel(row)">
             </mat-checkbox >
           </td>
-        </ng-container>   
-  
+        </ng-container>
+
         <!-- Name Column -->
         <ng-container matColumnDef="name">
           <th class="header-name-user" mat-header-cell *matHeaderCellDef mat-sort-header> Name </th>
@@ -124,22 +124,20 @@
             <th class="header-email-user" mat-header-cell *matHeaderCellDef mat-sort-header> Email </th>
             <td class="cell-email-user" mat-cell *matCellDef="let row"> {{row.email}} </td>
           </ng-container>
-  
+
         <!-- Type Column -->
         <ng-container matColumnDef="type">
           <th class="header-type-user" mat-header-cell *matHeaderCellDef mat-sort-header> Type </th>
           <td class="cell-type-user" mat-cell *matCellDef="let row"> {{row.type}} </td>
         </ng-container>
-  
+
         <tr mat-header-row *matHeaderRowDef="displayedUserColumns"></tr>
         <tr mat-row *matRowDef="let row; columns: displayedUserColumns;"
             (click)="usersSelection.toggle(row)">
         </tr>
       </table>
-  
+
         <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]" #pagUser></mat-paginator>
       </div>
     </nb-card-body>
   </nb-card>
-  
-  
