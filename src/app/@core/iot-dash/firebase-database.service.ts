@@ -192,4 +192,8 @@ export class FirebaseDatabaseService {
   updateDevice(id: string, device: Device){
     return this.angularFireDatabase.object(`sensors/${id}`).update(device);
   }
+
+  getAllSensors():Observable<Device[]>{
+    return this.angularFireDatabase.list<Device>('sensors').valueChanges();
+  } 
 }

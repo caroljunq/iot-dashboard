@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { FirebaseDatabaseService } from 'app/@core/iot-dash/firebase-database.service';
 
 @Component({
   selector: 'app-sensor-list',
@@ -7,7 +8,12 @@ import { Component, OnInit } from '@angular/core';
 })
 export class SensorListComponent implements OnInit {
 
-  constructor() { }
+  constructor(
+    private firebaseDatabaseService: FirebaseDatabaseService, 
+  ){
+    this.firebaseDatabaseService.getAllSensors().subscribe(res => console.log(res))
+    
+  }
 
   ngOnInit() {
   }

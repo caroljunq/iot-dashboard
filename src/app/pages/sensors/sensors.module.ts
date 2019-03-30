@@ -9,7 +9,6 @@ import { ThemeModule } from '../../@theme/theme.module';
 import { SensorEditComponent } from './sensor-edit/sensor-edit.component';
 import { SensorListComponent } from './sensor-list/sensor-list.component';
 
-
 import { SensorsRoutingModule } from './sensors-routing.module';
 
 

@@ -51,7 +51,7 @@ export class RoomEditComponent implements OnInit {
 
   editMode = false;
 
-  
+
   // Sensor table
   displayedSensorColumns: string[] = ['select','name', 'key','type','min', 'max'];
   sensorDataSource: MatTableDataSource<SensorData>;
@@ -146,14 +146,14 @@ export class RoomEditComponent implements OnInit {
 
   createRoom(){
     console.log(this.sensorsSelection.selected)
-    this.firebaseDatabaseService.createSite('teste23123');      
+    this.firebaseDatabaseService.createSite('teste23123');
   }
 
   onSubmit(){
     if(this.roomForm.valid && !this.editMode){
       return this.createRoom();
     }else{
-      return 
+      return
     }
   }
 
