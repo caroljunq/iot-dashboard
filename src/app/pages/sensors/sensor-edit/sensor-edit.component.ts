@@ -7,25 +7,25 @@ import { ActivatedRoute, ParamMap, Router } from '@angular/router';
 import { Device } from 'app/@core/iot-dash/iot-dash-models';
 import { Observable, of } from 'rxjs';
 
-//Toast
+// Toast
 import { NbGlobalLogicalPosition, NbGlobalPosition, NbToastrService } from '@nebular/theme';
 import { NbToastStatus } from '@nebular/theme/components/toastr/model';
 
 @Component({
   selector: 'app-sensor-edit',
   templateUrl: './sensor-edit.component.html',
-  styleUrls: ['./sensor-edit.component.scss']
+  styleUrls: ['./sensor-edit.component.scss'],
 })
 export class SensorEditComponent implements OnInit {
 
   sensorForm = this.formBuilder.group({
-    name: ['',Validators.required],
-    type: ['',Validators.required],
-    unit: ['',Validators.required],
-    max: ['',Validators.required],
-    min: ['',Validators.required],
+    name: ['', Validators.required],
+    type: ['', Validators.required],
+    unit: ['', Validators.required],
+    max: ['', Validators.required],
+    min: ['', Validators.required],
     isActor: [false],
-    active: [true]
+    isActive: [true],
   });
 
   editMode = false;
@@ -34,7 +34,7 @@ export class SensorEditComponent implements OnInit {
 
   saveBtn = true;
 
-  //toast config
+  // toast config
   destroyByClick = false;
   duration = 4000;
   hasIcon = true;
@@ -46,8 +46,8 @@ export class SensorEditComponent implements OnInit {
     private firebaseDatabaseService: FirebaseDatabaseService,
     protected formBuilder: FormBuilder,
     private toastrService: NbToastrService,
-    private router: Router
-  ){
+    private router: Router,
+  ) {
     this.saveBtn = true;
 
     this.route.paramMap.pipe(
@@ -65,12 +65,12 @@ export class SensorEditComponent implements OnInit {
           max: null,
           min: null,
           isActor: false,
-          active: true,
+          isActive: true,
         });
       }),
     ).subscribe(
-      (sensor) =>{ 
-        this.sensorStatus = sensor.active;
+      (sensor) => {
+        this.sensorStatus = sensor.isActive;
         this.sensorKey = sensor.key;
         this.sensorForm.setValue({
           name: sensor.name,
@@ -79,8 +79,8 @@ export class SensorEditComponent implements OnInit {
           max: sensor.max,
           min: sensor.min,
           isActor: sensor.isActor,
-          active: sensor.active
-        })
+          isActive: sensor.isActive,
+        });
       },
     );
   }
@@ -89,7 +89,7 @@ export class SensorEditComponent implements OnInit {
 
   }
 
-  showToast(message: string,title: string,status: NbToastStatus) {
+  showToast(message: string, title: string, status: NbToastStatus) {
 
     const config = {
       status: status,
@@ -100,51 +100,55 @@ export class SensorEditComponent implements OnInit {
       preventDuplicates: this.preventDuplicates,
     };
 
-    this.toastrService.show(message,title,config);
+    this.toastrService.show(message, title, config);
   }
 
-  async createDevice(){
+  async createDevice() {
     try {
-      let newDevice = await this.firebaseDatabaseService.createDevice({
+      const newDevice = await this.firebaseDatabaseService.createDevice({
+        key: '',
+        isActive: true,
         name: this.sensorForm.value.name,
         type: this.sensorForm.value.type,
         min: this.sensorForm.value.min,
         max: this.sensorForm.value.max,
         unit: this.sensorForm.value.unit,
-        isActor: this.sensorForm.value.isActor
-      })
+        isActor: this.sensorForm.value.isActor,
+      });
       this.saveBtn = false;
-      this.showToast('Device created.','SUCCESS',NbToastStatus.SUCCESS);
+      this.showToast('Device created.', 'SUCCESS', NbToastStatus.SUCCESS);
       this.router.navigateByUrl('/rooms');
-    } catch(e) {
+    } catch (e) {
       this.saveBtn = true;
-      this.showToast('Device not created. Try again.','WARNING',NbToastStatus.DANGER);
+      this.showToast('Device not created. Try again.', 'WARNING', NbToastStatus.DANGER);
     }
   }
 
-  async updateDevice(){
+  async updateDevice() {
     try {
-      let newDevice = await this.firebaseDatabaseService.updateDevice(this.sensorKey,{
+      const newDevice = await this.firebaseDatabaseService.updateDevice(this.sensorKey, {
+        key: this.sensorKey,
+        isActive: true,
         name: this.sensorForm.value.name,
         type: this.sensorForm.value.type,
         min: this.sensorForm.value.min,
         max: this.sensorForm.value.max,
         unit: this.sensorForm.value.unit,
-        isActor: this.sensorForm.value.isActor
-      })
-      this.showToast('Device updated.','SUCCESS',NbToastStatus.SUCCESS);
+        isActor: this.sensorForm.value.isActor,
+      });
+      this.showToast('Device updated.', 'SUCCESS', NbToastStatus.SUCCESS);
       // this.router.navigateByUrl('/rooms');
-    } catch(e) {
-      this.showToast('Device not updated. Try again.','WARNING',NbToastStatus.DANGER);
+    } catch (e) {
+      this.showToast('Device not updated. Try again.', 'WARNING', NbToastStatus.DANGER);
     }
   }
 
-  onSubmit(){
-    if(!this.editMode && this.sensorForm.valid){
+  onSubmit() {
+    if (!this.editMode && this.sensorForm.valid) {
       this.createDevice();
     }
-    if(this.editMode && this.sensorForm.valid){
+    if (this.editMode && this.sensorForm.valid) {
       this.updateDevice();
-    }  
+    }
   }
 }

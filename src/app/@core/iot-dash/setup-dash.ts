@@ -28,6 +28,7 @@ export function getSampleData(): RootData {
         key: 'jtaq3sq65jjm274sn7',
         name: 'Actor #0 Secretaria Secretaria',
         isActor: true,
+        isActive: true,
         max: 1,
         min: 0,
         type: '',
@@ -41,6 +42,7 @@ export function getSampleData(): RootData {
         type: 'Umidade',
         unit: '%',
         isActor: false,
+        isActive: true,
       },
       'jtaq3sq6j4dwqomqzhn': {
         key: 'jtaq3sq6j4dwqomqzhn',
@@ -50,6 +52,7 @@ export function getSampleData(): RootData {
         type: 'Temperatura',
         unit: 'ºC',
         isActor: false,
+        isActive: true,
       },
       'jtaq3sq6mzdmk90jivd': {
         key: 'jtaq3sq6mzdmk90jivd',
@@ -59,11 +62,13 @@ export function getSampleData(): RootData {
         type: 'Umidade',
         unit: '%',
         isActor: false,
+        isActive: true,
       },
       'jtaq3sq690wqngf8f6v': {
         key: 'jtaq3sq690wqngf8f6v',
         name: 'Actor #1 Gesso Raio-X',
         isActor: true,
+        isActive: true,
         max: 1,
         min: 0,
         type: '',
@@ -73,6 +78,7 @@ export function getSampleData(): RootData {
         key: 'jtaq3sq6mu5em9wwibi',
         name: 'Actor #0 TV Gesso',
         isActor: true,
+        isActive: true,
         max: 1,
         min: 0,
         type: '',
@@ -86,6 +92,7 @@ export function getSampleData(): RootData {
         type: 'Temperatura',
         unit: 'ºC',
         isActor: false,
+        isActive: true,
       },
       'jtaq3sq5r63ky31sldr': {
         key: 'jtaq3sq5r63ky31sldr',
@@ -95,6 +102,7 @@ export function getSampleData(): RootData {
         type: 'Temperatura',
         unit: 'ºC',
         isActor: false,
+        isActive: true,
       },
       'jtaq3sq6wfnt1dr4mo': {
         'key': 'jtaq3sq6wfnt1dr4mo',
@@ -104,6 +112,7 @@ export function getSampleData(): RootData {
         'type': 'Umidade',
         'unit': '%',
         isActor: false,
+        isActive: true,
       },
       'jtaq3sq6yrl35hwhpu': {
         'key': 'jtaq3sq6yrl35hwhpu',
@@ -113,11 +122,13 @@ export function getSampleData(): RootData {
         'type': 'Umidade',
         'unit': '%',
         isActor: false,
+        isActive: true,
       },
       'jtaq3sq7mmpjybj23u': {
         'key': 'jtaq3sq7mmpjybj23u',
         'name': 'Actor #1 Cirurgia Gesso',
         isActor: true,
+        isActive: true,
         max: 1,
         min: 0,
         type: '',
@@ -127,6 +138,7 @@ export function getSampleData(): RootData {
         'key': 'jtaq3sq7t1aqv3mjaa',
         'name': 'Actor #0 Gesso Secretaria',
         isActor: true,
+        isActive: true,
         max: 1,
         min: 0,
         type: '',
@@ -140,6 +152,7 @@ export function getSampleData(): RootData {
         'type': 'Temperatura',
         'unit': 'ºC',
         isActor: false,
+        isActive: true,
       },
       'jtaq3sq6iyg5rocavgo': {
         'key': 'jtaq3sq6iyg5rocavgo',
@@ -149,6 +162,7 @@ export function getSampleData(): RootData {
         'type': 'Temperatura',
         'unit': 'ºC',
         isActor: false,
+        isActive: true,
       },
       'jtaq3sq7adlsav1ea9q': {
         'key': 'jtaq3sq7adlsav1ea9q',
@@ -158,6 +172,7 @@ export function getSampleData(): RootData {
         'type': 'Umidade',
         'unit': '%',
         isActor: false,
+        isActive: true,
       },
     },
     sites: {
@@ -195,8 +210,7 @@ export function getSampleData(): RootData {
         },
       },
     },
-    sensorData: {},
-    actorData: {},
+    deviceData: {},
     users: {
       '56BHZdeRoshWHP43rptjWcUJv0o2': {
         displayName: 'Carolina Junqueira Ferreira',

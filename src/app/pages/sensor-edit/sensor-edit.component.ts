@@ -19,16 +19,16 @@ interface SensorForm {
 @Component({
   selector: 'app-sensor-edit',
   templateUrl: './sensor-edit.component.html',
-  styleUrls: ['./sensor-edit.component.scss']
+  styleUrls: ['./sensor-edit.component.scss'],
 })
 export class SensorEditComponent implements OnInit {
 
   sensorForm = this.formBuilder.group({
-    name: ['',Validators.required],
-    type: ['',Validators.required],
-    unit: ['',Validators.required],
-    max: ['',Validators.required],
-    min: ['',Validators.required]
+    name: ['', Validators.required],
+    type: ['', Validators.required],
+    unit: ['', Validators.required],
+    max: ['', Validators.required],
+    min: ['', Validators.required],
   });
 
   editMode = false;
@@ -38,14 +38,13 @@ export class SensorEditComponent implements OnInit {
     protected route: ActivatedRoute,
     private firebaseDatabaseService: FirebaseDatabaseService,
     protected formBuilder: FormBuilder,
-  ){
-
+  ) {
     this.route.paramMap.pipe(
       switchMap<ParamMap, Device>(paramMap => {
         const id = paramMap.get('id');
         if (id) {
           this.editMode = true;
-          return this.firebaseDatabaseService.getSensorByKey(id);
+          return this.firebaseDatabaseService.getSensorById(id);
         }
         return of(<Device>{
           key: '',
@@ -57,7 +56,7 @@ export class SensorEditComponent implements OnInit {
         });
       }),
       ).subscribe(
-      (sensor) =>{ 
+      (sensor) => {
         this.sensorKey = sensor.key,
         this.sensorForm.setValue({
           name: sensor.name,
@@ -65,34 +64,31 @@ export class SensorEditComponent implements OnInit {
           unit: sensor.unit,
           max: sensor.max,
           min: sensor.min,
-        })
+        });
       },
     );
 
   }
 
-  ngOnInit() {
+  ngOnInit() { }
 
-  }
-
-  createDevice(){
+  createDevice() {
     this.firebaseDatabaseService.createSensor(<Device>{
       key: null,
       name: this.sensorForm.value.name,
       type: this.sensorForm.value.type,
       min: this.sensorForm.value.min,
       max: this.sensorForm.value.max,
-      unit: this.sensorForm.value.unit
-    })
+      unit: this.sensorForm.value.unit,
+    });
   }
 
-  onSubmit(){
-   
-    if(!this.editMode && this.sensorForm.valid){
+  onSubmit() {
+    if (!this.editMode && this.sensorForm.valid) {
       this.createDevice();
-    }else{
-      return
-    }  
+    } else {
+      return;
+    }
   }
 
 }

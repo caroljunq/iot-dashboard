@@ -20,21 +20,6 @@ export class FirebaseDatabaseService {
     //   // this.angularFireDatabase.object('/').update(getSampleData());
     // }
   }
-
-  sites$: Observable<Site[]>;
-  getSites(): Observable<Site[]> {
-    if (this.sites$) {
-      return this.sites$;
-    }
-    console.trace('getSites');
-    this.sites$ = this.angularFireDatabase.list<Site>('sites').valueChanges().pipe(
-      // tap(v => console.log(v)),
-      publishReplay(),
-      refCount(),
-      filter(v => !!v),
-    );
-    return this.sites$;
-  }
   getSite(key: string): Observable<Site> {
     return this.angularFireDatabase.object<Site>(`sites/${key}`).valueChanges();
   }
@@ -167,10 +152,11 @@ export class FirebaseDatabaseService {
   // }
 
 
-  // createSite(site){
-  //   console.log(site);
-  //   return true;
-  // }
+  createSite(site) {
+    console.trace(site);
+    // return true;
+    throw new Error('Method not implemented.');
+  }
 
   // getUserSites(dashUser: DashUser): any {
   //   return this.angularFireDatabase.list<string>(`userSites/${dashUser.authUser.uid}`).valueChanges().pipe(
@@ -181,31 +167,25 @@ export class FirebaseDatabaseService {
   //   );
   // }
 
-  createDevice(device: Device){
-    let deviceRef = this.angularFireDatabase.database.ref('sensors').push();
+  createDevice(device: Device) {
+    const deviceRef = this.angularFireDatabase.database.ref('sensors').push();
     device.key = deviceRef.key;
     return deviceRef.update(device);
   }
 
-  getSensorById(id: string): Observable<Device>{
+  getSensorById(id: string): Observable<Device> {
     return this.angularFireDatabase.object<Device>(`sensors/${id}`).valueChanges();
   }
 
 
-  updateDevice(id: string, device: Device){
+  updateDevice(id: string, device: Device) {
     return this.angularFireDatabase.object(`sensors/${id}`).update(device);
-
-  getUserSites(dashUser: DashUser): any {
-    return this.angularFireDatabase.list<string>(`userSites/${dashUser.authUser.uid}`).valueChanges().pipe(
-      // tap(userSites => console.log('[FirebaseDatabaseService.getUserSites]', {userSites})),
-      switchMap(userSites => combineLatest(userSites.map(
-        userSite => this.getSite(userSite),
-      ))),
-    );
-
   }
 
-  getAllSensors():Observable<Device[]>{
+  getAllSensors(): Observable<Device[]> {
     return this.angularFireDatabase.list<Device>('sensors').valueChanges();
+  }
+  createSensor(arg0: Device): any {
+    throw new Error('Method not implemented.');
   }
 }
