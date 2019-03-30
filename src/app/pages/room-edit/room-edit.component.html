@@ -1,13 +1,18 @@
 <nb-card>
   <nb-card-header class="custom-form-title">{{!editoMode? "Create a room":"Edit room"}}</nb-card-header>
-  <nb-card-body class="row room-top-form">
-    <div class="input-group col-12 col-sm-10">
-      <label>Room name</label>
-      <input type="text" nbInput fullWidth placeholder="Room name">
-    </div>
-    <div class="col-12 col-sm-2">
-      <button nbButton hero status="success" fullWidth>Save</button>
-    </div>
+  <nb-card-body>
+    <form class="row room-top-form" [formGroup]="roomForm" (ngSubmit)="onSubmit()">
+      <div class="input-group col-12 col-sm-10">
+        <label>Room name</label>
+        <input type="text" nbInput fullWidth placeholder="Room name" formControlName="name">
+      </div>
+      <div class="col-12 col-sm-2">
+        <button nbButton hero status="success" fullWidth
+            aria-disabled="false" tabindex="0"
+            [disabled]="!roomForm.valid"
+            type="submit">Save</button>
+      </div>
+    </form>
   </nb-card-body>
 </nb-card>
 <nb-card>

@@ -2,6 +2,15 @@ import { Component, OnInit,ViewChild } from '@angular/core';
 import { MatPaginator, MatSort, MatTableDataSource} from '@angular/material';
 import {SelectionModel} from '@angular/cdk/collections';
 
+import { FirebaseDatabaseService } from 'app/@core/iot-dash/firebase-database.service';
+import { Validators, FormBuilder } from '@angular/forms';
+
+import { switchMap, takeWhile, map } from 'rxjs/operators';
+import { ActivatedRoute, ParamMap } from '@angular/router';
+import { Site, Device, TimedValue } from 'app/@core/iot-dash/iot-dash-models';
+import { Observable, of } from 'rxjs';
+
+
 interface SensorData {
   key: string,
   name: string,
@@ -22,6 +31,11 @@ const NAMES: string[] = [
   'Maia', 'Asher', 'Olivia', 'Atticus', 'Amelia', 'Jack', 'Charlotte', 'Theodore', 'Isla', 'Oliver',
   'Isabella', 'Jasper', 'Cora', 'Levi', 'Violet', 'Arthur', 'Mia', 'Thomas', 'Elizabeth'
 ];
+interface SiteForm{
+  name: string;
+  sensors: [];
+  actors: [];
+}
 
 @Component({
   selector: 'app-room-edit',
@@ -30,7 +44,14 @@ const NAMES: string[] = [
 })
 export class RoomEditComponent implements OnInit {
 
+
+  roomForm = this.formBuilder.group({
+    name: ['',Validators.required]
+  });
+
   editMode = false;
+
+  
   // Sensor table
   displayedSensorColumns: string[] = ['select','name', 'key','type','min', 'max'];
   sensorDataSource: MatTableDataSource<SensorData>;
@@ -47,7 +68,11 @@ export class RoomEditComponent implements OnInit {
   @ViewChild("pagUser") paginatorUser: MatPaginator;
   @ViewChild("sortUser") sortUser: MatSort;
 
-  constructor() {
+  constructor(
+    protected route: ActivatedRoute,
+    private firebaseDatabaseService: FirebaseDatabaseService,
+    protected formBuilder: FormBuilder
+  ) {
     const sensors = Array.from({length: 100}, (_, k) => createNewSensor(k + 1));
     const users = Array.from({length: 100}, (_, k) => createNewUser(k + 1));
 
@@ -118,6 +143,20 @@ export class RoomEditComponent implements OnInit {
     }
     return `${this.usersSelection.isSelected(row) ? 'deselect' : 'select'} row ${row.key}`;
   }
+
+  createRoom(){
+    console.log(this.sensorsSelection.selected)
+    this.firebaseDatabaseService.createSite('teste23123');      
+  }
+
+  onSubmit(){
+    if(this.roomForm.valid && !this.editMode){
+      return this.createRoom();
+    }else{
+      return 
+    }
+  }
+
 }
 
  function createNewSensor(id: number): SensorData {

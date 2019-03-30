@@ -46,7 +46,6 @@ export class SensorEditComponent implements OnInit {
         if (id) {
           this.editMode = true;
           return this.firebaseDatabaseService.getSensorByKey(id);
-          // return this.usersService.getUser(id);
         }
         return of(<Device>{
           key: '',

@@ -89,6 +89,7 @@ export class FirebaseDatabaseService {
     return true;
   }
 
+
   getSensorByKey(id): Observable<Device> {
     return of(<Device>{
       key: 'fakeKey',
@@ -98,6 +99,12 @@ export class FirebaseDatabaseService {
       min: 15,
       max: 12,
     });
+  }
+
+
+  createSite(site){
+    console.log(site);
+    return true;
   }
 
   getUserSites(dashUser: DashUser): any {
