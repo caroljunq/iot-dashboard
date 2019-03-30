@@ -9,7 +9,7 @@
       <div class="col-12 col-sm-2">
         <button nbButton hero status="success" fullWidth
             aria-disabled="false" tabindex="0"
-            [disabled]="!roomForm.valid"
+            [disabled]="!roomForm.valid || !saveBtn"
             type="submit">Save</button>
       </div>
     </form>

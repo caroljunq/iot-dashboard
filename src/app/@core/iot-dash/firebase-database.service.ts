@@ -152,10 +152,10 @@ export class FirebaseDatabaseService {
   // }
 
 
-  createSite(site) {
-    console.trace(site);
-    // return true;
-    throw new Error('Method not implemented.');
+  createSite(site: Site) {
+    const siteRef = this.angularFireDatabase.database.ref('sites11').push();
+    site.key = siteRef.key;
+    return siteRef.update(site);
   }
 
   // getUserSites(dashUser: DashUser): any {
