@@ -7,7 +7,7 @@ import { DashboardModule } from './pages/dashboard/dashboard.module';
 import { HistoricalDataModule } from './pages/historical-data/historical-data.module';
 import { DashboardIdGuard } from './pages/dashboard/dashboard.service';
 import { RoomEditModule } from './pages/room-edit/room-edit.module';
-import { SensorsModule } from './pages/sensors/sensors.module';
+import { DevicesModule } from './pages/devices/devices.module';
 
 import { AuthGuard } from './pages/users/auth.guard';
 // import { UsersModule } from './pages/users/users.module';
@@ -34,7 +34,7 @@ const routes: Routes = [
   },
   {
     path: 'sensors',
-    loadChildren: './pages/sensors/sensors.module#SensorsModule',
+    loadChildren: './pages/devices/devices.module#DevicesModule',
   },
   { path: '', redirectTo: 'dashboard/none', pathMatch: 'full', canActivate: [AuthGuard] },
   { path: '**', redirectTo: 'dashboard/none', canActivate: [AuthGuard] },

@@ -12,11 +12,11 @@ import { NbGlobalLogicalPosition, NbGlobalPosition, NbToastrService } from '@neb
 import { NbToastStatus } from '@nebular/theme/components/toastr/model';
 
 @Component({
-  selector: 'app-sensor-edit',
-  templateUrl: './sensor-edit.component.html',
-  styleUrls: ['./sensor-edit.component.scss']
+  selector: 'app-devices-edit',
+  templateUrl: './devices-edit.component.html',
+  styleUrls: ['./devices-edit.component.scss']
 })
-export class SensorEditComponent implements OnInit {
+export class DevicesEditComponent implements OnInit {
 
   sensorForm = this.formBuilder.group({
     name: ['',Validators.required],

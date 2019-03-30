@@ -1,4 +1,4 @@
-import { Component, OnInit,ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { MatPaginator, MatSort, MatTableDataSource} from '@angular/material';
 import {SelectionModel} from '@angular/cdk/collections';
 
@@ -146,12 +146,12 @@ export class RoomEditComponent implements OnInit {
 
   createRoom(){
     console.log(this.sensorsSelection.selected)
-    this.firebaseDatabaseService.createSite('teste23123');
+    // this.firebaseDatabaseService.createSite('teste23123');
   }
 
   onSubmit(){
     if(this.roomForm.valid && !this.editMode){
-      return this.createRoom();
+      return 
     }else{
       return
     }
