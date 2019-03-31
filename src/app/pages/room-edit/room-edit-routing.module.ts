@@ -4,9 +4,9 @@ import { Routes, RouterModule } from '@angular/router';
 import { RoomEditComponent } from './room-edit.component';
 
 const routes: Routes = [
-  { path: '', component: RoomEditComponent },
   { path: 'create', component: RoomEditComponent },
   { path: ':id', component: RoomEditComponent },
+  { path: '**', redirectTo: 'create' },
 ];
 
 @NgModule({

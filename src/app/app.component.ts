@@ -27,6 +27,16 @@ export class AppComponent {
       icon: 'ion-android-people',
       link: 'users/list',
     },
+    {
+      title: 'Sites',
+      icon: 'ion-android-people',
+      link: 'rooms/',
+    },
+    {
+      title: 'Sensors',
+      icon: 'ion-android-people',
+      link: 'sensors/',
+    },
   ];
   fakeMenu = [
     {

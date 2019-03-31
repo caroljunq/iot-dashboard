@@ -30,7 +30,7 @@ export class AuthGuard implements CanActivate, CanActivateChild, CanLoad {
     next: ActivatedRouteSnapshot,
     state: RouterStateSnapshot,
   ): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree {
-    console.log(`[canActivate] url: '${state.url}', component: '${(<Function>next.component).name}',`);
+    console.log(`[canActivate] url: '${state.url}', component: '${(<Function>next.component || {name: null}).name}',`);
     return this.usersService.user$.pipe(
       take(1),
       // tap(user => console.log(`[canActivate] user: '${user}', component: '${(<Function>next.component).name}',`)),
