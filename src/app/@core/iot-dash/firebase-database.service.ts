@@ -24,7 +24,7 @@ export class FirebaseDatabaseService {
   createSite(site: Site) {
     const siteRef = this.angularFireDatabase.database.ref('sites11').push();
     site.key = siteRef.key;
-    return siteRef.update(site);
+    return siteRef.push(site);
   }
 
   getSite(key: string): Observable<Site> {
@@ -37,6 +37,11 @@ export class FirebaseDatabaseService {
 
   getSensorSites(key: string): Observable<Device[]> {
     return this.angularFireDatabase.list<Device>(`sites/${key}/sensors`).valueChanges();
+  }
+
+  insertMultipleSiteUsers(siteKey,selectedUsers){
+    console.log(siteKey)
+    // return this.angularFireDatabase.object(`userSites/${userId}`).push(selectedUsers);
   }
 
 

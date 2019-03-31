@@ -36,6 +36,11 @@ export interface Site {
   name: string;
   devices: {[key: string]: string};
 }
+export interface UserSite {
+  [userUid: string]: {
+    [siteKey: string]: string,
+  };
+};
 
 export interface RootData {
   devices: {[key: string]: Device};

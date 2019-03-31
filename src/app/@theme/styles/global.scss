@@ -67,7 +67,7 @@ mwl-gauge.gauge-chart {
   .input-group{
     margin-bottom: 28px;
   }
-  
+
   .space-bt{
     display: flex;
     justify-content: space-between;
@@ -130,7 +130,7 @@ th.mat-header-cell:first-of-type,td.mat-cell:first-of-type, td.mat-footer-cell:f
 }
 
 .left-inner-addon{
-    
+
   input {
     padding: 0.75rem 2rem !important;
   }
@@ -156,4 +156,8 @@ th.mat-header-cell:first-of-type,td.mat-cell:first-of-type, td.mat-footer-cell:f
 
 table{
   width: 100%;
+}
+
+nb-accordion-item-header{
+  font-weight: 600 !important;
 }

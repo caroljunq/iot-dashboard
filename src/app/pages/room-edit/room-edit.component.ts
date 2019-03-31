@@ -41,7 +41,7 @@ export class RoomEditComponent implements OnInit {
   siteKey: string = '';
 
   // Sensor table
-  displayedSensorColumns: string[] = ['select', 'name', 'key', 'type', 'min', 'max','status','actor'];
+  displayedSensorColumns: string[] = ['select', 'name', 'key', 'type', 'min', 'max','actor'];
   sensorDataSource: MatTableDataSource<Device> = new MatTableDataSource([]);
   sensorsSelection = new SelectionModel<Device>(true, []);
 
@@ -101,7 +101,6 @@ export class RoomEditComponent implements OnInit {
     // get the data once, 2 --> get startWith from getUsersList, after all users at 2nd
     this.usersService.getUsersList().pipe(take(2))
       .subscribe((users) => {
-        console.log(users);
         this.userDataSource.data = users;
         this.userDataSource.paginator = this.paginatorUser;
         this.userDataSource.sort = this.sortUser;
@@ -172,11 +171,20 @@ export class RoomEditComponent implements OnInit {
          obj[item.key] = item.key
          return obj
       }, {});
-      const createSite = await this.firebaseDatabaseService.createSite({
+
+      const selectedUsers = this.usersSelection.selected.reduce((arr, item) => {
+         arr.push(item.uid);
+         return arr;
+      }, []);
+
+      const newSiteKey = await this.firebaseDatabaseService.createSite({
         name: this.roomForm.value.name,
         key: '',
         devices: selectedDevices
-      });
+      }).key
+      
+      const createSiteUsers = await this.firebaseDatabaseService.insertMultipleSiteUsers(newSiteKey,selectedUsers);
+
       this.saveBtn = false;
       this.showToast('Room created.', 'SUCCESS', NbToastStatus.SUCCESS);
       // this.router navigateByUrl(/rooms/id do role) dashboard do role
@@ -192,6 +200,7 @@ export class RoomEditComponent implements OnInit {
          obj[item.key] = item.key
          return obj
       }, {});
+
       const createSite = await this.firebaseDatabaseService.createSite({
         name: this.roomForm.value.name,
         key: this.siteKey,
