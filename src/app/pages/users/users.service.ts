@@ -5,6 +5,8 @@ import { switchMap, map, tap, shareReplay, distinctUntilChanged, take, startWith
 import { AngularFireDatabase } from '@angular/fire/database';
 import { AngularFireAuth } from '@angular/fire/auth';
 import { auth } from 'firebase/app';
+import { NbGlobalLogicalPosition, NbGlobalPosition, NbToastrService } from '@nebular/theme';
+import { NbToastStatus } from '@nebular/theme/components/toastr/model';
 
 import { DashUser, StoredUser } from './user-models';
 
@@ -39,6 +41,7 @@ export class UsersService {
     protected angularFireDatabase: AngularFireDatabase,
     protected angularFireAuth: AngularFireAuth,
     protected router: Router,
+    protected toastrService: NbToastrService,
   ) {
     this.user$ = this.angularFireAuth.authState.pipe(
       // tap(v => console.log('[UsersService] authState', v)),
@@ -98,7 +101,9 @@ export class UsersService {
         () => this.router.navigate(['/']),
         10,
       );
-      return Promise.resolve(await this.getUserFormCredential(credential));
+      const dashUser = await this.getUserFormCredential(credential);
+      this.showToast('Cadastro Realizado.', 'SUCCESS', NbToastStatus.SUCCESS);
+      return Promise.resolve(dashUser);
     } catch (e) {
       console.error('[UsersService.login]', e);
       return Promise.reject();
@@ -151,7 +156,7 @@ export class UsersService {
     const userRef = this.angularFireDatabase.object<StoredUser>(`users/${user.uid}`);
     return userRef.set(user);
   }
-  updateUser(user: StoredUser): Promise<void> {
+  async updateUser(user: StoredUser): Promise<void> {
     // const allowedFields = [ 'uid', 'displayName', 'photoURL', 'name', 'email', 'isActive', 'isAdmin'];
     // user = <StoredUser>Object.entries(user).map(
     //   i => ({k: i[0], v: i[1]}),
@@ -170,7 +175,9 @@ export class UsersService {
       'isAdmin': user.isAdmin || false,
     };
     const userRef = this.angularFireDatabase.object<StoredUser>(`users/${user.uid}`);
-    return userRef.update(user);
+    await userRef.update(user);
+    this.showToast('Cadastro Atualizado.', 'SUCCESS', NbToastStatus.SUCCESS);
+    return Promise.resolve();
   }
 
   signOut() {
@@ -207,5 +214,29 @@ export class UsersService {
         );
       }),
     );
+  }
+
+  async emailForgotPassword(email: string): Promise<void> {
+    await this.angularFireAuth.auth.sendPasswordResetEmail(email/*, actionCodeSettings*/);
+    this.showToast('Email enviado.', 'SUCCESS', NbToastStatus.SUCCESS);
+    return Promise.resolve();
+  }
+
+  showToast(message: string, title: string, status: NbToastStatus) {
+    // toast config
+    const destroyByClick = false;
+    const duration = 4000;
+    const hasIcon = true;
+    const position: NbGlobalPosition = NbGlobalLogicalPosition.BOTTOM_END;
+    const preventDuplicates = false;
+    const config = {
+      status: status,
+      destroyByClick: destroyByClick,
+      duration: duration,
+      hasIcon: hasIcon,
+      position: position,
+      preventDuplicates: preventDuplicates,
+    };
+    this.toastrService.show(message, title, config);
   }
 }

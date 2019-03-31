@@ -22,14 +22,14 @@ export interface Device {
   key: string;
   name: string;
   isActor: boolean;
+  isActive: boolean;
   // ------ SENSOR -------
   // Umidade: 20 - 80
   // Temperatura: 15 - 25
   type: string | 'Temperatura' | 'Umidade';
   unit: string | 'ºC' | '%';
-  max: number | 0;
-  min: number | 0;
-  isActive: boolean;
+  max: number;
+  min: number;
 }
 export interface Site {
   key: string;
@@ -41,6 +41,12 @@ export interface UserSite {
     [siteKey: string]: string,
   };
 };
+
+export interface UserSites {
+  [userUid: string]: {
+    [siteKey: string]: string,
+  };
+}
 
 export interface RootData {
   devices: {[key: string]: Device};

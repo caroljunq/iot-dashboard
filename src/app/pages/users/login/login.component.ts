@@ -26,6 +26,9 @@ export class LoginComponent implements OnInit {
     this.passForgot = !this.passForgot;
   }
   onSubmit() {
+    if (this.passForgot) {
+      return this.usersService.emailForgotPassword(this.loginForm.value.email);
+    }
     if (this.loginForm.invalid) {
       return;
     }

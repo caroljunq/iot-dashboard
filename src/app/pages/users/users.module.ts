@@ -16,8 +16,5 @@ import { NoAuthGuard } from './auth.guard';
     UsersRoutingModule,
     ThemeModule,
   ],
-  providers: [
-    { provide: NoAuthGuard, useClass: NoAuthGuard },
-  ],
 })
 export class UsersModule { }

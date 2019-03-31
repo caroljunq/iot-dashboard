@@ -62,7 +62,10 @@ export class RoomEditComponent implements OnInit {
     protected formBuilder: FormBuilder,
     private toastrService: NbToastrService,
     private router: Router,
+<<<<<<< HEAD
     private usersService: UsersService
+=======
+>>>>>>> 9c4dc9ec1952f0e43334e7c159f5e95aec4a5f67
   ) {
 
     this.saveBtn = true;

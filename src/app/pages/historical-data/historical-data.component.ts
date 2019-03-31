@@ -16,12 +16,11 @@ export class HistoricalDataComponent implements AfterViewInit, OnDestroy {
   options: any = {};
   themeSubscription: any;
 
-  currentDate = null;
+  currentDate = interval(2000).pipe( map(() => Date.now()));
   formControl: FormControl;
   ngModelDate: Date;
 
   constructor(private theme: NbThemeService) {
-    this.currentDate = interval(2000).pipe( map(() => Date.now()));
     this.formControl = new FormControl(new Date());
     this.ngModelDate = new Date();
   }

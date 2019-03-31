@@ -1,15 +1,11 @@
 import { Injectable } from '@angular/core';
-import { database } from 'firebase/app';
 import { AngularFireDatabase } from '@angular/fire/database';
 import { Observable, of, combineLatest } from 'rxjs';
 import { map, filter, publishReplay, refCount, take, catchError, tap, switchMap } from 'rxjs/operators';
 
 import { environment } from 'environments/environment';
 import { getSampleData } from './setup-dash';
-import { Site, Device, TimedValue, TimedAggregate } from './iot-dash-models';
-import { LiveChartService } from './live-chart.service';
-import { AngularFireFunctions } from '@angular/fire/functions';
-import { DashUser } from './../../pages/users/user-models';
+import { Site, Device, UserSites } from './iot-dash-models';
 
 @Injectable({
   providedIn: 'root',
@@ -38,6 +34,26 @@ export class FirebaseDatabaseService {
   getSensorSites(key: string): Observable<Device[]> {
     return this.angularFireDatabase.list<Device>(`sites/${key}/sensors`).valueChanges();
   }
+  getSitesUsers() {
+    return this.angularFireDatabase.object<UserSites>(`userSites/`).valueChanges().pipe(
+      map(userList => {
+        const users = Object.keys(userList);
+        const sitesEntries = Object.values(userList);
+        const sitesUsers = {};
+        for (let index = 0; index < sitesEntries.length; index++) {
+          const siteEntry = sitesEntries[index];
+          for (const siteKey of Object.keys(siteEntry)) {
+            if (!sitesUsers[siteKey]) {
+              sitesUsers[siteKey] = [];
+            }
+            sitesUsers[siteKey].push(users[index]);
+          }
+        }
+        return sitesUsers;
+      }),
+    );
+  }
+
 
   insertMultipleSiteUsers(siteKey,selectedUsers){
     console.log(siteKey)

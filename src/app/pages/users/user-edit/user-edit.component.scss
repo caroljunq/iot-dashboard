@@ -2,3 +2,7 @@
   color: #40dc7e !important;
   font-weight: 600;
 }
+
+.ng-invalid.ng-dirty {
+  border-color: red;
+}

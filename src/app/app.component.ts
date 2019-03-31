@@ -35,9 +35,9 @@ export class AppComponent {
       link: 'dashboard/fake',
     },
     {
-      title: 'Users',
-      icon: 'ion-android-people',
-      link: 'users/list',
+      title: 'Historical Data',
+      icon: 'nb-bar-chart',
+      link: 'historical-data',
     },
   ];
 

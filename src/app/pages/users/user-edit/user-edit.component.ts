@@ -1,6 +1,6 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ActivatedRoute, ParamMap } from '@angular/router';
-import { FormGroup, FormControl, FormBuilder } from '@angular/forms';
+import { FormGroup, FormControl, FormBuilder, Validators, AbstractControl, ValidationErrors } from '@angular/forms';
 import { Observable, of } from 'rxjs';
 import { switchMap, takeWhile, map } from 'rxjs/operators';
 
@@ -22,13 +22,34 @@ interface ProfileForm {
 })
 export class UserEditComponent implements OnInit, OnDestroy {
   isActive = true;
-  profileForm = this.formBuilder.group({
-    fullName: [''],
-    emailAddress: [''],
-    password: [''],
-    repeatPassword: [''],
-    termsConditions: [true],
-  });
+  formValue = {
+    fullName: '',
+    emailAddress: '',
+    password: '',
+    repeatPassword: '',
+    termsConditions: true,
+  };
+  profileForm = new FormGroup(
+    {
+      fullName: new FormControl(this.formValue.fullName, [ Validators.required, Validators.minLength(6) ]),
+      emailAddress: new FormControl(this.formValue.emailAddress, [ Validators.email ]),
+      password: new FormControl(this.formValue.password, [Validators.minLength(6)]),
+      repeatPassword: new FormControl(this.formValue.repeatPassword, [
+        Validators.minLength(6),
+        (control: AbstractControl): ValidationErrors | null => {
+          if (
+            this.profileForm &&
+            this.profileForm.value.password &&
+            control.value &&
+            this.profileForm.value.password !== control.value
+          ) {
+            return {'repeatPassword': 'Passswords dont match'};
+          }
+        },
+      ]),
+      termsConditions: new FormControl(this.formValue.termsConditions, []),
+    },
+  );
   editMode = false;
 
   constructor(
@@ -73,10 +94,22 @@ export class UserEditComponent implements OnInit, OnDestroy {
   }
 
   onSubmit() {
+    const { emailAddress, fullName, password } = this.profileForm.value;
+    const name = fullName;
+    const displayName = fullName;
+    const email = emailAddress;
+    if (this.editMode) {
+      this.usersService.user$.subscribe(user => {
+        this.usersService.updateUser({
+          ...user.storedUser,
+          name, displayName,
+        });
+      });
+      return;
+    }
     if (this.profileForm.invalid) {
       return;
     }
-    const { emailAddress, fullName, password } = this.profileForm.value;
-    this.usersService.emailUserCreate({email: emailAddress, password, fullName});
+    return this.usersService.emailUserCreate({email, password, fullName});
   }
 }

@@ -14,7 +14,5 @@ import { HistoricalDataComponent } from './historical-data.component';
   ],
   declarations: [ HistoricalDataComponent ],
   exports: [ HistoricalDataComponent ],
-  entryComponents: [  ],
 })
 export class HistoricalDataModule { }
-

@@ -5,25 +5,18 @@ import { DashboardComponent } from './pages/dashboard/dashboard.component';
 import { HistoricalDataComponent } from './pages/historical-data/historical-data.component';
 import { DashboardModule } from './pages/dashboard/dashboard.module';
 import { HistoricalDataModule } from './pages/historical-data/historical-data.module';
-import { DashboardIdGuard } from './pages/dashboard/dashboard.service';
-import { RoomEditModule } from './pages/room-edit/room-edit.module';
-import { DevicesModule } from './pages/devices/devices.module';
 
 import { AuthGuard } from './pages/users/auth.guard';
-// import { UsersModule } from './pages/users/users.module';
+import { DashboardIdGuard } from './pages/dashboard/dashboard.service';
 
 const routes: Routes = [
-  // { path: 'dashboard', redirectTo: 'dashboard/none', pathMatch: 'full', canActivate: [AuthGuard, DashboardIdGuard] },
-  { path: 'dashboard/:id', component: DashboardComponent, canActivate: [AuthGuard, DashboardIdGuard] },
-  { path: 'historical-data', component: HistoricalDataComponent, canActivate: [AuthGuard] },
+  { path: 'dashboard/:id', component: DashboardComponent, canActivate: [ DashboardIdGuard] },
+  { path: 'historical-data', component: HistoricalDataComponent },
   { path: 'users', loadChildren: './pages/users/users.module#UsersModule' },
-  { path: 'rooms', loadChildren: './pages/room-edit/room-edit.module#RoomEditModule' },
-  {
-    path: 'sensors',
-    loadChildren: './pages/devices/devices.module#DevicesModule',
-  },
-  { path: '', redirectTo: 'dashboard/none', pathMatch: 'full', canActivate: [AuthGuard] },
-  { path: '**', redirectTo: 'dashboard/none', canActivate: [AuthGuard] },
+  { path: 'rooms', loadChildren: './pages/room-edit/room-edit.module#RoomEditModule', canActivate: [AuthGuard] },
+  { path: 'sensors', loadChildren: './pages/devices/devices.module#DevicesModule', canActivate: [AuthGuard] },
+  { path: '', redirectTo: 'dashboard/fake', pathMatch: 'full' },
+  { path: '**', redirectTo: 'dashboard/fake' },
 ];
 
 @NgModule({
@@ -32,7 +25,6 @@ const routes: Routes = [
     RouterModule.forRoot(routes, {enableTracing: false, useHash: false}),
     DashboardModule,
     HistoricalDataModule,
-    RoomEditModule,
   ],
   exports: [RouterModule],
 })
