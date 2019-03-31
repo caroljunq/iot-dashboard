@@ -1,5 +1,5 @@
 <div class="row config-line">
-  <div class="col-md-6 col-sm-6 col-12">
+  <div class="col-md-4 col-sm-4 col-12">
     <div class="form-group">
     <label>Room</label>
     <span class="config-val">{{ site?.name }}</span>
@@ -12,6 +12,10 @@
   <div class="col-md-3 col-sm-3 col-6">
     <label class="config-desc">Current Hour</label>
     <span class="config-val">{{ currentDate | async | date:'HH:mm' }}</span>
+  </div>
+  <div class="col-12 col-md-2 col-sm-2">
+    <button nbButton hero status="success" fullWidth
+        aria-disabled="false">Edit</button>
   </div>
 </div>
 

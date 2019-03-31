@@ -2,9 +2,13 @@
   <nb-card-header class="custom-form-title">{{!editMode? "Create a room":"Edit room"}}</nb-card-header>
   <nb-card-body>
     <form class="row room-top-form" [formGroup]="roomForm" (ngSubmit)="onSubmit()">
-      <div class="input-group col-12 col-sm-10">
+      <div class="input-group col-12 col-sm-8">
         <label>Room name</label>
         <input type="text" nbInput fullWidth placeholder="Room name" formControlName="name">
+      </div>
+      <div class="col-12 col-sm-2" *ngIf="editMode">
+        <button nbButton hero status="danger" fullWidth 
+          aria-disabled="false" tabindex="0">Remove</button>
       </div>
       <div class="col-12 col-sm-2">
         <button nbButton hero status="success" fullWidth

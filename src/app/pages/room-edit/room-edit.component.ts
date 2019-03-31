@@ -83,8 +83,11 @@ export class RoomEditComponent implements OnInit {
     ).subscribe(
       (site) => {
         this.siteKey = site.key;
-        // sensorsSelection iniciar valores
-        // usersSelection // initciar valores
+        //TODO: FALTA - caso esteja em modo edit mode, carregar usersSelection e sensorsSelection
+        // Já tem implementação de afiliação de sensores e users para um site
+        // getSiteDevices(key: string): Observable<Device[]>
+        // getSitesUsers
+
         this.roomForm.setValue({
           name: site.name,
         });
@@ -94,7 +97,7 @@ export class RoomEditComponent implements OnInit {
     // get the data once
     this.firebaseDatabaseService.getAllDevices().pipe(take(1))
       .subscribe((sensors) => {
-        this.sensorDataSource.data = sensors;
+        this.sensorDataSource.data = sensors.filter(sensor => sensor.isActive);
         this.sensorDataSource.paginator = this.paginatorSensor;
         this.sensorDataSource.sort = this.sortSensor;
       })
@@ -183,11 +186,13 @@ export class RoomEditComponent implements OnInit {
         devices: selectedDevices
       })
 
+      //associating user and site
       const createSiteUsers = await this.firebaseDatabaseService.insertMultipleSiteUsers(newSiteKey,selectedUsers);
 
       this.saveBtn = false;
       this.showToast('Room created.', 'SUCCESS', NbToastStatus.SUCCESS);
-      // this.router navigateByUrl(/rooms/id do role) dashboard do role
+      // FALTA - depois de inserir, ir para a rota de
+      // this.router.navigateByUrl(/rooms/id)/, basicamente ir para edit
     }catch(e){
       this.saveBtn = true;
       this.showToast('Room not created. Try again.', 'WARNING', NbToastStatus.DANGER);
@@ -201,15 +206,17 @@ export class RoomEditComponent implements OnInit {
          return obj
       }, {});
 
-      const siteKey = await this.firebaseDatabaseService.createSite({
+      const siteUpdate = await this.firebaseDatabaseService.updateSite(this.siteKey, {
         name: this.roomForm.value.name,
         key: this.siteKey,
         devices: selectedDevices
       });
 
+      // FALTA - com base no objeto userSelection, atualizar os UserSites (afiliacao de site)
+
       this.showToast('Room updated.', 'SUCCESS', NbToastStatus.SUCCESS);
-      // this.router navigateByUrl(/rooms/id do role)
-      // navegar para o dashboard desse id
+      // FALTA - depois de atualizar, ir para a rota de
+      // this.router.navigateByUrl(/rooms/id)/, basicamente ir para edit. Atualizar, para caso tiver mais sensores
     }catch(e){
       this.showToast('Room not updated. Try again.', 'WARNING', NbToastStatus.DANGER);
     }
@@ -237,8 +244,5 @@ export class RoomEditComponent implements OnInit {
     };
 
     this.toastrService.show(message, title, config);
-
-    // this.showToast('Device created.', 'SUCCESS', NbToastStatus.SUCCESS);
-    // this.showToast('Device not created. Try again.', 'WARNING', NbToastStatus.DANGER);
   }
 }
