@@ -37,6 +37,12 @@ export interface Site {
   devices: {[key: string]: string};
 }
 
+export interface UserSites {
+  [userUid: string]: {
+    [siteKey: string]: string,
+  };
+}
+
 export interface RootData {
   devices: {[key: string]: Device};
   deviceData: {[deviceKey: string]: {[key: string]: TimedValue<number>}};
