@@ -30,7 +30,7 @@ export class AuthGuard implements CanActivate, CanActivateChild, CanLoad {
     next: ActivatedRouteSnapshot,
     state: RouterStateSnapshot,
   ): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree {
-    // console.log(`[canActivate] url: '${state.url}', component: '${(<Function>next.component).name}',`);
+    console.log(`[canActivate] url: '${state.url}', component: '${(<Function>next.component).name}',`);
     return this.usersService.user$.pipe(
       take(1),
       // tap(user => console.log(`[canActivate] user: '${user}', component: '${(<Function>next.component).name}',`)),
@@ -72,6 +72,23 @@ export class NoAuthGuard extends AuthGuard {
       take(1),
       map(user => {
         if (!user) {
+          return true;
+        }
+        return this.router.parseUrl('/');
+      }),
+    );
+  }
+}
+@Injectable()
+export class AdminGuard extends AuthGuard {
+  canActivate(
+    next: ActivatedRouteSnapshot,
+    state: RouterStateSnapshot,
+  ): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree {
+    return this.usersService.user$.pipe(
+      take(1),
+      map(user => {
+        if (user && user.storedUser.isAdmin) {
           return true;
         }
         return this.router.parseUrl('/');

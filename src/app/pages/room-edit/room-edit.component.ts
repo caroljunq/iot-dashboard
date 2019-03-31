@@ -84,7 +84,7 @@ export class RoomEditComponent implements OnInit {
     private firebaseDatabaseService: FirebaseDatabaseService,
     protected formBuilder: FormBuilder,
     private toastrService: NbToastrService,
-    private router: Router
+    private router: Router,
   ) {
 
     this.saveBtn = true;

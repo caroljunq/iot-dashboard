@@ -49,7 +49,7 @@ import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
     { provide: FunctionsRegionToken, useValue: environment.firebase.functionsRegionToken },
     { provide: NbRoleProvider, useClass: UsersService },
   ],
-  schemas: [CUSTOM_ELEMENTS_SCHEMA]
+  schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
 export class AppModule {
 }

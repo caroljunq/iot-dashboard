@@ -4,14 +4,11 @@ import { Routes, RouterModule } from '@angular/router';
 import { DevicesEditComponent } from './devices-edit/devices-edit.component';
 import { DevicesListComponent } from './devices-list/devices-list.component';
 
-
-import { AuthGuard } from '../users/auth.guard';
-
 const routes: Routes = [
-  { path: '', component: DevicesListComponent, canActivate: [AuthGuard]},
-  { path: 'list', component: DevicesListComponent, canActivate: [AuthGuard]},
-  { path: 'create', component: DevicesEditComponent, canActivate: [AuthGuard]},
-  { path: ':id', component: DevicesEditComponent, canActivate: [AuthGuard]},
+  { path: '', component: DevicesListComponent },
+  { path: 'list', component: DevicesListComponent },
+  { path: 'create', component: DevicesEditComponent },
+  { path: ':id', component: DevicesEditComponent },
 ];
 
 @NgModule({

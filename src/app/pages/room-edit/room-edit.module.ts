@@ -35,11 +35,10 @@ import {
     MatSortModule,
     MatTableModule,
     MatPaginatorModule,
-    MatCheckboxModule
+    MatCheckboxModule,
   ],
   declarations: [ RoomEditComponent ],
   exports: [ RoomEditComponent ],
-  entryComponents: [  ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
 export class RoomEditModule { }
