@@ -7,19 +7,16 @@ import { Validators, FormBuilder } from '@angular/forms';
 
 import { switchMap, takeWhile, map, take } from 'rxjs/operators';
 import { ActivatedRoute, ParamMap, Router } from '@angular/router';
-import { Site, Device } from 'app/@core/iot-dash/iot-dash-models';
+import { Site, Device, StoredUser } from 'app/@core/iot-dash/iot-dash-models';
 import { Observable, of } from 'rxjs';
+
+import { UsersService } from 'app/pages/users/users.service';
+
 
 // Toast
 import { NbGlobalLogicalPosition, NbGlobalPosition, NbToastrService } from '@nebular/theme';
 import { NbToastStatus } from '@nebular/theme/components/toastr/model';
 
-interface UserData {
-  key: number;
-  name: string;
-  email: string;
-  type: string;
-}
 @Component({
   selector: 'app-room-edit',
   templateUrl: './room-edit.component.html',
@@ -52,9 +49,9 @@ export class RoomEditComponent implements OnInit {
   @ViewChild('sortSensor') sortSensor: MatSort;
 
   // Users table
-  displayedUserColumns: string[] = ['select', 'name', 'email', 'type'];
-  userDataSource: MatTableDataSource<UserData>;
-  usersSelection = new SelectionModel<UserData>(true, []);
+  displayedUserColumns: string[] = ['select', 'name', 'email', 'admin'];
+  userDataSource: MatTableDataSource<StoredUser> = new MatTableDataSource([]);
+  usersSelection = new SelectionModel<StoredUser>(true, []);
 
   @ViewChild('pagUser') paginatorUser: MatPaginator;
   @ViewChild('sortUser') sortUser: MatSort;
@@ -64,7 +61,8 @@ export class RoomEditComponent implements OnInit {
     private firebaseDatabaseService: FirebaseDatabaseService,
     protected formBuilder: FormBuilder,
     private toastrService: NbToastrService,
-    private router: Router
+    private router: Router,
+    private usersService: UsersService
   ) {
 
     this.saveBtn = true;
@@ -90,27 +88,24 @@ export class RoomEditComponent implements OnInit {
         this.roomForm.setValue({
           name: site.name,
         });
-
-        this.userDataSource = new MatTableDataSource(users);
-
-        this.userDataSource.paginator = this.paginatorUser;
-        this.userDataSource.sort = this.sortUser;
-
       },
     );
 
-
-    // set the data once
+    // get the data once
     this.firebaseDatabaseService.getAllDevices().pipe(take(1))
       .subscribe((sensors) => {
         this.sensorDataSource.data = sensors;
         this.sensorDataSource.paginator = this.paginatorSensor;
         this.sensorDataSource.sort = this.sortSensor;
       })
-
-    // this.userDataSource = new MatTableDataSource(users);
-
-    const users = []
+    // get the data once, 2 --> get startWith from getUsersList, after all users at 2nd
+    this.usersService.getUsersList().pipe(take(2))
+      .subscribe((users) => {
+        console.log(users);
+        this.userDataSource.data = users;
+        this.userDataSource.paginator = this.paginatorUser;
+        this.userDataSource.sort = this.sortUser;
+      })
   }
 
   ngOnInit() {
@@ -164,11 +159,11 @@ export class RoomEditComponent implements OnInit {
         this.userDataSource.data.forEach(row => this.usersSelection.select(row));
   }
 
-  checkboxUserLabel(row?: UserData): string {
+  checkboxUserLabel(row?: StoredUser): string {
     if (!row) {
       return `${this.isAllUserSelected() ? 'select' : 'deselect'} all`;
     }
-    return `${this.usersSelection.isSelected(row) ? 'deselect' : 'select'} row ${row.key}`;
+    return `${this.usersSelection.isSelected(row) ? 'deselect' : 'select'} row ${row.uid}`;
   }
 
   async createRoom() {

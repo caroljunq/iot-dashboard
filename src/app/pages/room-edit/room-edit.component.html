@@ -16,7 +16,7 @@
   </nb-card-body>
 </nb-card>
 <nb-accordion>
- <nb-accordion-item>
+ <nb-accordion-item [expanded]="true">
     <nb-accordion-item-header>Select the sensors for this room</nb-accordion-item-header>
     <nb-accordion-item-body>
       <div class="col-12 no-padding">
@@ -47,7 +47,7 @@
           <!-- Key Column -->
           <ng-container matColumnDef="key">
             <th class="header-key" mat-header-cell *matHeaderCellDef mat-sort-header> Key </th>
-            <td class="cell-key" mat-cell *matCellDef="let row"> {{row.key}} </td>
+            <td class="cell-key" mat-cell *matCellDef="let row"> {{row.uid}} </td>
           </ng-container>
 
           <!-- Name Column -->
@@ -96,9 +96,9 @@
       </div>
     </nb-accordion-item-body>
   </nb-accordion-item>
-  <nb-accordion-item>
+  <nb-accordion-item [expanded]="true">
     <nb-accordion-item-header>Allow users to access this room</nb-accordion-item-header>
-    <nb-accordion-body>
+    <nb-accordion-item-body>
       <div class="col-12 no-padding">
         <div class="left-inner-addon">
           <i class="nb-search"></i>
@@ -127,7 +127,7 @@
             <!-- Name Column -->
           <ng-container matColumnDef="name">
             <th class="header-name-user" mat-header-cell *matHeaderCellDef mat-sort-header> Name </th>
-            <td class="cell-name-user" mat-cell *matCellDef="let row"> {{row.name}} </td>
+            <td class="cell-name-user" mat-cell *matCellDef="let row"> {{row.displayName}} </td>
           </ng-container>
 
             <!-- Email Column -->
@@ -137,9 +137,9 @@
           </ng-container>
 
             <!-- Type Column -->
-          <ng-container matColumnDef="type">
-            <th class="header-type-user" mat-header-cell *matHeaderCellDef mat-sort-header> Type </th>
-            <td class="cell-type-user" mat-cell *matCellDef="let row"> {{row.type}} </td>
+          <ng-container matColumnDef="admin">
+            <th class="header-type-user" mat-header-cell *matHeaderCellDef mat-sort-header> Admin </th>
+            <td class="cell-type-user" mat-cell *matCellDef="let row"> {{row.isAdmin ? "Yes":"No"}} </td>
           </ng-container>
 
           <tr mat-header-row *matHeaderRowDef="displayedUserColumns"></tr>
@@ -150,6 +150,6 @@
 
         <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]" #pagUser></mat-paginator>
     </div>
-    </nb-accordion-body>
+    </nb-accordion-item-body>
   </nb-accordion-item>
 </nb-accordion>
