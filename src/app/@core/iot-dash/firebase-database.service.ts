@@ -20,12 +20,26 @@ export class FirebaseDatabaseService {
     //   // this.angularFireDatabase.object('/').update(getSampleData());
     // }
   }
-  getSite(key: string): Observable<Site> {
-    return this.angularFireDatabase.object<Site>(`sites/${key}`).valueChanges();
+
+  createSite(site: Site) {
+    const siteRef = this.angularFireDatabase.database.ref('sites11').push();
+    site.key = siteRef.key;
+    return siteRef.update(site);
   }
+
+  getSite(key: string): Observable<Site> {
+    return this.angularFireDatabase.object<Site>(`sites11/${key}`).valueChanges();
+  }
+
+  updateSite(key: string, site: Site){
+    return this.angularFireDatabase.object(`sites11/${key}`).update(site);
+  }
+
   getSensorSites(key: string): Observable<Device[]> {
     return this.angularFireDatabase.list<Device>(`sites/${key}/sensors`).valueChanges();
   }
+
+
 
   // getSites(): Observable<Site[]> {
   //   if (this.sites$) {
@@ -152,13 +166,7 @@ export class FirebaseDatabaseService {
   // }
 
 
-  createSite(site: Site) {
-    const siteRef = this.angularFireDatabase.database.ref('sites11').push();
-    site.key = siteRef.key;
-    return siteRef.update(site);
-  }
-
-  // getUserSites(dashUser: DashUser): any {
+    // getUserSites(dashUser: DashUser): any {
   //   return this.angularFireDatabase.list<string>(`userSites/${dashUser.authUser.uid}`).valueChanges().pipe(
   //     tap(userSites => console.log('[FirebaseDatabaseService.getUserSites]', {userSites})),
   //     switchMap(userSites => combineLatest(userSites.map(

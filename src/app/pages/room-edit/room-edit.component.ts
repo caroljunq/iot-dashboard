@@ -5,23 +5,14 @@ import { SelectionModel } from '@angular/cdk/collections';
 import { FirebaseDatabaseService } from 'app/@core/iot-dash/firebase-database.service';
 import { Validators, FormBuilder } from '@angular/forms';
 
-import { switchMap, takeWhile, map } from 'rxjs/operators';
+import { switchMap, takeWhile, map, take } from 'rxjs/operators';
 import { ActivatedRoute, ParamMap, Router } from '@angular/router';
-import { Site } from 'app/@core/iot-dash/iot-dash-models';
+import { Site, Device } from 'app/@core/iot-dash/iot-dash-models';
 import { Observable, of } from 'rxjs';
 
 // Toast
 import { NbGlobalLogicalPosition, NbGlobalPosition, NbToastrService } from '@nebular/theme';
 import { NbToastStatus } from '@nebular/theme/components/toastr/model';
-
-interface SensorData {
-  key: string;
-  name: string;
-  max: number;
-  min: number;
-  type: string;
-  unit: string;
-}
 
 interface UserData {
   key: number;
@@ -29,23 +20,12 @@ interface UserData {
   email: string;
   type: string;
 }
-
-const NAMES: string[] = [
-  'Maia', 'Asher', 'Olivia', 'Atticus', 'Amelia', 'Jack', 'Charlotte', 'Theodore', 'Isla', 'Oliver',
-  'Isabella', 'Jasper', 'Cora', 'Levi', 'Violet', 'Arthur', 'Mia', 'Thomas', 'Elizabeth',
-];
-
-interface SiteForm {
-  name: string;
-  sensors: [];
-  actors: [];
-}
-
 @Component({
   selector: 'app-room-edit',
   templateUrl: './room-edit.component.html',
   styleUrls: ['./room-edit.component.scss'],
 })
+
 export class RoomEditComponent implements OnInit {
 
   // toast config
@@ -64,9 +44,9 @@ export class RoomEditComponent implements OnInit {
   siteKey: string = '';
 
   // Sensor table
-  displayedSensorColumns: string[] = ['select', 'name', 'key', 'type', 'min', 'max'];
-  sensorDataSource: MatTableDataSource<SensorData>;
-  sensorsSelection = new SelectionModel<SensorData>(true, []);
+  displayedSensorColumns: string[] = ['select', 'name', 'key', 'type', 'min', 'max','status','actor'];
+  sensorDataSource: MatTableDataSource<Device> = new MatTableDataSource([]);
+  sensorsSelection = new SelectionModel<Device>(true, []);
 
   @ViewChild('pagSensor') paginatorSensor: MatPaginator;
   @ViewChild('sortSensor') sortSensor: MatSort;
@@ -94,7 +74,7 @@ export class RoomEditComponent implements OnInit {
         const id = paramMap.get('id');
         if (id) {
           this.editMode = true;
-          // return this.firebaseDatabaseService.getSiteById(id);
+          return this.firebaseDatabaseService.getSite(id);
         }
         return of(<Site>{
           key: '',
@@ -111,11 +91,7 @@ export class RoomEditComponent implements OnInit {
           name: site.name,
         });
 
-        this.sensorDataSource = new MatTableDataSource(sensors);
         this.userDataSource = new MatTableDataSource(users);
-
-        this.sensorDataSource.paginator = this.paginatorSensor;
-        this.sensorDataSource.sort = this.sortSensor;
 
         this.userDataSource.paginator = this.paginatorUser;
         this.userDataSource.sort = this.sortUser;
@@ -123,7 +99,17 @@ export class RoomEditComponent implements OnInit {
       },
     );
 
-    const sensors = []
+
+    // set the data once
+    this.firebaseDatabaseService.getAllDevices().pipe(take(1))
+      .subscribe((sensors) => {
+        this.sensorDataSource.data = sensors;
+        this.sensorDataSource.paginator = this.paginatorSensor;
+        this.sensorDataSource.sort = this.sortSensor;
+      })
+
+    // this.userDataSource = new MatTableDataSource(users);
+
     const users = []
   }
 
@@ -150,7 +136,7 @@ export class RoomEditComponent implements OnInit {
         this.sensorDataSource.data.forEach(row => this.sensorsSelection.select(row));
   }
 
-  checkboxSensorLabel(row?: SensorData): string {
+  checkboxSensorLabel(row?: Device): string {
     if (!row) {
       return `${this.isAllSensorSelected() ? 'select' : 'deselect'} all`;
     }
@@ -198,10 +184,30 @@ export class RoomEditComponent implements OnInit {
       });
       this.saveBtn = false;
       this.showToast('Room created.', 'SUCCESS', NbToastStatus.SUCCESS);
-      // this.router navigateByUrl(/rooms/id do role)
+      // this.router navigateByUrl(/rooms/id do role) dashboard do role
     }catch(e){
       this.saveBtn = true;
       this.showToast('Room not created. Try again.', 'WARNING', NbToastStatus.DANGER);
+    }
+  }
+
+  async updateRoom() {
+    try{
+      const selectedDevices = this.sensorsSelection.selected.reduce((obj, item) => {
+         obj[item.key] = item.key
+         return obj
+      }, {});
+      const createSite = await this.firebaseDatabaseService.createSite({
+        name: this.roomForm.value.name,
+        key: this.siteKey,
+        devices: selectedDevices
+      });
+
+      this.showToast('Room updated.', 'SUCCESS', NbToastStatus.SUCCESS);
+      // this.router navigateByUrl(/rooms/id do role)
+      // navegar para o dashboard desse id
+    }catch(e){
+      this.showToast('Room not updated. Try again.', 'WARNING', NbToastStatus.DANGER);
     }
   }
 
@@ -211,8 +217,7 @@ export class RoomEditComponent implements OnInit {
     }
 
     if (this.editMode && this.roomForm.valid) {
-      // this.updateRoom();
-      console.log("updateRoom")
+      this.updateRoom();
     }
   }
 
