@@ -181,7 +181,7 @@ export class RoomEditComponent implements OnInit {
         name: this.roomForm.value.name,
         key: '',
         devices: selectedDevices
-      }).key
+      })
 
       const createSiteUsers = await this.firebaseDatabaseService.insertMultipleSiteUsers(newSiteKey,selectedUsers);
 
@@ -201,7 +201,7 @@ export class RoomEditComponent implements OnInit {
          return obj
       }, {});
 
-      const createSite = await this.firebaseDatabaseService.createSite({
+      const siteKey = await this.firebaseDatabaseService.createSite({
         name: this.roomForm.value.name,
         key: this.siteKey,
         devices: selectedDevices

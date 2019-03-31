@@ -17,10 +17,11 @@ export class FirebaseDatabaseService {
     // }
   }
 
-  createSite(site: Site) {
+  async createSite(site: Site) {
     const siteRef = this.angularFireDatabase.database.ref('sites11').push();
     site.key = siteRef.key;
-    return siteRef.push(site);
+    const newSite = await siteRef.update(site);
+    return siteRef.key;
   }
 
   getSite(key: string): Observable<Site> {
