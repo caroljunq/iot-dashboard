@@ -10,23 +10,25 @@
         </label>
         <input type="text" nbInput fullWidth placeholder="Full name" formControlName="fullName">
       </div>
-      <div class="input-group col-12 col-sm-10 col-md-8 col-lg-6">
-        <label>Email address</label>
-        <input type="text" nbInput fullWidth placeholder="Email" formControlName="emailAddress">
-      </div>
-      <div class="input-group col-12 col-sm-10 col-md-8 col-lg-6">
-        <label>Password</label>
-        <input type="password" nbInput fullWidth [placeholder]="!editMode ? 'Password' : 'Não modificada'" formControlName="password">
-      </div>
-      <div class="input-group col-12 col-sm-10 col-md-8 col-lg-6">
-        <label>Repeat password</label>
-        <input type="password" nbInput fullWidth [placeholder]="!editMode ? 'Repeat Password' : 'Não modificada'" formControlName="repeatPassword">
-      </div>
-      <div *ngIf="!editMode" class="input-group col-12 col-sm-10 col-md-8 col-lg-6">
-        <nb-checkbox name="terms" formControlName="termsConditions">
-          Agree to <a href="#" class="terms-conditions">Terms & Conditions</a>
-        </nb-checkbox>
-      </div>
+      <ng-container *ngIf="!editMode">
+        <div class="input-group col-12 col-sm-10 col-md-8 col-lg-6">
+          <label>Email address</label>
+          <input type="text" nbInput fullWidth placeholder="Email" formControlName="emailAddress">
+        </div>
+        <div class="input-group col-12 col-sm-10 col-md-8 col-lg-6">
+          <label>Password</label>
+          <input type="password" nbInput fullWidth [placeholder]="!editMode ? 'Password' : 'Não modificada'" formControlName="password">
+        </div>
+        <div class="input-group col-12 col-sm-10 col-md-8 col-lg-6">
+          <label>Repeat password</label>
+          <input type="password" nbInput fullWidth [placeholder]="!editMode ? 'Repeat Password' : 'Não modificada'" formControlName="repeatPassword">
+        </div>
+        <div class="input-group col-12 col-sm-10 col-md-8 col-lg-6">
+          <nb-checkbox name="terms" formControlName="termsConditions">
+            Agree to <a href="#" class="terms-conditions">Terms & Conditions</a>
+          </nb-checkbox>
+        </div>
+      </ng-container>
       <div class="input-group col-12 col-sm-10 col-md-8 col-lg-6">
         <button nbButton fullWidth status="success" class="btn-success btn-full-width"
           aria-disabled="false" tabindex="0"

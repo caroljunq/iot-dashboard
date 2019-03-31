@@ -287,7 +287,7 @@ export class DashboardService implements CanActivate {
 
   @cachedFn()
   getAuthSite(key: string): Observable<Site> {
-    console.log('getAuthSite', key);
+    // console.log('getAuthSite', key);
     if (key === 'fake') {
       return of(FAKE_SITE.site);
     }
