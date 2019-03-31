@@ -58,9 +58,15 @@ export class FirebaseDatabaseService {
   insertMultipleSiteUsers(siteKey: string, selectedUsers: string[]) {
     return Promise.all(
       selectedUsers.map(
-        userKey => this.angularFireDatabase.database.ref(`userSites/${userKey}/${siteKey}`).set(siteKey),
+        userKey => this.addUserToSite(siteKey, userKey),
       ),
     );
+  }
+  removeUserFromSite(siteKey: string, userKey: string) {
+    return this.angularFireDatabase.database.ref(`userSites/${userKey}/${siteKey}`).remove();
+  }
+  addUserToSite(siteKey: string, userKey: string) {
+    return this.angularFireDatabase.database.ref(`userSites/${userKey}/${siteKey}`).set(siteKey);
   }
 
   getSiteDevices(key: string): Observable<Device[]> {
