@@ -16,7 +16,7 @@ import { UsersService } from './pages/users/users.service';
 })
 export class AppComponent {
   menu$: Observable<NbMenuItem[]>;
-  baseMenu = [
+  baseMenu: NbMenuItem[] = [
     {
       title: 'Historical Data',
       icon: 'nb-bar-chart',
@@ -27,18 +27,20 @@ export class AppComponent {
       icon: 'ion-android-people',
       link: 'users/list',
     },
+  ];
+  adminMenu: NbMenuItem[] = [
     {
       title: 'Sites',
-      icon: 'ion-android-people',
+      icon: 'nb-e-commerce',
       link: 'rooms/',
     },
     {
       title: 'Sensors',
-      icon: 'ion-android-people',
+      icon: 'ion-android-wifi',
       link: 'sensors/',
     },
   ];
-  fakeMenu = [
+  fakeMenu: NbMenuItem[] = [
     {
       title: 'Dashboard',
       icon: 'nb-home',
@@ -74,7 +76,7 @@ export class AppComponent {
         }
         if (dashUser.storedUser.isAdmin) {
           return this.angularFireDatabase.list<Site>('sites').valueChanges().pipe(
-            map(siteToMenuItem),
+            map(sites => siteToMenuItem(sites).concat(this.adminMenu)),
           );
         }
         return this.angularFireDatabase.list<string>(`userSites/${dashUser.authUser.uid}`).valueChanges().pipe(
