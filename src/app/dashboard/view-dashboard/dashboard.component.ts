@@ -9,7 +9,7 @@ import {
   takeWhile,
 } from 'rxjs/operators';
 
-import { DashboardService, LoadedSite } from './dashboard.service';
+import { DashboardService, LoadedSite } from '../dashboard.service';
 
 @Component({
   selector: 'app-dashboard',
