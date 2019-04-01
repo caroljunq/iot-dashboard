@@ -10,7 +10,7 @@ import { AuthGuard, NoAuthGuard, AdminGuard } from './auth.guard';
 const routes: Routes = [
   { path: 'login', component: LoginComponent, canActivate: [NoAuthGuard] },
   { path: 'register', component: UserEditComponent, canActivate: [NoAuthGuard]},
-  { path: 'list', component: UsersListComponent, canActivate: [AuthGuard, AdminGuard] },
+  { path: 'list', component: UsersListComponent, canActivate: [AuthGuard] },
   { path: ':id', component: UserEditComponent, canActivate: [AuthGuard] },
   { path: '', redirectTo: 'list', pathMatch: 'full' },
 ];

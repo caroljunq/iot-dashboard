@@ -41,7 +41,7 @@ export class RoomEditComponent implements OnInit {
   siteKey: string = '';
 
   // Sensor table
-  displayedSensorColumns: string[] = ['select', 'name', 'key', 'type', 'min', 'max','actor'];
+  displayedSensorColumns: string[] = ['select', 'name', 'key', 'type', 'min', 'max', 'actor'];
   sensorDataSource: MatTableDataSource<Device> = new MatTableDataSource([]);
   sensorsSelection = new SelectionModel<Device>(true, []);
 
@@ -83,7 +83,7 @@ export class RoomEditComponent implements OnInit {
     ).subscribe(
       (site) => {
         this.siteKey = site.key;
-        //TODO: FALTA - caso esteja em modo edit mode, carregar usersSelection e sensorsSelection
+        // TODO: FALTA - caso esteja em modo edit mode, carregar usersSelection e sensorsSelection
         // Já tem implementação de afiliação de sensores e users para um site
         // getSiteDevices(key: string): Observable<Device[]>
         // getSitesUsers
@@ -100,14 +100,14 @@ export class RoomEditComponent implements OnInit {
         this.sensorDataSource.data = sensors.filter(sensor => sensor.isActive);
         this.sensorDataSource.paginator = this.paginatorSensor;
         this.sensorDataSource.sort = this.sortSensor;
-      })
+      });
     // get the data once, 2 --> get startWith from getUsersList, after all users at 2nd
     this.usersService.getUsersList().pipe(take(2))
       .subscribe((users) => {
         this.userDataSource.data = users;
         this.userDataSource.paginator = this.paginatorUser;
         this.userDataSource.sort = this.sortUser;
-      })
+      });
   }
 
   ngOnInit() {
@@ -169,10 +169,10 @@ export class RoomEditComponent implements OnInit {
   }
 
   async createRoom() {
-    try{
+    try {
       const selectedDevices = this.sensorsSelection.selected.reduce((obj, item) => {
-         obj[item.key] = item.key
-         return obj
+         obj[item.key] = item.key;
+         return obj;
       }, {});
 
       const selectedUsers = this.usersSelection.selected.reduce((arr, item) => {
@@ -183,33 +183,33 @@ export class RoomEditComponent implements OnInit {
       const newSiteKey = await this.firebaseDatabaseService.createSite({
         name: this.roomForm.value.name,
         key: '',
-        devices: selectedDevices
-      })
+        devices: selectedDevices,
+      });
 
-      //associating user and site
-      const createSiteUsers = await this.firebaseDatabaseService.insertMultipleSiteUsers(newSiteKey,selectedUsers);
+      // associating user and site
+      const createSiteUsers = await this.firebaseDatabaseService.insertMultipleSiteUsers(newSiteKey, selectedUsers);
 
       this.saveBtn = false;
       this.showToast('Room created.', 'SUCCESS', NbToastStatus.SUCCESS);
       // FALTA - depois de inserir, ir para a rota de
       // this.router.navigateByUrl(/rooms/id)/, basicamente ir para edit
-    }catch(e){
+    }catch (e) {
       this.saveBtn = true;
       this.showToast('Room not created. Try again.', 'WARNING', NbToastStatus.DANGER);
     }
   }
 
   async updateRoom() {
-    try{
+    try {
       const selectedDevices = this.sensorsSelection.selected.reduce((obj, item) => {
-         obj[item.key] = item.key
-         return obj
+         obj[item.key] = item.key;
+         return obj;
       }, {});
 
       const siteUpdate = await this.firebaseDatabaseService.updateSite(this.siteKey, {
         name: this.roomForm.value.name,
         key: this.siteKey,
-        devices: selectedDevices
+        devices: selectedDevices,
       });
 
       // FALTA - com base no objeto userSelection, atualizar os UserSites (afiliacao de site)
@@ -217,7 +217,7 @@ export class RoomEditComponent implements OnInit {
       this.showToast('Room updated.', 'SUCCESS', NbToastStatus.SUCCESS);
       // FALTA - depois de atualizar, ir para a rota de
       // this.router.navigateByUrl(/rooms/id)/, basicamente ir para edit. Atualizar, para caso tiver mais sensores
-    }catch(e){
+    }catch (e) {
       this.showToast('Room not updated. Try again.', 'WARNING', NbToastStatus.DANGER);
     }
   }

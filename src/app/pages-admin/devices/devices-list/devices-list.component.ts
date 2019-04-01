@@ -11,12 +11,12 @@ import { NbToastStatus } from '@nebular/theme/components/toastr/model';
  @Component({
    selector: 'app-devices-list',
    templateUrl: './devices-list.component.html',
-   styleUrls: ['./devices-list.component.scss']
+   styleUrls: ['./devices-list.component.scss'],
  })
 
  export class DevicesListComponent implements OnInit {
 
-  displayedColumns: string[] = ['key','name','status','actor','type','max','min'];
+  displayedColumns: string[] = ['key', 'name', 'status', 'actor', 'type', 'max', 'min'];
   dataSource: MatTableDataSource<Device>;
   devices: Device[];
 
@@ -36,12 +36,12 @@ import { NbToastStatus } from '@nebular/theme/components/toastr/model';
     private router: Router,
   ) {
 
-    this.firebaseDatabaseService.getAllDevices().subscribe(devs =>{
+    this.firebaseDatabaseService.getAllDevices().subscribe(devs => {
       this.devices = devs;
       this.dataSource = new MatTableDataSource(this.devices);
       this.dataSource.paginator = this.paginator;
       this.dataSource.sort = this.sort;
-    })
+    });
 
     this.dataSource = new MatTableDataSource(this.devices);
   }
@@ -58,11 +58,11 @@ import { NbToastStatus } from '@nebular/theme/components/toastr/model';
     }
   }
 
-  onRowClicked(row: Device){
-    try{
+  onRowClicked(row: Device) {
+    try {
       this.router.navigateByUrl(`/sensors/${row.key}`);
-    }catch(e){
-      this.showToast("Sensor can not be displayed.","WARNING", NbToastStatus.DANGER);
+    }catch (e) {
+      this.showToast('Sensor can not be displayed.', 'WARNING', NbToastStatus.DANGER);
     }
   }
 

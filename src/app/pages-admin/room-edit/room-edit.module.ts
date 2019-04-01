@@ -1,4 +1,4 @@
-import { NgModule, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 
@@ -6,11 +6,10 @@ import { NgxEchartsModule } from 'ngx-echarts';
 import { NbDialogModule } from '@nebular/theme';
 
 import { ThemeModule } from '../../@theme/theme.module';
-import { DevicesEditComponent } from './devices-edit/devices-edit.component';
-import { DevicesListComponent } from './devices-list/devices-list.component';
+import { RoomEditComponent } from './room-edit.component';
 
-import { DevicesRoutingModule } from './devices-routing.module';
 
+import { RoomEditRoutingModule } from './room-edit-routing.module';
 
 // angular material
 import {
@@ -20,9 +19,8 @@ import {
   MatSortModule,
   MatTableModule,
   MatPaginatorModule,
-  MatCheckboxModule
+  MatCheckboxModule,
 } from '@angular/material';
-
 
 @NgModule({
   imports: [
@@ -30,19 +28,16 @@ import {
     NgxEchartsModule,
     NbDialogModule.forChild(),
     CommonModule,
-    DevicesRoutingModule,
+    RoomEditRoutingModule,
     MatButtonModule,
     MatFormFieldModule,
     MatInputModule,
     MatSortModule,
     MatTableModule,
     MatPaginatorModule,
-    MatCheckboxModule
+    MatCheckboxModule,
   ],
-  declarations: [ DevicesEditComponent, DevicesListComponent  ],
-  exports: [ DevicesEditComponent, DevicesListComponent ],
-  entryComponents: [  ],
-  schemas: [CUSTOM_ELEMENTS_SCHEMA]
+  declarations: [ RoomEditComponent ],
+  exports: [ RoomEditComponent ],
 })
-export class DevicesModule { }
-
+export class RoomEditModule { }

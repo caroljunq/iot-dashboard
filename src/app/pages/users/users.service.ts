@@ -30,6 +30,28 @@ export const ACL = {
   },
 };
 
+// One-at-a-Time Decorator
+function oneAtaTimeFn<V>() {
+  let isRunning = false;
+  return function (target: any, propertyKey: string, descriptor: PropertyDescriptor) {
+    const original = descriptor.value;
+    if (typeof original === 'function') {
+      descriptor.value = function(...args): V {
+        if (isRunning) {
+          throw new Error('Already called');
+          // return;
+        }
+        isRunning = true;
+        const result = original.apply(this, args);
+        // console.log('Result: ', {propertyKey, key, args, result });
+        isRunning = false;
+        return result;
+      };
+    }
+    return descriptor;
+  };
+}
+
 @Injectable({
   providedIn: 'root',
 })
@@ -132,7 +154,7 @@ export class UsersService {
       return Promise.resolve(user);
     } catch (e) {
       console.error('[UsersService.login]', e);
-      return Promise.reject();
+      return Promise.reject(e);
     }
   }
 
@@ -157,27 +179,33 @@ export class UsersService {
     return userRef.set(user);
   }
   async updateUser(user: StoredUser): Promise<void> {
-    // const allowedFields = [ 'uid', 'displayName', 'photoURL', 'name', 'email', 'isActive', 'isAdmin'];
-    // user = <StoredUser>Object.entries(user).map(
-    //   i => ({k: i[0], v: i[1]}),
-    // ).filter(
-    //   i => allowedFields.includes(i.k)
-    // ).reduce(
-    //   (acc, i) => ({...acc, [i.k]: i.v}),
-    //   {},
-    // );
-    user = {
-      'uid': user.uid || '',
-      'displayName': user.displayName || '',
-      'photoURL': user.photoURL || '',
-      'email': user.email || '',
-      'isActive': user.isActive || false,
-      'isAdmin': user.isAdmin || false,
-    };
-    const userRef = this.angularFireDatabase.object<StoredUser>(`users/${user.uid}`);
-    await userRef.update(user);
-    this.showToast('Cadastro Atualizado.', 'SUCCESS', NbToastStatus.SUCCESS);
-    return Promise.resolve();
+    try {
+      // const allowedFields = [ 'uid', 'displayName', 'photoURL', 'name', 'email', 'isActive', 'isAdmin'];
+      // user = <StoredUser>Object.entries(user).map(
+      //   i => ({k: i[0], v: i[1]}),
+      // ).filter(
+      //   i => allowedFields.includes(i.k)
+      // ).reduce(
+      //   (acc, i) => ({...acc, [i.k]: i.v}),
+      //   {},
+      // );
+      user = {
+        uid:          user.uid || '',
+        displayName:  user.displayName || '',
+        photoURL:     user.photoURL || '',
+        email:        user.email || '',
+        isActive:     user.isActive || false,
+        isAdmin:      user.isAdmin || false,
+      };
+      const userRef = this.angularFireDatabase.object<StoredUser>(`users/${user.uid}`);
+      await userRef.update(user);
+      this.showToast('Cadastro Atualizado.', 'Sucesso', NbToastStatus.SUCCESS);
+      return Promise.resolve();
+    } catch (error) {
+      console.error(error);
+      this.showToast('Erro ao atualizar cadastro.', 'Erro', NbToastStatus.DANGER);
+      return Promise.reject(error);
+    }
   }
 
   signOut() {

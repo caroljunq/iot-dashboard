@@ -16,79 +16,64 @@ import { UsersService } from './pages/users/users.service';
 })
 export class AppComponent {
   menu$: Observable<NbMenuItem[]>;
-  baseMenu: NbMenuItem[] = [
-    {
-      title: 'Historical Data',
-      icon: 'nb-bar-chart',
-      link: 'historical-data',
-    },
-    {
-      title: 'Users',
-      icon: 'ion-android-people',
-      link: 'users/list',
-    },
-  ];
-  adminMenu: NbMenuItem[] = [
-    {
-      title: 'Sites',
-      icon: 'nb-e-commerce',
-      link: 'rooms/',
-    },
-    {
-      title: 'Sensors',
-      icon: 'ion-android-wifi',
-      link: 'sensors/',
-    },
-  ];
-  fakeMenu: NbMenuItem[] = [
-    {
-      title: 'Dashboard',
-      icon: 'nb-home',
-      link: 'dashboard/fake',
-    },
-    {
-      title: 'Historical Data',
-      icon: 'nb-bar-chart',
-      link: 'historical-data',
-    },
-  ];
 
   constructor(
     protected usersService: UsersService,
     protected firebaseDatabaseService: FirebaseDatabaseService,
     protected angularFireDatabase: AngularFireDatabase,
   ) {
-    this.menu$ = this.getMenu(this.baseMenu, this.fakeMenu);
-  }
-
-  getMenu(baseMenu: NbMenuItem[], fakeMenu: NbMenuItem[] = []): Observable<NbMenuItem[]> {
+    const fakeDash: NbMenuItem = {
+      title: 'Dashboard Teste',
+      icon: 'nb-home',
+      link: 'dashboard/fake',
+    };
+    const historicalData: NbMenuItem = {
+      title: 'Historical Data',
+      icon: 'nb-bar-chart',
+      link: 'historical-data',
+    };
+    const users: NbMenuItem = {
+      title: 'Users',
+      icon: 'ion-android-people',
+      link: 'users/list',
+    };
+    const novoSite: NbMenuItem = {
+      title: 'Novo Site',
+      icon: 'nb-e-commerce',
+      link: 'rooms/create',
+    };
+    const devices: NbMenuItem = {
+      title: 'Sensors',
+      icon: 'ion-android-wifi',
+      link: 'sensors/',
+    };
     const siteToMenuItem = (sites: Site[]) => sites.filter(site => !!site).map<NbMenuItem>(site => ({
       title: site.name || 'Dashboard',
       icon: 'nb-home',
       link: 'dashboard/' + site.key,
-    })).concat(baseMenu);
+    }));
 
-    return this.usersService.user$.pipe(
-      // tap(user => console.log('[AppService]', {user})),
+    this.menu$ = this.usersService.user$.pipe(
       switchMap<DashUser, NbMenuItem[]>(dashUser => {
-        if (!dashUser || !dashUser.storedUser.isActive) {
-          return of(fakeMenu);
+        if (!dashUser) {
+          return of([fakeDash, historicalData]);
+        }
+        if (!dashUser.storedUser.isActive) {
+          return of([fakeDash, historicalData, users]);
         }
         if (dashUser.storedUser.isAdmin) {
           return this.angularFireDatabase.list<Site>('sites').valueChanges().pipe(
-            map(sites => siteToMenuItem(sites).concat(this.adminMenu)),
+            map(sites => [fakeDash, ...siteToMenuItem(sites), historicalData, users, novoSite, devices]),
           );
         }
         return this.angularFireDatabase.list<string>(`userSites/${dashUser.authUser.uid}`).valueChanges().pipe(
-          // tap(userSites => console.log('[FirebaseDatabaseService.getUserSites]', {userSites})),
           switchMap(userSites => combineLatest(userSites.map(
             userSite => this.angularFireDatabase.object<Site>(`sites/${userSite}`).valueChanges(),
           ))),
-          map(siteToMenuItem),
+          map(sites => [fakeDash, ...siteToMenuItem(sites), historicalData, users]),
         );
       }),
-      startWith(baseMenu),
-      // tap(menu => console.log('[AppService]', {menu})),
+      startWith([fakeDash, historicalData]),
     );
   }
 }

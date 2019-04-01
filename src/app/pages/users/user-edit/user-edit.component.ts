@@ -2,7 +2,7 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ActivatedRoute, ParamMap } from '@angular/router';
 import { FormGroup, FormControl, FormBuilder, Validators, AbstractControl, ValidationErrors } from '@angular/forms';
 import { Observable, of } from 'rxjs';
-import { switchMap, takeWhile, map } from 'rxjs/operators';
+import { switchMap, takeWhile, map, take } from 'rxjs/operators';
 
 import { UsersService } from 'app/pages/users/users.service';
 import { StoredUser } from '../user-models';
@@ -93,23 +93,35 @@ export class UserEditComponent implements OnInit, OnDestroy {
     this.isActive = false;
   }
 
-  onSubmit() {
-    const { emailAddress, fullName, password } = this.profileForm.value;
-    const name = fullName;
-    const displayName = fullName;
-    const email = emailAddress;
-    if (this.editMode) {
-      this.usersService.user$.subscribe(user => {
-        this.usersService.updateUser({
-          ...user.storedUser,
+  onSubmitFlag = false;
+  error;
+  async onSubmit() {
+    if (this.onSubmitFlag) return;
+    this.onSubmitFlag = true;
+    try {
+      const { emailAddress, fullName, password } = this.profileForm.value;
+      const name = fullName;
+      const displayName = fullName;
+      const email = emailAddress;
+      if (this.editMode) {
+        const paramMap = await this.route.paramMap.pipe(take(1)).toPromise();
+        const id = paramMap.get('id');
+        const user = await this.usersService.getUser(id).pipe(take(1)).toPromise();
+        await this.usersService.updateUser({
+          ...user,
           name, displayName,
         });
-      });
+        return;
+      }
+      if (this.profileForm.invalid) {
+        return;
+      }
+      const result = await this.usersService.emailUserCreate({email, password, fullName});
       return;
+    } catch (error) {
+      this.error = error;
+    } finally {
+      this.onSubmitFlag = false;
     }
-    if (this.profileForm.invalid) {
-      return;
-    }
-    return this.usersService.emailUserCreate({email, password, fullName});
   }
 }

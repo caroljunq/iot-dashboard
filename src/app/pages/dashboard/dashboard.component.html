@@ -1,4 +1,6 @@
-<div class="row config-line">
+<div [nbSpinner]="!site" nbSpinnerStatus="danger">
+
+  <div class="row config-line">
   <div class="col-md-4 col-sm-4 col-12">
     <div class="form-group">
     <label>Room</label>
@@ -13,9 +15,10 @@
     <label class="config-desc">Current Hour</label>
     <span class="config-val">{{ currentDate | async | date:'HH:mm' }}</span>
   </div>
-  <div class="col-12 col-md-2 col-sm-2">
-    <button nbButton hero status="success" fullWidth
-        aria-disabled="false">Edit</button>
+  <div class="col-12 col-md-2 col-sm-2" *nbIsGranted="['edit', 'admin']">
+    <a nbButton hero status="success" fullWidth aria-disabled="false" routerLink="/rooms/{{ site?.key }}">
+      Edit
+    </a>
   </div>
 </div>
 
@@ -50,4 +53,6 @@
       </nb-card-body>
     </nb-card>
   </div>
+</div>
+
 </div>

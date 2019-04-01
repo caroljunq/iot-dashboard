@@ -8,32 +8,30 @@ import { StoredUser } from '../user-models';
 interface ListedUser extends StoredUser {
   badgeStatus: 'primary'| 'info'| 'success'| 'warning'| 'danger';
   badgeText: 'n'| 'u'| 'a';
-  title: 'inativo'| 'usuário'| 'administrador';
+  title: string;
 }
 function mkListedUser(user: StoredUser): ListedUser {
   const { isActive, isAdmin } = user;
-  if (isAdmin) {
-    return <ListedUser>{
-      ...user,
-      badgeStatus: 'primary',
-      badgeText: 'a',
-      title: 'administrador',
-    };
-  }
-  if (isActive) {
-    return <ListedUser>{
-      ...user,
-      badgeStatus: 'info',
-      badgeText: 'u',
-      title: 'usuário',
-    };
-  }
-  return <ListedUser>{
+  const listedUser: ListedUser = {
     ...user,
     badgeStatus: 'danger',
     badgeText: 'n',
     title: 'inativo',
   };
+  if (isActive) {
+    listedUser.badgeStatus = 'info';
+    listedUser.badgeText = 'u';
+    listedUser.title = 'usuário';
+  }
+  if (isAdmin) {
+    listedUser.badgeStatus = 'primary';
+    listedUser.badgeText = 'a';
+    listedUser.title = 'administrador';
+  }
+  if (user.email) {
+    listedUser.title = user.email;
+  }
+  return listedUser;
 }
 
 @Component({

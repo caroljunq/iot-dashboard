@@ -113,6 +113,7 @@ const FAKE_SITE = {
   },
 };
 
+// Pure Function Cached Decorator
 function cachedFn<V>() {
   const cache = new Map<string, V>();
   return function (target: any, propertyKey: string, descriptor: PropertyDescriptor) {
@@ -125,6 +126,8 @@ function cachedFn<V>() {
           if (!cache.has(key)) {
             // console.log('Cache Miss');
             cache.set(key, original.apply(this, args));
+          } else {
+            // console.log('Cache Hit');
           }
           const result = cache.get(key);
           // console.log('Result: ', {propertyKey, key, args, result });

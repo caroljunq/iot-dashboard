@@ -28,7 +28,7 @@ export class FirebaseDatabaseService {
     return this.angularFireDatabase.object<Site>(`sites11/${key}`).valueChanges();
   }
 
-  updateSite(key: string, site: Site){
+  updateSite(key: string, site: Site) {
     return this.angularFireDatabase.object(`sites11/${key}`).update(site);
   }
 

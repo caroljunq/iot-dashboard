@@ -25,14 +25,25 @@ export class LoginComponent implements OnInit {
   changeForgotBtn() {
     this.passForgot = !this.passForgot;
   }
-  onSubmit() {
-    if (this.passForgot) {
-      return this.usersService.emailForgotPassword(this.loginForm.value.email);
+  error;
+  submitDebounceFlag = false;
+  async onSubmit() {
+    if (this.submitDebounceFlag) return;
+    this.submitDebounceFlag = true;
+    try {
+      if (this.passForgot) {
+        return this.usersService.emailForgotPassword(this.loginForm.value.email);
+      }
+      if (this.loginForm.invalid) {
+        return;
+      }
+      const { email, password } = this.loginForm.value;
+      const result = await this.usersService.emailLogin(email, password);
+      return result;
+    } catch (error) {
+      this.error = error;
+    } finally {
+      this.submitDebounceFlag = false;
     }
-    if (this.loginForm.invalid) {
-      return;
-    }
-    const { email, password } = this.loginForm.value;
-    this.usersService.emailLogin(email, password);
   }
 }
