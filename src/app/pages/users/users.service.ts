@@ -1,3 +1,4 @@
+import { ROOT_DATA } from './../../@core/iot-dash/iot-dash-models';
 import { Router } from '@angular/router';
 import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
@@ -5,9 +6,8 @@ import { switchMap, map, tap, shareReplay, distinctUntilChanged, take, startWith
 import { AngularFireDatabase } from '@angular/fire/database';
 import { AngularFireAuth } from '@angular/fire/auth';
 import { auth } from 'firebase/app';
-import { NbGlobalLogicalPosition, NbGlobalPosition, NbToastrService } from '@nebular/theme';
-import { NbToastStatus } from '@nebular/theme/components/toastr/model';
 
+import { ToastService, NbToastStatus } from 'app/@theme/toast.service';
 import { DashUser, StoredUser } from './user-models';
 
 export const ACL = {
@@ -63,7 +63,7 @@ export class UsersService {
     protected angularFireDatabase: AngularFireDatabase,
     protected angularFireAuth: AngularFireAuth,
     protected router: Router,
-    protected toastrService: NbToastrService,
+    protected toastService: ToastService,
   ) {
     this.user$ = this.angularFireAuth.authState.pipe(
       // tap(v => console.log('[UsersService] authState', v)),
@@ -71,7 +71,7 @@ export class UsersService {
         if (!authUser) {
           return of(null);
         }
-        return this.angularFireDatabase.object(`users/${authUser.uid}`).valueChanges().pipe(
+        return this.angularFireDatabase.object(`${ROOT_DATA.users}/${authUser.uid}`).valueChanges().pipe(
           map((storedUser: StoredUser) => ({
             storedUser,
             authUser,
@@ -99,7 +99,7 @@ export class UsersService {
   }
 
   getUser(id: string): Observable<StoredUser> {
-    return this.angularFireDatabase.object<StoredUser>(`users/${id}`).valueChanges();
+    return this.angularFireDatabase.object<StoredUser>(`${ROOT_DATA.users}/${id}`).valueChanges();
   }
   getRole(): Observable<string | string[]> {
     return this.role$;
@@ -124,7 +124,7 @@ export class UsersService {
         10,
       );
       const dashUser = await this.getUserFormCredential(credential);
-      this.showToast('Cadastro Realizado.', 'SUCCESS', NbToastStatus.SUCCESS);
+      this.toastService.showToast('Cadastro Realizado.', 'SUCCESS', NbToastStatus.SUCCESS);
       return Promise.resolve(dashUser);
     } catch (e) {
       console.error('[UsersService.login]', e);
@@ -175,7 +175,7 @@ export class UsersService {
   }
 
   createUser(user: StoredUser): Promise<void> {
-    const userRef = this.angularFireDatabase.object<StoredUser>(`users/${user.uid}`);
+    const userRef = this.angularFireDatabase.object<StoredUser>(`${ROOT_DATA.users}/${user.uid}`);
     return userRef.set(user);
   }
   async updateUser(user: StoredUser): Promise<void> {
@@ -197,13 +197,13 @@ export class UsersService {
         isActive:     user.isActive || false,
         isAdmin:      user.isAdmin || false,
       };
-      const userRef = this.angularFireDatabase.object<StoredUser>(`users/${user.uid}`);
+      const userRef = this.angularFireDatabase.object<StoredUser>(`${ROOT_DATA.users}/${user.uid}`);
       await userRef.update(user);
-      this.showToast('Cadastro Atualizado.', 'Sucesso', NbToastStatus.SUCCESS);
+      this.toastService.showToast('Cadastro Atualizado.', 'Sucesso', NbToastStatus.SUCCESS);
       return Promise.resolve();
     } catch (error) {
       console.error(error);
-      this.showToast('Erro ao atualizar cadastro.', 'Erro', NbToastStatus.DANGER);
+      this.toastService.showToast('Erro ao atualizar cadastro.', 'Erro', NbToastStatus.DANGER);
       return Promise.reject(error);
     }
   }
@@ -221,7 +221,7 @@ export class UsersService {
         if (!user.storedUser.isAdmin) {
           return of([user.storedUser]);
         }
-        return this.angularFireDatabase.list<StoredUser>(`users`).valueChanges().pipe(
+        return this.angularFireDatabase.list<StoredUser>(`${ROOT_DATA.users}`).valueChanges().pipe(
           map(
             list => list.map(item => ({
               ...item,
@@ -246,25 +246,8 @@ export class UsersService {
 
   async emailForgotPassword(email: string): Promise<void> {
     await this.angularFireAuth.auth.sendPasswordResetEmail(email/*, actionCodeSettings*/);
-    this.showToast('Email enviado.', 'SUCCESS', NbToastStatus.SUCCESS);
+    this.toastService.showToast('Email enviado.', 'SUCCESS', NbToastStatus.SUCCESS);
     return Promise.resolve();
   }
 
-  showToast(message: string, title: string, status: NbToastStatus) {
-    // toast config
-    const destroyByClick = false;
-    const duration = 4000;
-    const hasIcon = true;
-    const position: NbGlobalPosition = NbGlobalLogicalPosition.BOTTOM_END;
-    const preventDuplicates = false;
-    const config = {
-      status: status,
-      destroyByClick: destroyByClick,
-      duration: duration,
-      hasIcon: hasIcon,
-      position: position,
-      preventDuplicates: preventDuplicates,
-    };
-    this.toastrService.show(message, title, config);
-  }
 }

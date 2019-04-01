@@ -1,3 +1,4 @@
+import { StoredUser, UserSites, ROOT_DATA } from './../@core/iot-dash/iot-dash-models';
 import { database } from 'firebase/app';
 import { Injectable } from '@angular/core';
 import { CanActivate, Router, ActivatedRouteSnapshot, RouterStateSnapshot, UrlTree } from '@angular/router';
@@ -23,6 +24,7 @@ import { Site, Device, TimedValue } from 'app/@core/iot-dash/iot-dash-models';
 import { UsersService } from 'app/pages/users/users.service';
 import { LiveChartService, baseSensorChartOpts } from 'app/@core/iot-dash/live-chart.service';
 import { oneSixSixBits } from 'app/@core/iot-dash/setup-dash';
+import { ToastService, NbToastStatus } from 'app/@theme/toast.service';
 
 export interface LoadedDevice<T> extends Device {
   value$: Observable<TimedValue<T>>;
@@ -33,6 +35,17 @@ export interface LoadedSite extends Site {
   devicesArray: LoadedDevice<Number|boolean>[];
   actorsArray: LoadedDevice<Number|boolean>[];
   sensorsArray: LoadedDevice<Number|boolean>[];
+}
+export interface EditableSite extends Site {
+  devicesArray: Device[];
+  usersArray: StoredUser[];
+}
+
+export interface SitesUsers {
+  [siteKey: string]: {
+    siteKey: string,
+    userList: string[],
+  };
 }
 
 function mapTimedValueToDeviceTimeSereies(device: Device, index: number) {
@@ -142,21 +155,20 @@ function cachedFn<V>() {
   };
 }
 
-@Injectable({
-  providedIn: 'root',
-})
-export class DashboardService implements CanActivate {
-
+@Injectable()
+export class DashboardService {
   firebaseDataSource = {
-    deviceFn: (deviceKey: string) => this.angularFireDatabase.object<Device>(`devices/${deviceKey}`).valueChanges(),
+    deviceFn: (deviceKey: string) => this.angularFireDatabase.object<Device>(
+      `${ROOT_DATA.devices}/${deviceKey}`,
+    ).valueChanges(),
     deviceDataFn: (deviceKey: string, limit = 1) => this.angularFireDatabase.list<TimedValue<number|boolean>>(
-      `deviceData/${deviceKey}`,
+      `${ROOT_DATA.deviceData}/${deviceKey}`,
       ref => ref.orderByChild('timestamp').limitToLast(limit),
     ).valueChanges(),
     deviceDataNextFn: (deviceKey: string, value: number | boolean) => {
       const nextValue = {timestamp: <number>database.ServerValue.TIMESTAMP, value};
       this.angularFireDatabase.list<TimedValue<number|boolean>>(
-        `deviceData/${deviceKey}`,
+        `${ROOT_DATA.deviceData}/${deviceKey}`,
       ).push(nextValue);
     },
   };
@@ -187,12 +199,38 @@ export class DashboardService implements CanActivate {
   })
 
   constructor(
-    protected router: Router,
     protected usersService: UsersService,
     protected angularFireDatabase: AngularFireDatabase,
     protected themeService: NbThemeService,
     protected liveChartService: LiveChartService,
+    protected toastService: ToastService,
+    protected router: Router,
   ) { }
+
+  getDataSource(key: string) {
+    let dataSource = this.firebaseDataSource;
+    if (!key || key === 'fake') {
+      const valueSources = Object.values(FAKE_SITE.devices).map(device => ({
+        ...device,
+        valueSource: new BehaviorSubject<TimedValue<number|boolean>>(
+          (Object.values<TimedValue<number | boolean>>(FAKE_SITE.deviceData[device.key])[0]),
+        ),
+      }));
+      dataSource = this.fakeDataSource(valueSources);
+      for (const device of valueSources) {
+        if (!device.isActor) {
+          setInterval(
+            () => dataSource.deviceDataNextFn(
+              device.key,
+              Math.random() * (device.max - device.min) + device.min,
+            ),
+            1000,
+          );
+        }
+      }
+    }
+    return dataSource;
+  }
 
   @cachedFn()
   getLoadedSite(key: string): Observable<LoadedSite> {
@@ -201,27 +239,7 @@ export class DashboardService implements CanActivate {
       switchMap<NbJSThemeOptions, LoadedSite>(theme => {
         const colors: NbJSThemeVariable = theme.variables;
         const echarts: string | NbJSThemeVariable | string[] = theme.variables.echarts;
-        let dataSource = this.firebaseDataSource;
-        if (!key || key === 'fake') {
-          const valueSources = Object.values(FAKE_SITE.devices).map(device => ({
-            ...device,
-            valueSource: new BehaviorSubject<TimedValue<number|boolean>>(
-              (Object.values<TimedValue<number | boolean>>(FAKE_SITE.deviceData[device.key])[0]),
-            ),
-          }));
-          dataSource = this.fakeDataSource(valueSources);
-          for (const device of valueSources) {
-            if (!device.isActor) {
-              setInterval(
-                () => dataSource.deviceDataNextFn(
-                  device.key,
-                  Math.random() * (device.max - device.min) + device.min,
-                ),
-                1000,
-              );
-            }
-          }
-        }
+        const dataSource = this.getDataSource(key);
         //
         return this.getAuthSite(key).pipe(
           filter(site => !!site),
@@ -303,14 +321,14 @@ export class DashboardService implements CanActivate {
         }
         // try read
         return this.angularFireDatabase.object<Site>(
-          `sites/${key}/`,
+          `${ROOT_DATA.sites}/${key}/`,
         ).valueChanges().pipe(
           catchError(error => {
             // if AuthZ error on read
             console.error(error);
             // take first user's site
             return this.angularFireDatabase.list<string>(
-              `userSites/${user.authUser.uid}`,
+              `${ROOT_DATA.userSites}/${user.authUser.uid}`,
               ref => ref.limitToFirst(1),
             ).valueChanges().pipe(
               take(1),
@@ -320,7 +338,7 @@ export class DashboardService implements CanActivate {
                   return of(FAKE_SITE.site);
                 }
                 return this.angularFireDatabase.object<Site>(
-                  `sites/${sitesKeys[0]}/`,
+                  `${ROOT_DATA.sites}/${sitesKeys[0]}/`,
                 ).valueChanges();
               }),
             );
@@ -330,22 +348,165 @@ export class DashboardService implements CanActivate {
     );
   }
 
+  @cachedFn()
+  getEditableSite(key: string): Observable<EditableSite> {
+    const dataSource = this.getDataSource(key);
+    return this.getAuthSite(key).pipe(
+      filter(site => !!site),
+      switchMap(
+        (site: Site) => combineLatest(
+          this.getSitesUsers().pipe(switchMap(
+            sitesUsers => this.usersService.getUsersList().pipe(map(
+              users => users.filter(user => {
+                if (!site || !site.key || !(<Object>sitesUsers).hasOwnProperty(site.key)) {
+                  return [];
+                }
+                return (sitesUsers[site.key].userList || []).includes(user.uid);
+              }),
+            )),
+          )),
+          combineLatest(Object.keys(site.devices).map(deviceKey => dataSource.deviceFn(deviceKey))),
+        ).pipe(
+          map(usersAndDevices => {
+            const usersArray: StoredUser[] = usersAndDevices[0];
+            const devicesArray: Device[] = usersAndDevices[1];
+            return {
+              ...site,
+              devicesArray,
+              usersArray,
+            };
+          }),
+        ),
+      ),
+    );
+  }
+
+  @cachedFn()
+  getSitesUsers(): Observable<SitesUsers> {
+    return this.angularFireDatabase.object<UserSites>(`${ROOT_DATA.userSites}/`).valueChanges().pipe(
+      map(userList => {
+        const users = Object.keys(userList);
+        const sitesEntries = Object.values(userList);
+        const sitesUsers: SitesUsers = {};
+        for (let index = 0; index < sitesEntries.length; index++) {
+          const siteEntry = sitesEntries[index];
+          for (const siteKey of Object.keys(siteEntry)) {
+            if (!sitesUsers[siteKey]) {
+              sitesUsers[siteKey] = { siteKey, userList: [] };
+            }
+            sitesUsers[siteKey].userList.push(users[index]);
+          }
+        }
+        return sitesUsers;
+      }),
+    );
+  }
+
+  getAllDevices(): Observable<Device[]> {
+    return this.angularFireDatabase.list<Device>(`${ROOT_DATA.devices}`).valueChanges();
+  }
+
+  async addDeviceToSite(site: Site, device: Device) {
+    try {
+      await this.angularFireDatabase.object(`${ROOT_DATA.sites}/${site.key}/devices/${device.key}`).set(device.key);
+      this.toastService.showToast('Dispositivo adicionado', 'Sucesso', NbToastStatus.SUCCESS);
+    } catch (error) {
+      console.error(error);
+      this.toastService.showToast('Não foi possível adicionar o dispositivo', 'Erro', NbToastStatus.DANGER);
+    }
+  }
+  async removeDeviceFromSite(site: Site, device: Device) {
+    try {
+      await this.angularFireDatabase.object(`${ROOT_DATA.sites}/${site.key}/devices/${device.key}`).remove();
+      this.toastService.showToast('Dispositivo removido', 'Sucesso', NbToastStatus.SUCCESS);
+    } catch (error) {
+      console.error(error);
+      this.toastService.showToast('Não foi possível remover o dispositivo', 'Erro', NbToastStatus.DANGER);
+    }
+  }
+
+  async addUserToSite(site: Site, user: StoredUser) {
+    try {
+      await this.angularFireDatabase.object(`${ROOT_DATA.userSites}/${user.uid}/${site.key}`).set(site.key);
+      this.toastService.showToast('Usuário adicionado', 'Sucesso', NbToastStatus.SUCCESS);
+    } catch (error) {
+      console.error(error);
+      this.toastService.showToast('Não foi possível adicionar o Usuário', 'Erro', NbToastStatus.DANGER);
+    }
+  }
+  async removeUserFromSite(site: Site, user: StoredUser) {
+    try {
+      await this.angularFireDatabase.object(`${ROOT_DATA.userSites}/${user.uid}/${site.key}`).remove();
+      this.toastService.showToast('Usuário removido', 'Sucesso', NbToastStatus.SUCCESS);
+    } catch (error) {
+      console.error(error);
+      this.toastService.showToast('Não foi possível remover o Usuário', 'Erro', NbToastStatus.DANGER);
+    }
+  }
+
+  async createsite(site: Site, users: StoredUser[], devices: Device[]): Promise<void> {
+    try {
+      const key = oneSixSixBits();
+      const newSite: Site = {
+        key,
+        name: site.name || 'Site ' + key,
+        devices: devices.reduce((acc, device) => {
+          acc[device.key] = device.key;
+          return acc;
+        }, {}),
+      };
+      await this.angularFireDatabase.object<Site>(`${ROOT_DATA.sites}/${key}`).set(newSite);
+      this.toastService.showToast('Novo site criado com sucesso', 'Sucesso', NbToastStatus.SUCCESS);
+      for (const user of users) {
+        this.addUserToSite(site, user);
+      }
+      this.router.navigate(['dashboard', 'edit', key]);
+    } catch (error) {
+      console.error(error);
+      this.toastService.showToast('Não foi possível criar o Novo Site', 'Erro', NbToastStatus.DANGER);
+    }
+  }
+  async updateSite(site: Site, users: StoredUser[], devices: Device[]): Promise<void> {
+    try {
+      const newSite: Site = {
+        key: site.key,
+        name: site.name || 'Site ' + site.key,
+        devices: site.devices || {},
+      };
+      await this.angularFireDatabase.object<Site>(`${ROOT_DATA.sites}/${site.key}`).update(newSite);
+      this.toastService.showToast('Cadastro Atualizado.', 'Sucesso', NbToastStatus.SUCCESS);
+      return Promise.resolve();
+    } catch (error) {
+      console.error(error);
+      this.toastService.showToast('Erro ao atualizar cadastro.', 'Erro', NbToastStatus.DANGER);
+      return Promise.reject(error);
+    }
+  }
+}
+
+@Injectable()
+export class DashboardIdGuard implements CanActivate {
+  constructor(
+    protected dashboardService: DashboardService,
+    protected router: Router,
+  ) { }
+
   canActivate(
     next: ActivatedRouteSnapshot,
     state: RouterStateSnapshot,
   ): Observable<boolean | UrlTree> {
-    const key = next.params.id;
+    const siteKey = next.params.id;
     // console.log('[canActivate]', {key, comp: next.component});
-    return this.getAuthSite(key).pipe(
+    return this.dashboardService.getAuthSite(siteKey).pipe(
       take(1),
       map(site => {
         if (!site) {
           throw new Error('No Site Resolved');
         }
-        if (site.key === key) {
+        if (site.key === siteKey) {
           return true;
         }
-        return this.router.parseUrl(`/dashboard/${key.key}`);
+        return this.router.parseUrl(`/dashboard/${site.key}`);
       }),
       catchError(error => {
         console.error(error);
@@ -354,5 +515,3 @@ export class DashboardService implements CanActivate {
     );
   }
 }
-
-export const DashboardIdGuard = DashboardService;

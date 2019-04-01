@@ -22,34 +22,25 @@ interface ProfileForm {
 })
 export class UserEditComponent implements OnInit, OnDestroy {
   isActive = true;
-  formValue = {
-    fullName: '',
-    emailAddress: '',
-    password: '',
-    repeatPassword: '',
-    termsConditions: true,
-  };
-  profileForm = new FormGroup(
-    {
-      fullName: new FormControl(this.formValue.fullName, [ Validators.required, Validators.minLength(6) ]),
-      emailAddress: new FormControl(this.formValue.emailAddress, [ Validators.email ]),
-      password: new FormControl(this.formValue.password, [Validators.minLength(6)]),
-      repeatPassword: new FormControl(this.formValue.repeatPassword, [
-        Validators.minLength(6),
-        (control: AbstractControl): ValidationErrors | null => {
-          if (
-            this.profileForm &&
-            this.profileForm.value.password &&
-            control.value &&
-            this.profileForm.value.password !== control.value
-          ) {
-            return {'repeatPassword': 'Passswords dont match'};
-          }
-        },
-      ]),
-      termsConditions: new FormControl(this.formValue.termsConditions, []),
-    },
-  );
+  profileForm = new FormGroup({
+    fullName: new FormControl('', [ Validators.required, Validators.minLength(6) ]),
+    emailAddress: new FormControl('', [ Validators.email ]),
+    password: new FormControl('', [Validators.minLength(6)]),
+    repeatPassword: new FormControl('', [
+      Validators.minLength(6),
+      (control: AbstractControl): ValidationErrors | null => {
+        if (
+          this.profileForm &&
+          this.profileForm.value.password &&
+          control.value &&
+          this.profileForm.value.password !== control.value
+        ) {
+          return {'repeatPassword': 'Passswords dont match'};
+        }
+      },
+    ]),
+    termsConditions: new FormControl(true, []),
+  });
   editMode = false;
 
   constructor(

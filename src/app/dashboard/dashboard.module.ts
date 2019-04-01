@@ -66,6 +66,7 @@ const components = [
   exports: components,
   providers: [
     { provide: DashboardService, useClass: DashboardService },
+    { provide: DashboardIdGuard, useClass: DashboardIdGuard },
   ],
   entryComponents: [
     StatusCardDialogComponent,

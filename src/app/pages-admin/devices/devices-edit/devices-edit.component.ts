@@ -1,15 +1,12 @@
 import { Component, OnInit } from '@angular/core';
-import { FirebaseDatabaseService } from 'app/@core/iot-dash/firebase-database.service';
-import { Validators, FormBuilder } from '@angular/forms';
-
-import { switchMap } from 'rxjs/operators';
 import { ActivatedRoute, ParamMap, Router } from '@angular/router';
-import { Device } from 'app/@core/iot-dash/iot-dash-models';
+import { Validators, FormBuilder } from '@angular/forms';
 import { Observable, of } from 'rxjs';
+import { switchMap } from 'rxjs/operators';
 
-// Toast
-import { NbGlobalLogicalPosition, NbGlobalPosition, NbToastrService } from '@nebular/theme';
-import { NbToastStatus } from '@nebular/theme/components/toastr/model';
+import { Device } from 'app/@core/iot-dash/iot-dash-models';
+import { FirebaseDatabaseService } from 'app/@core/iot-dash/firebase-database.service';
+import { ToastService, NbToastStatus } from 'app/@theme/toast.service';
 
 @Component({
   selector: 'app-devices-edit',
@@ -34,18 +31,11 @@ export class DevicesEditComponent implements OnInit {
 
   saveBtn = true;
 
-  // toast config
-  destroyByClick = false;
-  duration = 4000;
-  hasIcon = true;
-  position: NbGlobalPosition = NbGlobalLogicalPosition.BOTTOM_END;
-  preventDuplicates = false;
-
   constructor(
     protected route: ActivatedRoute,
     private firebaseDatabaseService: FirebaseDatabaseService,
     protected formBuilder: FormBuilder,
-    private toastrService: NbToastrService,
+    protected toastService: ToastService,
     private router: Router,
   ) {
     this.saveBtn = true;
@@ -85,23 +75,7 @@ export class DevicesEditComponent implements OnInit {
     );
   }
 
-  ngOnInit() {
-
-  }
-
-  showToast(message: string, title: string, status: NbToastStatus) {
-
-    const config = {
-      status: status,
-      destroyByClick: this.destroyByClick,
-      duration: this.duration,
-      hasIcon: this.hasIcon,
-      position: this.position,
-      preventDuplicates: this.preventDuplicates,
-    };
-
-    this.toastrService.show(message, title, config);
-  }
+  ngOnInit() { }
 
   async createDevice() {
     try {
@@ -116,11 +90,11 @@ export class DevicesEditComponent implements OnInit {
         isActor: this.sensorForm.value.isActor,
       });
       this.saveBtn = false;
-      this.showToast('Device created.', 'SUCCESS', NbToastStatus.SUCCESS);
+      this.toastService.showToast('Device created.', 'SUCCESS', NbToastStatus.SUCCESS);
       this.router.navigateByUrl('/sensors/list');
     } catch (e) {
       this.saveBtn = true;
-      this.showToast('Device not created. Try again.', 'WARNING', NbToastStatus.DANGER);
+      this.toastService.showToast('Device not created. Try again.', 'WARNING', NbToastStatus.DANGER);
     }
   }
 
@@ -136,10 +110,10 @@ export class DevicesEditComponent implements OnInit {
         unit: this.sensorForm.value.unit,
         isActor: this.sensorForm.value.isActor,
       });
-      this.showToast('Device updated.', 'SUCCESS', NbToastStatus.SUCCESS);
+      this.toastService.showToast('Device updated.', 'SUCCESS', NbToastStatus.SUCCESS);
       this.router.navigateByUrl('/sensors/list');
     } catch (e) {
-      this.showToast('Device not updated. Try again.', 'WARNING', NbToastStatus.DANGER);
+      this.toastService.showToast('Device not updated. Try again.', 'WARNING', NbToastStatus.DANGER);
     }
   }
 

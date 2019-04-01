@@ -20,14 +20,12 @@ export class ViewDashboardComponent implements OnDestroy {
   site: LoadedSite;
   siteSubscription: Subscription;
   currentDate = interval(1000).pipe( map(() => Date.now()));
-  alive = true;
 
   constructor(
     protected route: ActivatedRoute,
     protected dashboardService: DashboardService,
   ) {
     this.siteSubscription = this.route.paramMap.pipe(
-      takeWhile(() => this.alive),
       switchMap(params => this.dashboardService.getLoadedSite(params.get('id'))),
     ).subscribe(
       site => {
@@ -40,7 +38,6 @@ export class ViewDashboardComponent implements OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.alive = false;
     this.siteSubscription.unsubscribe();
   }
 }

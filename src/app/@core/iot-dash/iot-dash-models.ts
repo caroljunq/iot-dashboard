@@ -40,7 +40,7 @@ export interface UserSite {
   [userUid: string]: {
     [siteKey: string]: string,
   };
-};
+}
 
 export interface UserSites {
   [userUid: string]: {
@@ -49,10 +49,18 @@ export interface UserSites {
 }
 
 export interface RootData {
+  users: {[key: string]: StoredUser};
   devices: {[key: string]: Device};
   deviceData: {[deviceKey: string]: {[key: string]: TimedValue<number>}};
-  sites: {[key: string]: Site};  users: {[key: string]: StoredUser};
-  userSites: {[userUid: string]: {[siteKey: string]: string}};
+  sites: {[key: string]: Site};
+  userSites: UserSites;
+}
+export enum ROOT_DATA {
+  users = 'users',
+  devices = 'devices',
+  deviceData = 'deviceData',
+  sites = 'sites',
+  userSites = 'userSites',
 }
 
 export interface TimedAggregate {

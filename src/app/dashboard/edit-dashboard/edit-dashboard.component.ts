@@ -1,21 +1,18 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+
+import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
+import { ActivatedRoute, ParamMap, Router } from '@angular/router';
 import { MatPaginator, MatSort, MatTableDataSource} from '@angular/material';
 import { SelectionModel } from '@angular/cdk/collections';
+import { Validators, FormGroup, FormControl } from '@angular/forms';
+import { Subscription, of, combineLatest, Observable } from 'rxjs';
+import { switchMap, takeWhile, map, take } from 'rxjs/operators';
 
 import { FirebaseDatabaseService } from 'app/@core/iot-dash/firebase-database.service';
-import { Validators, FormBuilder } from '@angular/forms';
-
-import { switchMap, takeWhile, map, take } from 'rxjs/operators';
-import { ActivatedRoute, ParamMap, Router } from '@angular/router';
 import { Site, Device, StoredUser } from 'app/@core/iot-dash/iot-dash-models';
-import { Observable, of } from 'rxjs';
-
 import { UsersService } from 'app/pages/users/users.service';
+import { ToastService, NbToastStatus } from 'app/@theme/toast.service';
 
-
-// Toast
-import { NbGlobalLogicalPosition, NbGlobalPosition, NbToastrService } from '@nebular/theme';
-import { NbToastStatus } from '@nebular/theme/components/toastr/model';
+import { DashboardService, EditableSite } from '../dashboard.service';
 
 @Component({
   selector: 'app-room-edit',
@@ -23,121 +20,164 @@ import { NbToastStatus } from '@nebular/theme/components/toastr/model';
   styleUrls: ['./edit-dashboard.component.scss'],
 })
 
-export class EditViewDashboardComponent implements OnInit {
-
-  // toast config
-  destroyByClick = false;
-  duration = 4000;
-  hasIcon = true;
-  position: NbGlobalPosition = NbGlobalLogicalPosition.BOTTOM_END;
-  preventDuplicates = false;
-
-  roomForm = this.formBuilder.group({
-    name: ['', Validators.required],
+export class EditViewDashboardComponent implements OnInit, OnDestroy {
+  roomForm = new FormGroup({
+    name: new FormControl('', [ Validators.required, Validators.minLength(6) ]),
   });
 
   editMode = false;
   saveBtn = true;
-  siteKey: string = '';
 
-  // Sensor table
-  displayedSensorColumns: string[] = ['select', 'name', 'key', 'type', 'min', 'max', 'actor'];
-  sensorDataSource: MatTableDataSource<Device> = new MatTableDataSource([]);
-  sensorsSelection = new SelectionModel<Device>(true, []);
+  // Device table
+  displayedDeviceColumns: string[] = ['select', 'name', 'type', 'min', 'max', 'actor'];
+  deviceDataSource = new MatTableDataSource<Device>([]);
+  devicesSelection = new SelectionModel<Device>(true, []);
 
-  @ViewChild('pagSensor') paginatorSensor: MatPaginator;
-  @ViewChild('sortSensor') sortSensor: MatSort;
+  @ViewChild('pagDevice') paginatorDevice: MatPaginator;
+  @ViewChild('sortDevice') sortDevice: MatSort;
 
   // Users table
   displayedUserColumns: string[] = ['select', 'name', 'email', 'admin'];
-  userDataSource: MatTableDataSource<StoredUser> = new MatTableDataSource([]);
+  userDataSource = new MatTableDataSource<StoredUser>([]);
   usersSelection = new SelectionModel<StoredUser>(true, []);
 
   @ViewChild('pagUser') paginatorUser: MatPaginator;
   @ViewChild('sortUser') sortUser: MatSort;
 
+  siteSubscription: Subscription;
+  site: EditableSite;
+
   constructor(
     protected route: ActivatedRoute,
     private firebaseDatabaseService: FirebaseDatabaseService,
-    protected formBuilder: FormBuilder,
-    private toastrService: NbToastrService,
-    private router: Router,
-    protected usersService: UsersService,
+    protected toastService: ToastService,
+    private usersService: UsersService,
+    protected dashboardService: DashboardService,
   ) {
-
-    this.saveBtn = true;
-
-    this.route.paramMap.pipe(
-      switchMap<ParamMap, Site>(paramMap => {
+    this.siteSubscription = combineLatest(
+      this.route.paramMap,
+      this.dashboardService.getAllDevices(),
+      this.usersService.getUsersList(),
+    ).pipe(
+      switchMap(([paramMap, allDevices, allUsers]) => {
         const id = paramMap.get('id');
+        let siteObservable: Observable<EditableSite>;
         if (id) {
           this.editMode = true;
-          return this.firebaseDatabaseService.getSite(id);
+          siteObservable = this.dashboardService.getEditableSite(id);
+        } else {
+          siteObservable = of({
+            key: '',
+            name: '',
+            devices: {},
+            devicesArray: [],
+            usersArray: [],
+          });
         }
-        return of(<Site>{
-          key: '',
-          name: '',
-          devices: {},
-        });
+        return siteObservable.pipe(map(site => ({site, allDevices, allUsers})));
       }),
     ).subscribe(
-      (site) => {
-        this.siteKey = site.key;
-        // TODO: FALTA - caso esteja em modo edit mode, carregar usersSelection e sensorsSelection
-        // Já tem implementação de afiliação de sensores e users para um site
-        // getSiteDevices(key: string): Observable<Device[]>
-        // getSitesUsers
-
+      ({site, allDevices, allUsers}) => {
+        this.site = site;
+        this.deviceDataSource.data = allDevices;
+        this.userDataSource.data = allUsers;
+        this.usersSelection.select(
+          ...allUsers.filter(allUser => !!site.usersArray.find(user => user.uid === allUser.uid)),
+        );
+        this.devicesSelection.select(
+          ...allDevices.filter(allDevice => !!site.devicesArray.find(device => device.key === allDevice.key)),
+        );
         this.roomForm.setValue({
           name: site.name,
         });
       },
+      // error => console.log('error', error),
+      // () => console.log('complete'),
     );
-
-    // get the data once
-    this.firebaseDatabaseService.getAllDevices().pipe(take(1))
-      .subscribe((sensors) => {
-        this.sensorDataSource.data = sensors.filter(sensor => sensor.isActive);
-        this.sensorDataSource.paginator = this.paginatorSensor;
-        this.sensorDataSource.sort = this.sortSensor;
-      });
-    // get the data once, 2 --> get startWith from getUsersList, after all users at 2nd
-    this.usersService.getUsersList().pipe(take(2))
-      .subscribe((users) => {
-        this.userDataSource.data = users;
-        this.userDataSource.paginator = this.paginatorUser;
-        this.userDataSource.sort = this.sortUser;
-      });
   }
 
-  ngOnInit() {
+  ngOnInit() { }
+  ngOnDestroy(): void {
+    this.siteSubscription.unsubscribe();
   }
 
-  applyFilterSensor(filterValue: string) {
-    this.sensorDataSource.filter = filterValue.trim().toLowerCase();
-
-    if (this.sensorDataSource.paginator) {
-      this.sensorDataSource.paginator.firstPage();
+  onDelete() {
+    //
+  }
+  onSubmit() {
+    if (this.roomForm.invalid) {
+      return;
+    }
+    if (!this.editMode) {
+      this.dashboardService.createsite(
+        {
+          key: '',
+          name: this.roomForm.value.name,
+          devices: {},
+        },
+        this.usersSelection.selected,
+        this.devicesSelection.selected,
+      );
+    } else {
+      this.dashboardService.updateSite(
+        {
+          ...this.site,
+          name: this.roomForm.value.name,
+        },
+        this.usersSelection.selected,
+        this.devicesSelection.selected,
+      );
     }
   }
 
-  isAllSensorSelected() {
-    const numSelected = this.sensorsSelection.selected.length;
-    const numRows = this.sensorDataSource.data.length;
+  onDevicesSelectionChange($event, device: Device) {
+    if (!$event) {
+      return null;
+    }
+    this.devicesSelection.toggle(device);
+    if (this.devicesSelection.isSelected(device)) {
+      this.dashboardService.addDeviceToSite(this.site, device);
+    } else {
+      this.dashboardService.removeDeviceFromSite(this.site, device);
+    }
+  }
+  onUsersSelectionChange($event, user: StoredUser) {
+    if (!$event) {
+      return null;
+    }
+    this.usersSelection.toggle(user);
+    if (this.usersSelection.isSelected(user)) {
+      this.dashboardService.addUserToSite(this.site, user);
+    } else {
+      this.dashboardService.removeUserFromSite(this.site, user);
+    }
+  }
+
+  applyFilterDevice(filterValue: string) {
+    this.deviceDataSource.filter = filterValue.trim().toLowerCase();
+
+    if (this.deviceDataSource.paginator) {
+      this.deviceDataSource.paginator.firstPage();
+    }
+  }
+
+  isAllDeviceSelected() {
+    const numSelected = this.devicesSelection.selected.length;
+    const numRows = this.deviceDataSource.data.length;
     return numSelected === numRows;
   }
 
-  masterSensorToggle() {
-    this.isAllSensorSelected() ?
-        this.sensorsSelection.clear() :
-        this.sensorDataSource.data.forEach(row => this.sensorsSelection.select(row));
+  masterDeviceToggle() {
+    this.isAllDeviceSelected() ?
+        this.devicesSelection.clear() :
+        this.deviceDataSource.data.forEach(row => this.devicesSelection.select(row));
   }
 
-  checkboxSensorLabel(row?: Device): string {
+  checkboxDeviceLabel(row?: Device): string {
     if (!row) {
-      return `${this.isAllSensorSelected() ? 'select' : 'deselect'} all`;
+      return `${this.isAllDeviceSelected() ? 'select' : 'deselect'} all`;
     }
-    return `${this.sensorsSelection.isSelected(row) ? 'deselect' : 'select'} row ${row.key}`;
+    return `${this.devicesSelection.isSelected(row) ? 'deselect' : 'select'} row ${row.name}`;
   }
 
 
@@ -166,83 +206,5 @@ export class EditViewDashboardComponent implements OnInit {
       return `${this.isAllUserSelected() ? 'select' : 'deselect'} all`;
     }
     return `${this.usersSelection.isSelected(row) ? 'deselect' : 'select'} row ${row.uid}`;
-  }
-
-  async createRoom() {
-    try {
-      const selectedDevices = this.sensorsSelection.selected.reduce((obj, item) => {
-         obj[item.key] = item.key;
-         return obj;
-      }, {});
-
-      const selectedUsers = this.usersSelection.selected.reduce((arr, item) => {
-         arr.push(item.uid);
-         return arr;
-      }, []);
-
-      const newSiteKey = await this.firebaseDatabaseService.createSite({
-        name: this.roomForm.value.name,
-        key: '',
-        devices: selectedDevices,
-      });
-
-      // associating user and site
-      const createSiteUsers = await this.firebaseDatabaseService.insertMultipleSiteUsers(newSiteKey, selectedUsers);
-
-      this.saveBtn = false;
-      this.showToast('Room created.', 'SUCCESS', NbToastStatus.SUCCESS);
-      // FALTA - depois de inserir, ir para a rota de
-      // this.router.navigateByUrl(/rooms/id)/, basicamente ir para edit
-    }catch (e) {
-      this.saveBtn = true;
-      this.showToast('Room not created. Try again.', 'WARNING', NbToastStatus.DANGER);
-    }
-  }
-
-  async updateRoom() {
-    try {
-      const selectedDevices = this.sensorsSelection.selected.reduce((obj, item) => {
-         obj[item.key] = item.key;
-         return obj;
-      }, {});
-
-      const siteUpdate = await this.firebaseDatabaseService.updateSite(this.siteKey, {
-        name: this.roomForm.value.name,
-        key: this.siteKey,
-        devices: selectedDevices,
-      });
-
-      // FALTA - com base no objeto userSelection, atualizar os UserSites (afiliacao de site)
-
-      this.showToast('Room updated.', 'SUCCESS', NbToastStatus.SUCCESS);
-      // FALTA - depois de atualizar, ir para a rota de
-      // this.router.navigateByUrl(/rooms/id)/, basicamente ir para edit. Atualizar, para caso tiver mais sensores
-    }catch (e) {
-      this.showToast('Room not updated. Try again.', 'WARNING', NbToastStatus.DANGER);
-    }
-  }
-
-  onSubmit() {
-    if (this.roomForm.valid && !this.editMode) {
-      return this.createRoom();
-    }
-
-    if (this.editMode && this.roomForm.valid) {
-      this.updateRoom();
-    }
-  }
-
-  showToast(message: string, title: string, status: NbToastStatus) {
-
-    const config = {
-      status: status,
-      destroyByClick: this.destroyByClick,
-      duration: this.duration,
-      hasIcon: this.hasIcon,
-      position: this.position,
-      preventDuplicates: this.preventDuplicates,
-    };
-
-    this.toastrService.show(message, title, config);
   }
 }

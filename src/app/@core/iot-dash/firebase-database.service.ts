@@ -35,25 +35,6 @@ export class FirebaseDatabaseService {
   getSensorSites(key: string): Observable<Device[]> {
     return this.angularFireDatabase.list<Device>(`sites/${key}/sensors`).valueChanges();
   }
-  getSitesUsers() {
-    return this.angularFireDatabase.object<UserSites>(`userSites/`).valueChanges().pipe(
-      map(userList => {
-        const users = Object.keys(userList);
-        const sitesEntries = Object.values(userList);
-        const sitesUsers = {};
-        for (let index = 0; index < sitesEntries.length; index++) {
-          const siteEntry = sitesEntries[index];
-          for (const siteKey of Object.keys(siteEntry)) {
-            if (!sitesUsers[siteKey]) {
-              sitesUsers[siteKey] = [];
-            }
-            sitesUsers[siteKey].push(users[index]);
-          }
-        }
-        return sitesUsers;
-      }),
-    );
-  }
 
   insertMultipleSiteUsers(siteKey: string, selectedUsers: string[]) {
     return Promise.all(

@@ -17,8 +17,8 @@
   </div>
   <div class="col-12 col-md-2 col-sm-2" *nbIsGranted="['edit', 'admin']">
     <label class="config-desc">Edit</label>
-    <span class="config-val">
-      <a nbButton hero status="success" fullWidth aria-disabled="false" [routerLink]="['..', 'edit', site?.key]">
+    <span class="config-val" *ngIf="site">
+      <a nbButton hero status="success" fullWidth aria-disabled="false" [routerLink]="['..', 'edit', site.key]">
         Edit
       </a>
     </span>
