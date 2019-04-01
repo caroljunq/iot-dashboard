@@ -20,7 +20,7 @@ import { NbJSThemeOptions, NbJSThemeVariable } from '@nebular/theme/services/js-
 
 import { DeviceTimeSeries, EChartOption, seriesColors } from 'app/@core/iot-dash/live-chart.service';
 import { Site, Device, TimedValue } from 'app/@core/iot-dash/iot-dash-models';
-import { UsersService } from '../users/users.service';
+import { UsersService } from 'app/pages/users/users.service';
 import { LiveChartService, baseSensorChartOpts } from 'app/@core/iot-dash/live-chart.service';
 import { oneSixSixBits } from 'app/@core/iot-dash/setup-dash';
 

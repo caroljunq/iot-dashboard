@@ -16,17 +16,17 @@ import {
 
 import { ThemeModule } from 'app/@theme/theme.module';
 
-import { RoomEditComponent } from './edit-dashboard/room-edit.component';
+import { EditViewDashboardComponent } from 'app/dashboard/edit-dashboard/edit-dashboard.component';
 
-import { DashboardService } from './dashboard.service';
-import { DashboardComponent } from './view-dashboard/dashboard.component';
+import { DashboardService, DashboardIdGuard } from './dashboard.service';
+import { ViewDashboardComponent } from 'app/dashboard/view-dashboard/view-dashboard.component';
 import { StatusCardComponent } from './view-dashboard/status-card/status-card.component';
 import { StatusCardDialogComponent } from './view-dashboard/status-card/status-card-dialog.component';
 import { DeviceMonitoringComponent } from './view-dashboard/device-monitoring/device-monitoring.component';
 
 const routes: Routes = [
-  { path: 'edit/:id', component: RoomEditComponent, canActivate: [] },
-  { path: ':id', component: DashboardComponent, canActivate: [] },
+  { path: 'edit/:id', component: EditViewDashboardComponent, canActivate: [] },
+  { path: ':id', component: ViewDashboardComponent, canActivate: [DashboardIdGuard] },
   { path: '**', redirectTo: 'fake' },
 ];
 
@@ -37,8 +37,8 @@ const routes: Routes = [
 export class DashboardRoutingModule { }
 
 const components = [
-  DashboardComponent,
-  RoomEditComponent,
+  ViewDashboardComponent,
+  EditViewDashboardComponent,
   StatusCardComponent,
   StatusCardDialogComponent,
   DeviceMonitoringComponent,

@@ -19,11 +19,11 @@ import { NbToastStatus } from '@nebular/theme/components/toastr/model';
 
 @Component({
   selector: 'app-room-edit',
-  templateUrl: './room-edit.component.html',
-  styleUrls: ['./room-edit.component.scss'],
+  templateUrl: './edit-dashboard.component.html',
+  styleUrls: ['./edit-dashboard.component.scss'],
 })
 
-export class RoomEditComponent implements OnInit {
+export class EditViewDashboardComponent implements OnInit {
 
   // toast config
   destroyByClick = false;

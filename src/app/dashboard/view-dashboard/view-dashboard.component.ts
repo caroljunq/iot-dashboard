@@ -9,14 +9,14 @@ import {
   takeWhile,
 } from 'rxjs/operators';
 
-import { DashboardService, LoadedSite } from '../dashboard.service';
+import { DashboardService, LoadedSite } from 'app/dashboard/dashboard.service';
 
 @Component({
   selector: 'app-dashboard',
-  styleUrls: ['./dashboard.component.scss'],
-  templateUrl: './dashboard.component.html',
+  styleUrls: ['./view-dashboard.component.scss'],
+  templateUrl: './view-dashboard.component.html',
 })
-export class DashboardComponent implements OnDestroy {
+export class ViewDashboardComponent implements OnDestroy {
   site: LoadedSite;
   siteSubscription: Subscription;
   currentDate = interval(1000).pipe( map(() => Date.now()));
