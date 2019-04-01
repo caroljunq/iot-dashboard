@@ -19,7 +19,6 @@ const routes: Routes = [
   imports: [
     // hash is required by firebase
     RouterModule.forRoot(routes, {enableTracing: false, useHash: false}),
-    DashboardModule,
     HistoricalDataModule,
   ],
   exports: [RouterModule],

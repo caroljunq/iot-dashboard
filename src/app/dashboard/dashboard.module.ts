@@ -51,7 +51,7 @@ const components = [
     // ------ view --------
     ThemeModule,
     NgxEchartsModule,
-    // NbDialogModule.forChild(),
+    NbDialogModule.forChild(),
     GaugeModule.forRoot(),
     // ------ edit --------
     // MatButtonModule,
@@ -66,6 +66,9 @@ const components = [
   exports: components,
   providers: [
     { provide: DashboardService, useClass: DashboardService },
+  ],
+  entryComponents: [
+    StatusCardDialogComponent,
   ],
 })
 export class DashboardModule { }
