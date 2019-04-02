@@ -3,6 +3,7 @@
     ".read": "root.child('users/'+auth.uid+'/isAdmin').val() === true",
     ".write": "root.child('users/'+auth.uid+'/isAdmin').val() === true",
     "deviceData": {
+      ".read": true,
       "$deviceId": {
         ".indexOn": "timestamp"
       }
