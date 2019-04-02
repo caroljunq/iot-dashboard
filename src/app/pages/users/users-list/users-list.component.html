@@ -12,7 +12,7 @@
       [picture]="user.photoURL"
       ></nb-user>
     </div>
-    <ng-container *nbIsGranted="['edit', 'admin']">
+    <ng-container *ngIf="currentUser?.storedUser?.isAdmin">
       <div class="col-xs-12 col-sm-3">
         <button nbButton size="xsmall" status="success" (click)="chageActive(user, !user.isActive)">
           {{ !user.isActive ? "Ativar": "Desativar" }}
@@ -24,7 +24,7 @@
         </button>
       </div>
     </ng-container>
-    <div class="col-xs-12 col-sm-3" *nbIsGranted="['edit', 'user']">
+    <div class="col-xs-12 col-sm-3">
       <a [routerLink]="['/users', user.uid]">Edit</a>
     </div>
   </nb-card-body>

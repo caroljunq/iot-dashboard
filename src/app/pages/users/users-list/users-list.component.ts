@@ -3,7 +3,7 @@ import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
 import { UsersService } from 'app/pages/users/users.service';
-import { StoredUser } from '../user-models';
+import { StoredUser, DashUser } from '../user-models';
 
 interface ListedUser extends StoredUser {
   badgeStatus: 'primary'| 'info'| 'success'| 'warning'| 'danger';
@@ -41,6 +41,10 @@ function mkListedUser(user: StoredUser): ListedUser {
 })
 export class UsersListComponent implements OnInit {
   users$: Observable<ListedUser[]>;
+  currentUser: DashUser;
+  userSubscription = this.usersService.user$.subscribe(
+    currentUser => this.currentUser = currentUser,
+  );
 
   constructor(
     protected usersService: UsersService,
