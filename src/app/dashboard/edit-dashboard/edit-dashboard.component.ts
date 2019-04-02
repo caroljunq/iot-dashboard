@@ -26,7 +26,7 @@ export class EditViewDashboardComponent implements OnInit, OnDestroy {
   });
 
   editMode = false;
-  saveBtn = true;
+  loaded = false;
 
   // Device table
   displayedDeviceColumns: string[] = ['select', 'name', 'type', 'min', 'max', 'actor'];
@@ -66,30 +66,27 @@ export class EditViewDashboardComponent implements OnInit, OnDestroy {
           this.editMode = true;
           siteObservable = this.dashboardService.getEditableSite(id);
         } else {
-          siteObservable = of({
-            key: '',
-            name: '',
-            devices: {},
-            devicesArray: [],
-            usersArray: [],
-          });
+          siteObservable = of(null);
         }
         return siteObservable.pipe(map(site => ({site, allDevices, allUsers})));
       }),
     ).subscribe(
       ({site, allDevices, allUsers}) => {
+        this.loaded = true;
         this.site = site;
         this.deviceDataSource.data = allDevices;
         this.userDataSource.data = allUsers;
-        this.usersSelection.select(
-          ...allUsers.filter(allUser => !!site.usersArray.find(user => user.uid === allUser.uid)),
-        );
-        this.devicesSelection.select(
-          ...allDevices.filter(allDevice => !!site.devicesArray.find(device => device.key === allDevice.key)),
-        );
-        this.roomForm.setValue({
-          name: site.name,
-        });
+        if (site) {
+          this.roomForm.setValue({
+            name: site.name,
+          });
+          this.usersSelection.select(
+            ...allUsers.filter(allUser => !!site.usersArray.find(user => user.uid === allUser.uid)),
+          );
+          this.devicesSelection.select(
+            ...allDevices.filter(allDevice => !!site.devicesArray.find(device => device.key === allDevice.key)),
+          );
+        }
       },
       // error => console.log('error', error),
       // () => console.log('complete'),
@@ -135,6 +132,9 @@ export class EditViewDashboardComponent implements OnInit, OnDestroy {
       return null;
     }
     this.devicesSelection.toggle(device);
+    if (!this.editMode) {
+      return null;
+    }
     if (this.devicesSelection.isSelected(device)) {
       this.dashboardService.addDeviceToSite(this.site, device);
     } else {
@@ -146,6 +146,9 @@ export class EditViewDashboardComponent implements OnInit, OnDestroy {
       return null;
     }
     this.usersSelection.toggle(user);
+    if (!this.editMode) {
+      return null;
+    }
     if (this.usersSelection.isSelected(user)) {
       this.dashboardService.addUserToSite(this.site, user);
     } else {

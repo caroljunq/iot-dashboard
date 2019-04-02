@@ -40,7 +40,7 @@ export class AppComponent {
     const novoSite: NbMenuItem = {
       title: 'Novo Site',
       icon: 'nb-e-commerce',
-      link: 'rooms/create',
+      link: 'dashboard/create',
     };
     const devices: NbMenuItem = {
       title: 'Sensors',

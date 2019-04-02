@@ -25,7 +25,8 @@ import { StatusCardDialogComponent } from './view-dashboard/status-card/status-c
 import { DeviceMonitoringComponent } from './view-dashboard/device-monitoring/device-monitoring.component';
 
 const routes: Routes = [
-  { path: 'edit/:id', component: EditViewDashboardComponent, canActivate: [] },
+  { path: 'create', component: EditViewDashboardComponent, canActivate: [] },
+  { path: 'edit/:id', component: EditViewDashboardComponent, canActivate: [DashboardIdGuard] },
   { path: ':id', component: ViewDashboardComponent, canActivate: [DashboardIdGuard] },
   { path: '**', redirectTo: 'fake' },
 ];

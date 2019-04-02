@@ -44,7 +44,8 @@ export interface EditableSite extends Site {
 export interface SitesUsers {
   [siteKey: string]: {
     siteKey: string,
-    userList: string[],
+    userKeyList: string[],
+    userList: StoredUser[],
   };
 }
 
@@ -355,25 +356,14 @@ export class DashboardService {
       filter(site => !!site),
       switchMap(
         (site: Site) => combineLatest(
-          this.getSitesUsers().pipe(switchMap(
-            sitesUsers => this.usersService.getUsersList().pipe(map(
-              users => users.filter(user => {
-                if (!site || !site.key || !(<Object>sitesUsers).hasOwnProperty(site.key)) {
-                  return [];
-                }
-                return (sitesUsers[site.key].userList || []).includes(user.uid);
-              }),
-            )),
-          )),
-          combineLatest(Object.keys(site.devices).map(deviceKey => dataSource.deviceFn(deviceKey))),
+          this.getSitesUsers(),
+          combineLatest(Object.keys(site.devices || {}).map(deviceKey => dataSource.deviceFn(deviceKey))),
         ).pipe(
-          map(usersAndDevices => {
-            const usersArray: StoredUser[] = usersAndDevices[0];
-            const devicesArray: Device[] = usersAndDevices[1];
+          map(([sitesUsers, devicesArray]) => {
             return {
               ...site,
               devicesArray,
-              usersArray,
+              usersArray: (sitesUsers[site.key] || {userList: []}).userList,
             };
           }),
         ),
@@ -383,22 +373,28 @@ export class DashboardService {
 
   @cachedFn()
   getSitesUsers(): Observable<SitesUsers> {
-    return this.angularFireDatabase.object<UserSites>(`${ROOT_DATA.userSites}/`).valueChanges().pipe(
-      map(userList => {
-        const users = Object.keys(userList);
-        const sitesEntries = Object.values(userList);
-        const sitesUsers: SitesUsers = {};
+    return combineLatest(
+      this.angularFireDatabase.object<UserSites>(`${ROOT_DATA.userSites}`).valueChanges(),
+      this.angularFireDatabase.list<StoredUser>(`${ROOT_DATA.users}`).valueChanges(),
+    ).pipe(
+      map(([userSites, storedUsers]) => {
+        const siteUsers = Object.keys(userSites);
+        const sitesEntries = Object.values(userSites);
+        const sitesUsers: SitesUsers = <SitesUsers>{};
         for (let index = 0; index < sitesEntries.length; index++) {
           const siteEntry = sitesEntries[index];
           for (const siteKey of Object.keys(siteEntry)) {
             if (!sitesUsers[siteKey]) {
-              sitesUsers[siteKey] = { siteKey, userList: [] };
+              sitesUsers[siteKey] = { siteKey, userList: [], userKeyList: [] };
             }
-            sitesUsers[siteKey].userList.push(users[index]);
+            const userKey = siteUsers[index];
+            sitesUsers[siteKey].userKeyList.push(userKey);
+            sitesUsers[siteKey].userList.push(storedUsers.find(user => user.uid === userKey));
           }
         }
         return sitesUsers;
       }),
+      shareReplay(1),
     );
   }
 
@@ -447,17 +443,17 @@ export class DashboardService {
   async createsite(site: Site, users: StoredUser[], devices: Device[]): Promise<void> {
     try {
       const key = oneSixSixBits();
-      const newSite: Site = {
+      site = {
         key,
         name: site.name || 'Site ' + key,
-        devices: devices.reduce((acc, device) => {
+        devices: (devices || []).reduce((acc, device) => {
           acc[device.key] = device.key;
           return acc;
         }, {}),
       };
-      await this.angularFireDatabase.object<Site>(`${ROOT_DATA.sites}/${key}`).set(newSite);
+      await this.angularFireDatabase.object<Site>(`${ROOT_DATA.sites}/${key}`).set(site);
       this.toastService.showToast('Novo site criado com sucesso', 'Sucesso', NbToastStatus.SUCCESS);
-      for (const user of users) {
+      for (const user of (users || [])) {
         this.addUserToSite(site, user);
       }
       this.router.navigate(['dashboard', 'edit', key]);
@@ -468,12 +464,18 @@ export class DashboardService {
   }
   async updateSite(site: Site, users: StoredUser[], devices: Device[]): Promise<void> {
     try {
-      const newSite: Site = {
+      site = {
         key: site.key,
         name: site.name || 'Site ' + site.key,
-        devices: site.devices || {},
+        devices: (devices || []).reduce((acc, device) => {
+          acc[device.key] = device.key;
+          return acc;
+        }, {}),
       };
-      await this.angularFireDatabase.object<Site>(`${ROOT_DATA.sites}/${site.key}`).update(newSite);
+      await this.angularFireDatabase.object<Site>(`${ROOT_DATA.sites}/${site.key}`).update(site);
+      for (const user of (users || [])) {
+        this.addUserToSite(site, user);
+      }
       this.toastService.showToast('Cadastro Atualizado.', 'Sucesso', NbToastStatus.SUCCESS);
       return Promise.resolve();
     } catch (error) {
