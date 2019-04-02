@@ -10,6 +10,8 @@ import {
 } from 'rxjs/operators';
 
 import { DashboardService, LoadedSite } from 'app/dashboard/dashboard.service';
+import { UsersService } from 'app/pages/users/users.service';
+import { DashUser } from 'app/pages/users/user-models';
 
 @Component({
   selector: 'app-dashboard',
@@ -20,10 +22,15 @@ export class ViewDashboardComponent implements OnDestroy {
   site: LoadedSite;
   siteSubscription: Subscription;
   currentDate = interval(1000).pipe( map(() => Date.now()));
+  currentUser: DashUser;
+  userSubscription = this.usersService.user$.subscribe(
+    currentUser => this.currentUser = currentUser,
+  );
 
   constructor(
     protected route: ActivatedRoute,
     protected dashboardService: DashboardService,
+    protected usersService: UsersService,
   ) {
     this.siteSubscription = this.route.paramMap.pipe(
       switchMap(params => this.dashboardService.getLoadedSite(params.get('id'))),

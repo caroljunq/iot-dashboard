@@ -15,7 +15,7 @@
     <label class="config-desc">Current Hour</label>
     <span class="config-val">{{ currentDate | async | date:'HH:mm' }}</span>
   </div>
-  <div class="col-12 col-md-2 col-sm-2" *nbIsGranted="['edit', 'admin']">
+  <div class="col-12 col-md-2 col-sm-2" *ngIf="currentUser?.storedUser?.isAdmin">
     <label class="config-desc">Edit</label>
     <span class="config-val" *ngIf="site">
       <a nbButton hero status="success" fullWidth aria-disabled="false" [routerLink]="['..', 'edit', site.key]">
