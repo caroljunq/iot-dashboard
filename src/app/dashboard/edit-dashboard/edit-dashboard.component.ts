@@ -5,7 +5,7 @@ import { MatPaginator, MatSort, MatTableDataSource} from '@angular/material';
 import { SelectionModel } from '@angular/cdk/collections';
 import { Validators, FormGroup, FormControl } from '@angular/forms';
 import { Subscription, of, combineLatest, Observable } from 'rxjs';
-import { switchMap, takeWhile, map, take } from 'rxjs/operators';
+import { switchMap, takeWhile, map, take, debounceTime, tap } from 'rxjs/operators';
 
 import { FirebaseDatabaseService } from 'app/@core/iot-dash/firebase-database.service';
 import { Site, Device, StoredUser } from 'app/@core/iot-dash/iot-dash-models';
@@ -59,6 +59,8 @@ export class EditViewDashboardComponent implements OnInit, OnDestroy {
       this.dashboardService.getAllActiveDevices().pipe(map(devices => devices.filter(device => device.isActive))),
       this.usersService.getUsersList(),
     ).pipe(
+      tap(console.log, console.error),
+      debounceTime(100),
       switchMap(([paramMap, allDevices, allUsers]) => {
         const id = paramMap.get('id');
         let siteObservable: Observable<EditableSite>;

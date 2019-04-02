@@ -10,6 +10,7 @@
     },
     "devices": {
       ".read": true,
+      ".indexOn": "isActive",
       "$deviceId": {
         ".indexOn": "isActive"
       }

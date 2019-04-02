@@ -268,7 +268,7 @@ export class DashboardService {
           filter(site => !!site),
           switchMap(
             (site: Site) => combineLatest(
-              Object.keys(site.devices).map(deviceKey => dataSource.deviceFn(deviceKey)),
+              Object.keys(site.devices || {}).map(deviceKey => dataSource.deviceFn(deviceKey)),
             ).pipe(
               map(devices => {
                 const loadedDevices: LoadedDevice<number|boolean>[] = devices.map((device, index) => {

@@ -15,9 +15,10 @@ export class DevicesService {
     protected angularFireDatabase: AngularFireDatabase,
   ) { }
 
-  createDevice(device: Device) {
+  async createDevice(device: Device) {
     const deviceRef = this.angularFireDatabase.database.ref(`${ROOT_DATA.devices}`).push();
     device.key = deviceRef.key;
+    await this.angularFireDatabase.object(`${ROOT_DATA.deviceData}/${device.key}`).set({});
     return deviceRef.update(device);
   }
 
