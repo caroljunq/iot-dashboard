@@ -63,13 +63,13 @@ export class DevicesEditComponent implements OnInit {
         this.sensorStatus = sensor.isActive;
         this.sensorKey = sensor.key;
         this.sensorForm.setValue({
-          name: sensor.name,
-          type: sensor.type,
-          unit: sensor.unit,
-          max: sensor.max,
-          min: sensor.min,
-          isActor: sensor.isActor,
-          isActive: sensor.isActive,
+          name: sensor.name || '',
+          type: sensor.type || '',
+          unit: sensor.unit || '',
+          max: sensor.max || '',
+          min: sensor.min || '',
+          isActor: sensor.isActor || false,
+          isActive: sensor.isActive || false,
         });
       },
     );

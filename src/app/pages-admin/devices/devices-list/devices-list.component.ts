@@ -2,7 +2,7 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { FirebaseDatabaseService } from 'app/@core/iot-dash/firebase-database.service';
 import { MatPaginator, MatSort, MatTableDataSource } from '@angular/material';
 import { Device } from 'app/@core/iot-dash/iot-dash-models';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 
 import { ToastService, NbToastStatus } from 'app/@theme/toast.service';
 
@@ -24,6 +24,7 @@ export class DevicesListComponent implements OnInit {
     private firebaseDatabaseService: FirebaseDatabaseService,
     protected toastService: ToastService,
     private router: Router,
+    protected route: ActivatedRoute,
   ) {
 
     this.firebaseDatabaseService.getAllDevices().subscribe(devs => {
@@ -48,8 +49,8 @@ export class DevicesListComponent implements OnInit {
 
   onRowClicked(row: Device) {
     try {
-      this.router.navigateByUrl(`/sensors/${row.key}`);
-    }catch (e) {
+      this.router.navigate(['..', row.key], {relativeTo: this.route});
+    } catch (e) {
       this.toastService.showToast('Sensor can not be displayed.', 'WARNING', NbToastStatus.DANGER);
     }
   }
