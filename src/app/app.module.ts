@@ -45,7 +45,7 @@ import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
         ...ACL,
       },
     }).providers,
-    { provide: APP_BASE_HREF, useValue: '/' },
+    { provide: APP_BASE_HREF, useValue: '/crsup' },
     { provide: FunctionsRegionToken, useValue: environment.firebase.functionsRegionToken },
     { provide: NbRoleProvider, useClass: UsersService },
   ],
