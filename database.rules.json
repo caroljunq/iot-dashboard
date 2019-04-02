@@ -1,0 +1,31 @@
+{
+  "rules": {
+    ".read": "root.child('users/'+auth.uid+'/isAdmin').val() === true",
+    ".write": "root.child('users/'+auth.uid+'/isAdmin').val() === true",
+    "deviceData": {
+      "$deviceId": {
+        ".indexOn": "timestamp"
+      }
+    },
+    "devices": {
+      ".read": true
+    },
+    "sites": {
+      "$siteId": {
+        ".read": "auth.uid != null && root.child('userSites/'+auth.uid+'/'+$siteId).exists()"
+      }
+    },
+    "users": {
+      "$uid": {
+        ".read": "auth.uid != null && auth.uid === $uid",
+        ".write": "auth.uid != null && auth.uid === $uid"
+      }
+    },
+    "userSites": {
+      "$uid": {
+        ".read": "auth.uid != null && auth.uid === $uid",
+        ".write": "root.child('users/'+auth.uid+'/isAdmin').val() === true"
+      }
+    }
+  }
+}
