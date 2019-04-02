@@ -3,7 +3,7 @@
     <nb-card-header class="custom-form-title">{{!editMode? "Create a room":"Edit room"}}</nb-card-header>
     <nb-card-body>
       <div class="row room-top-form">
-        <div class="input-group col-12 col-sm-8">
+        <div class="input-group col-12 col-sm-10">
           <label>Room name</label>
           <input type="text" nbInput fullWidth placeholder="Room name" formControlName="name">
         </div>
@@ -22,8 +22,8 @@
   </nb-card>
   <!-- DEVICES -->
   <nb-card>
+    <nb-card-header>{{!editMode ? "Select" : "Selected"}} devices for this room</nb-card-header>
     <nb-card-body>
-      <h3>Select devices for this room</h3>
       <div class="row">
         <div class="col-3" *ngFor="let deive of site?.devicesArray">
           <nb-user
@@ -35,7 +35,10 @@
       <!--  -->
       <nb-accordion>
         <nb-accordion-item>
-          <nb-accordion-item-header>Add Devices</nb-accordion-item-header>
+          <nb-accordion-item-header>
+            <span>Add Devices</span>
+            <span class="btn-add-custom" status="success" aria-disabled="false" tabindex="0">+</span>
+          </nb-accordion-item-header>
           <nb-accordion-item-body>
             <div class="col-12 no-padding">
                 <div class="left-inner-addon">
@@ -113,8 +116,8 @@
   </nb-card>
   <!-- USERS -->
   <nb-card>
+    <nb-card-header>{{!editMode ? "Allow" : "Allowed"}} users to access this room</nb-card-header>
     <nb-card-body>
-      <h3>Allow users to access this room</h3>
       <div class="row">
         <div class="col-4" *ngFor="let user of site?.usersArray">
           <nb-user
@@ -130,7 +133,10 @@
       </div>
       <nb-accordion>
         <nb-accordion-item>
-          <nb-accordion-item-header>Add Users</nb-accordion-item-header>
+          <nb-accordion-item-header>
+            <span>Add Users</span>
+            <span class="btn-add-custom" status="success" aria-disabled="false" tabindex="0">+</span>
+          </nb-accordion-item-header>
            <nb-accordion-item-body>
               <div class="col-12 no-padding">
                 <div class="left-inner-addon">
