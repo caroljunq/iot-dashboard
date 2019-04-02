@@ -29,7 +29,7 @@ export class DeviceMonitoringComponent implements OnDestroy, AfterViewInit {
     4: 50,
     5: 50,
     6: 50,
-    7: 50
+    7: 50,
   };
 
   constructor(

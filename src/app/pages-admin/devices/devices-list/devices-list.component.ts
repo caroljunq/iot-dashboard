@@ -1,10 +1,11 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { FirebaseDatabaseService } from 'app/@core/iot-dash/firebase-database.service';
 import { MatPaginator, MatSort, MatTableDataSource } from '@angular/material';
-import { Device } from 'app/@core/iot-dash/iot-dash-models';
 import { Router, ActivatedRoute } from '@angular/router';
 
+import { Device } from 'app/@core/iot-dash/iot-dash-models';
+
 import { ToastService, NbToastStatus } from 'app/@theme/toast.service';
+import { DevicesService } from './../devices.service';
 
 @Component({
   selector: 'app-devices-list',
@@ -21,13 +22,13 @@ export class DevicesListComponent implements OnInit {
   @ViewChild(MatSort) sort: MatSort;
 
   constructor(
-    private firebaseDatabaseService: FirebaseDatabaseService,
+    protected devicesService: DevicesService,
     protected toastService: ToastService,
     private router: Router,
     protected route: ActivatedRoute,
   ) {
 
-    this.firebaseDatabaseService.getAllDevices().subscribe(devs => {
+    this.devicesService.getAllDevices().subscribe(devs => {
       this.devices = devs;
       this.dataSource = new MatTableDataSource(this.devices);
       this.dataSource.paginator = this.paginator;

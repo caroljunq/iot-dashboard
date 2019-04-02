@@ -10,7 +10,7 @@ const routes: Routes = [
   { path: 'dashboard', loadChildren: './dashboard/dashboard.module#DashboardModule', canActivate: [] },
   { path: 'historical-data', component: HistoricalDataComponent },
   { path: 'users', loadChildren: './pages/users/users.module#UsersModule' },
-  { path: 'sensors', loadChildren: './pages-admin/devices/devices.module#DevicesModule', canActivate: [AuthGuard] },
+  { path: 'devices', loadChildren: './pages-admin/devices/devices.module#DevicesModule', canActivate: [AuthGuard] },
   { path: '', redirectTo: 'dashboard/fake', pathMatch: 'full' },
   { path: '**', redirectTo: 'dashboard/fake' },
 ];

@@ -128,7 +128,7 @@ const FAKE_SITE = {
 };
 
 // Pure Function Cached Decorator
-function cachedFn<V>() {
+export function cachedFn<V>() {
   const cache = new Map<string, V>();
   return function (target: any, propertyKey: string, descriptor: PropertyDescriptor) {
     const original = descriptor.value;
@@ -154,6 +154,28 @@ function cachedFn<V>() {
     }
     return descriptor;
   };
+}
+
+export function validValue(text: string|number|boolean, def = 20): number|boolean {
+  if (typeof text === 'number' || typeof text === 'boolean') {
+    return text;
+  }
+  try {
+    const number = Number.parseFloat(text);
+    if (Number.isNaN(number)) {
+      throw new Error('not a number');
+    }
+    return number;
+  } catch (error) {
+    return def;
+  }
+}
+export function validMinMax(text: string|number|boolean, def = 20): number {
+  text = validValue(text, def);
+  if (typeof text === 'boolean') {
+    return text ? 1 : 0;
+  }
+  return text;
 }
 
 @Injectable()
@@ -251,9 +273,9 @@ export class DashboardService {
               map(devices => {
                 const loadedDevices: LoadedDevice<number|boolean>[] = devices.map((device, index) => {
                   const value$: Observable<TimedValue<number|boolean>> = dataSource.deviceDataFn(device.key, 1).pipe(
-                    filter(value => value !== null && value !== undefined),
-                    map(list => list[0]),
-                    startWith({timestamp: Date.now(), value: device.min}),
+                    filter(list => list !== null && list !== undefined && list.length === 1),
+                    map(list => ({...list[0], value: validValue(list[0].value) })),
+                    startWith({timestamp: Date.now(), value: validMinMax(device.min, 25)}),
                     // tap(v => console.count(site.name)),
                   );
                   const chart$ = dataSource.deviceDataFn(device.key, 15).pipe(
@@ -284,6 +306,8 @@ export class DashboardService {
                   // );
                   return {
                     ...device,
+                    max: validMinMax(device.max, 30),
+                    min: validMinMax(device.min, 20),
                     value$,
                     chart$,
                     emiter,
@@ -398,8 +422,15 @@ export class DashboardService {
     );
   }
 
-  getAllDevices(): Observable<Device[]> {
-    return this.angularFireDatabase.list<Device>(`${ROOT_DATA.devices}`).valueChanges();
+  @cachedFn()
+  getAllActiveDevices(): Observable<Device[]> {
+    return this.angularFireDatabase.list<Device>(
+      `${ROOT_DATA.devices}`,
+      ref => ref.orderByChild('isActive').equalTo(true),
+    ).valueChanges().pipe(
+      publishReplay(1),
+      refCount(),
+    );
   }
 
   async addDeviceToSite(site: Site, device: Device) {

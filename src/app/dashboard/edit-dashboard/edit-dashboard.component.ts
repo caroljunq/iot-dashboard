@@ -56,7 +56,7 @@ export class EditViewDashboardComponent implements OnInit, OnDestroy {
   ) {
     this.siteSubscription = combineLatest(
       this.route.paramMap,
-      this.dashboardService.getAllDevices(),
+      this.dashboardService.getAllActiveDevices(),
       this.usersService.getUsersList(),
     ).pipe(
       switchMap(([paramMap, allDevices, allUsers]) => {

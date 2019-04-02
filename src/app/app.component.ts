@@ -45,7 +45,7 @@ export class AppComponent {
     const devices: NbMenuItem = {
       title: 'Sensors',
       icon: 'ion-android-wifi',
-      link: 'sensors/',
+      link: 'devices/',
     };
     const siteToMenuItem = (sites: Site[]) => sites.filter(site => !!site).map<NbMenuItem>(site => ({
       title: site.name || 'Dashboard',

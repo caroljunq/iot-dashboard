@@ -16,22 +16,4 @@ export class FirebaseDatabaseService {
     //   // this.angularFireDatabase.object('/').update(getSampleData());
     // }
   }
-
-  createDevice(device: Device) {
-    const deviceRef = this.angularFireDatabase.database.ref(`${ROOT_DATA.devices}`).push();
-    device.key = deviceRef.key;
-    return deviceRef.update(device);
-  }
-
-  getDeviceById(id: string): Observable<Device> {
-    return this.angularFireDatabase.object<Device>(`${ROOT_DATA.devices}/${id}`).valueChanges();
-  }
-
-  updateDevice(id: string, device: Device) {
-    return this.angularFireDatabase.object(`${ROOT_DATA.devices}/${id}`).update(device);
-  }
-
-  getAllDevices(): Observable<Device[]> {
-    return this.angularFireDatabase.list<Device>(`${ROOT_DATA.devices}`).valueChanges();
-  }
 }

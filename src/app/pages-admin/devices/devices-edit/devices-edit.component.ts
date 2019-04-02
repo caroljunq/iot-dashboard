@@ -1,12 +1,13 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, ParamMap, Router } from '@angular/router';
-import { Validators, FormBuilder } from '@angular/forms';
+import { Validators, FormBuilder, FormGroup, FormControl } from '@angular/forms';
 import { Observable, of } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
 
 import { Device } from 'app/@core/iot-dash/iot-dash-models';
-import { FirebaseDatabaseService } from 'app/@core/iot-dash/firebase-database.service';
 import { ToastService, NbToastStatus } from 'app/@theme/toast.service';
+
+import { DevicesService } from './../devices.service';
 
 @Component({
   selector: 'app-devices-edit',
@@ -14,15 +15,14 @@ import { ToastService, NbToastStatus } from 'app/@theme/toast.service';
   styleUrls: ['./devices-edit.component.scss'],
 })
 export class DevicesEditComponent implements OnInit {
-
-  sensorForm = this.formBuilder.group({
-    name: ['', Validators.required],
-    type: ['', Validators.required],
-    unit: ['', Validators.required],
-    max: ['', Validators.required],
-    min: ['', Validators.required],
-    isActor: [false],
-    isActive: [true],
+  sensorForm = new FormGroup({
+    name: new FormControl('', [Validators.required, Validators.minLength(6)]),
+    type: new FormControl('', [Validators.required, Validators.minLength(3)]),
+    unit: new FormControl('', [Validators.required, Validators.minLength(1)]),
+    max: new FormControl('', [Validators.required]),
+    min: new FormControl('', [Validators.required]),
+    isActor: new FormControl(false, []),
+    isActive: new FormControl(true, []),
   });
 
   editMode = false;
@@ -33,7 +33,7 @@ export class DevicesEditComponent implements OnInit {
 
   constructor(
     protected route: ActivatedRoute,
-    private firebaseDatabaseService: FirebaseDatabaseService,
+    protected devicesService: DevicesService,
     protected formBuilder: FormBuilder,
     protected toastService: ToastService,
     private router: Router,
@@ -45,7 +45,7 @@ export class DevicesEditComponent implements OnInit {
         const id = paramMap.get('id');
         if (id) {
           this.editMode = true;
-          return this.firebaseDatabaseService.getDeviceById(id);
+          return this.devicesService.getDeviceById(id);
         }
         return of(<Device>{
           key: '',
@@ -66,8 +66,8 @@ export class DevicesEditComponent implements OnInit {
           name: sensor.name || '',
           type: sensor.type || '',
           unit: sensor.unit || '',
-          max: sensor.max || '',
-          min: sensor.min || '',
+          max: sensor.max,
+          min: sensor.min,
           isActor: sensor.isActor || false,
           isActive: sensor.isActive || false,
         });
@@ -79,7 +79,7 @@ export class DevicesEditComponent implements OnInit {
 
   async createDevice() {
     try {
-      const newDevice = await this.firebaseDatabaseService.createDevice({
+      const newDevice = await this.devicesService.createDevice({
         key: '',
         isActive: true,
         name: this.sensorForm.value.name,
@@ -91,7 +91,7 @@ export class DevicesEditComponent implements OnInit {
       });
       this.saveBtn = false;
       this.toastService.showToast('Device created.', 'SUCCESS', NbToastStatus.SUCCESS);
-      this.router.navigateByUrl('/sensors/list');
+      this.router.navigateByUrl('/devices/list');
     } catch (e) {
       this.saveBtn = true;
       this.toastService.showToast('Device not created. Try again.', 'WARNING', NbToastStatus.DANGER);
@@ -100,7 +100,7 @@ export class DevicesEditComponent implements OnInit {
 
   async updateDevice() {
     try {
-      const newDevice = await this.firebaseDatabaseService.updateDevice(this.sensorKey, {
+      const newDevice = await this.devicesService.updateDevice(this.sensorKey, {
         key: this.sensorKey,
         isActive: true,
         name: this.sensorForm.value.name,
