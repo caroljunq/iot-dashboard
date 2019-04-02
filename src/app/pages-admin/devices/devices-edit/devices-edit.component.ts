@@ -19,8 +19,8 @@ export class DevicesEditComponent implements OnInit {
     name: new FormControl('', [Validators.required, Validators.minLength(6)]),
     type: new FormControl('', [Validators.required, Validators.minLength(3)]),
     unit: new FormControl('', [Validators.required, Validators.minLength(1)]),
-    max: new FormControl('', [Validators.required]),
-    min: new FormControl('', [Validators.required]),
+    max: new FormControl('', [Validators.required,Validators.pattern(/^[+-]?(\d*\.)?\d+$/)]),
+    min: new FormControl('', [Validators.required,Validators.pattern(/^[+-]?(\d*\.)?\d+$/)]),
     isActor: new FormControl(false, []),
     isActive: new FormControl(true, []),
   });
