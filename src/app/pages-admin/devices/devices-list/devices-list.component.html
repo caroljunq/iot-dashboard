@@ -2,13 +2,13 @@
   <nb-card-header class="custom-form-title">Sensors</nb-card-header>
   <nb-card-body>
     <div class="row">
-      <div class="col-10 no-padding">
+      <div class="col-12 col-sm-10">
         <div class="left-inner-addon">
           <i class="nb-search"></i>
           <input size="medium" type="search" nbInput fullWidth (keyup)="applyFilter($event.target.value)" placeholder="Search">
         </div>
       </div>
-      <div class="col-2 no-padding">
+      <div class="col-12 col-sm-2">
         <a nbButton hero status="success" fullWidth aria-disabled="false" [routerLink]="['..', 'create']">
           New Device
         </a>
